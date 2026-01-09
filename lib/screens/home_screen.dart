@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -6,37 +7,157 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Warna dasar aplikasi (F3F4F6)
       backgroundColor: const Color(0xFFF3F4F6),
       body: Stack(
         children: [
-          // Background Gradient dengan Kurva
+          // ==============================
+          // LAYER 1: BACKGROUND GRADIENT
+          // ==============================
           ClipPath(
             clipper: HeaderCurveClipper(),
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.4, // Tinggi area gradient
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.45,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xFFFAFAFA), // Stops 31%
-                    Color(0xFFFDE5E3), // Stops 55%
-                    Color(0xFFFDCBC9), // Stops 100%
+                    Color(0xFFFAFAFA),
+                    Color(0xFFFDE5E3),
+                    Color(0xFFFDCBC9),
                   ],
                   stops: [0.31, 0.55, 1.0],
                 ),
               ),
             ),
           ),
-          
-          // Layer untuk konten (Header, dsb) akan diletakkan di sini nanti
-          const SafeArea(
-            child: SingleChildScrollView(
+
+          // ==============================
+          // LAYER 2: SCROLLABLE CONTENT
+          // ==============================
+          // Konten ditaruh di sini agar bisa discroll
+          SingleChildScrollView(
+            padding: const EdgeInsets.only(
+                top: 100), // PENTING: Jarak agar tidak ketutup Header
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 children: [
-                  // Nanti kita isi Header di sini
+                  const SizedBox(height: 20),
+                  // Di sini nanti tempat Widget Kartu Absen, Menu, dll
+                  // Saya buat dummy box panjang biar kelihatan bisa discroll
+                  Container(height: 200, color: Colors.white.withOpacity(0.5)),
+                  const SizedBox(height: 20),
+                  Container(height: 500, color: Colors.white.withOpacity(0.5)),
                 ],
+              ),
+            ),
+          ),
+
+          // ==============================
+          // LAYER 3: FIXED HEADER (Top Bar)
+          // ==============================
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // --- BAGIAN KIRI: LOGO ---
+                    Image.asset(
+                      'assets/images/common/logo_smile_v2.png', // Sesuaikan nama file persis
+                      height: 58, // Sesuaikan tinggi agar proporsional
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Placeholder jika gambar belum ada
+                        return const Text("Smile V2",
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red));
+                      },
+                    ),
+
+                    // --- BAGIAN KANAN: ICON & STATUS ---
+                    Row(
+                      children: [
+                        // 1. Icon Notifikasi dengan Badge
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            // Menggunakan SVG Picture
+                            SvgPicture.asset(
+                              'assets/icons/ic_notification.svg',
+                              width: 24, // Ukuran Icon
+                              height: 24,
+                              // colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn), // Uncomment jika ingin mengubah warna icon lewat kodingan
+                            ),
+
+                            // Badge Merah (Titik)
+                            Positioned(
+                              right: 1,
+                              top: 0,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFF04241),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+
+                        const SizedBox(width: 16),
+
+                        // 2. Status Koneksi (Hijau)
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Lingkaran Status
+                            Container(
+                              width: 18,
+                              height: 18,
+                              decoration: BoxDecoration(
+                                  color: const Color(
+                                      0xFF74FF46), // Fill Hijau Terang
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color(
+                                        0xFFDBDBDB), // Stroke Abu-abu
+                                    width: 2, // Ketebalan stroke
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    )
+                                  ]),
+                            ),
+                            const SizedBox(height: 2),
+                            // Teks "Online"
+                            const Text(
+                              "Online",
+                              style: TextStyle(
+                                color: Color(0xFF65D340), // Warna Teks Hijau
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -46,28 +167,19 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// Custom Clipper untuk membuat lengkungan di bawah
+// Custom Clipper (Tidak Berubah)
 class HeaderCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    // 1. Mulai dari titik 0,0 (kiri atas)
-    // 2. Tarik garis ke bawah di sisi kiri (sisakan ruang untuk lengkungan)
-    path.lineTo(0, size.height - 60); 
-    
-    // 3. Membuat lengkungan (Curve)
-    // quadraticBezierTo(titik_kontrol_x, titik_kontrol_y, titik_tujuan_x, titik_tujuan_y)
+    path.lineTo(0, size.height - 60);
     path.quadraticBezierTo(
-      size.width / 2,     // Titik tengah secara horizontal
-      size.height + 40,   // Menarik lengkungan ke bawah melewati batas container
-      size.width,         // Titik akhir di sisi kanan
-      size.height - 60,   // Tinggi akhir di sisi kanan (sejajar dengan sisi kiri)
+      size.width / 2,
+      size.height + 40,
+      size.width,
+      size.height - 60,
     );
-    
-    // 4. Tarik garis ke pojok kanan atas
     path.lineTo(size.width, 0);
-    
-    // 5. Tutup jalur
     path.close();
     return path;
   }
