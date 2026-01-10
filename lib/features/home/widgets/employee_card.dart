@@ -138,10 +138,10 @@ class _EmployeeCardState extends State<EmployeeCard> {
                 Container(
                   width: 47,
                   height: 47,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      image: NetworkImage('https://i.pravatar.cc/150?img=12'),
+                      image: AssetImage('assets/images/home/profile_user.jpeg'),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -237,136 +237,184 @@ class _EmployeeCardState extends State<EmployeeCard> {
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-            child: Row(
-              children: [
-                // === KOLOM KIRI: KEHADIRAN ===
-                Expanded(
-                  flex: 4,
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start, // Default Start untuk Label
-                    children: [
-                      // LABEL (Tetap Kiri)
-                      const Text(
-                        "KEHADIRAN PER BULAN",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 7,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      // ANGKA (Dibuat Center)
-                      Center(
-                        child: RichText(
-                          text: const TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "27",
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              TextSpan(
-                                text: "/30",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            child: IntrinsicHeight(
+              child: Row(
+                // SOLUSI: Tambahkan ini agar kedua kolom dipaksa rata atas
+                crossAxisAlignment: CrossAxisAlignment.start,
 
-                // Garis Pemisah Vertikal Putih
-                Container(
-                  width: 2,
-                  height: 40,
-                  color: Colors.white,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                ),
-
-                // === KOLOM KANAN: TERLAMBAT ===
-                Expanded(
-                  flex: 6,
-                  child: Stack(
-                    clipBehavior: Clip.none, // Agar icon aman jika geser-geser
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment
-                            .start, // Default Start untuk Label
-                        children: [
-                          // LABEL (Tetap Kiri)
-                          const Text(
-                            "TERLAMBAT",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 7,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          // ANGKA & TEKS KALI (Dibuat Center)
-                          Center(
-                            child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.center, // Center Horizontal
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .baseline, // Sejajar Garis Bawah Font
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Text(
-                                  _isLateHidden ? "--" : "3",
-                                  style: const TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                const Text(
-                                  "Kali",
-                                  style: TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // ICON MATA (HIDE/UNHIDE)
-                      Positioned(
-                        right: 0,
-                        top:
-                            14, // REVISI: Diturunkan agar sejajar dengan text "Kali"
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _isLateHidden = !_isLateHidden;
-                            });
-                          },
-                          child: Icon(
-                            _isLateHidden
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
+                children: [
+                  // === KOLOM KIRI: KEHADIRAN ===
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start, // Default Start untuk Label
+                      children: [
+                        // LABEL (Tetap Kiri)
+                        const Text(
+                          "KEHADIRAN PER BULAN",
+                          style: TextStyle(
                             color: Colors.white,
-                            size: 21,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      )
-                    ],
+                        // ANGKA (Dibuat Center)
+                        // TAMBAHKAN JARAK
+                        const SizedBox(height: 4),
+
+                        // Center(
+                        //   child: RichText(
+                        //     text: const TextSpan(
+                        //       children: [
+                        //         TextSpan(
+                        //           text: "27",
+                        //           style: TextStyle(
+                        //             fontSize: 32,
+                        //             fontWeight: FontWeight.bold,
+                        //             color: Colors.white,
+                        //           ),
+                        //         ),
+                        //         TextSpan(
+                        //           text: "/30",
+                        //           style: TextStyle(
+                        //             fontSize: 15,
+                        //             fontWeight: FontWeight.bold,
+                        //             color: Colors.white,
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment:
+                              CrossAxisAlignment.baseline, // Kunci kesejajaran
+                          textBaseline: TextBaseline.alphabetic,
+                          children: const [
+                            Text("27",
+                                style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
+                            Text("/30",
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white)),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+
+                  // Garis Pemisah Vertikal Putih
+                  Container(
+                    width: 2,
+                    // height: 40,
+                    height: double.infinity,
+                    color: Colors.white,
+                    // margin: const EdgeInsets.symmetric(horizontal: 8),
+                    margin: const EdgeInsets.only(left: 8, right: 8, top: 15),
+                  ),
+
+                  // === KOLOM KANAN: TERLAMBAT ===
+                  Expanded(
+                    flex: 6,
+                    child: Stack(
+                      clipBehavior:
+                          Clip.none, // Agar icon aman jika geser-geser
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment
+                              .start, // Default Start untuk Label
+                          children: [
+                            // LABEL (Tetap Kiri)
+                            // const Text(
+                            //   "TERLAMBAT",
+                            //   style: TextStyle(
+                            //     color: Colors.white,
+                            //     fontSize: 7,
+                            //     fontWeight: FontWeight.w600,
+                            //   ),
+                            // ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left:
+                                      10.0), // Ubah angka 10 sesuai kebutuhan gesernya
+                              child: const Text(
+                                "TERLAMBAT",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+
+                            // 2. JARAK (SIZEDBOX) - Ditaruh SETELAH Padding selesai
+                            const SizedBox(height: 4),
+
+                            // ANGKA & TEKS KALI (Dibuat Center)
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .center, // Center Horizontal
+                                crossAxisAlignment: CrossAxisAlignment
+                                    .baseline, // Sejajar Garis Bawah Font
+                                textBaseline: TextBaseline.alphabetic,
+                                children: [
+                                  Text(
+                                    _isLateHidden ? "--" : "3",
+                                    style: const TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Text(
+                                    "Kali",
+                                    style: TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // ICON MATA (HIDE/UNHIDE)
+                        Positioned(
+                          right: 0,
+                          top:
+                              18, // REVISI: Diturunkan agar sejajar dengan text "Kali"
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _isLateHidden = !_isLateHidden;
+                              });
+                            },
+                            child: SvgPicture.asset(
+                              _isLateHidden
+                                  ? 'assets/icons/ic_hide_white.svg' // Icon saat tersembunyi
+                                  : 'assets/icons/ic_show_white.svg', // Icon saat terlihat
+                              width: 21,
+                              height: 21,
+                              colorFilter: const ColorFilter.mode(Colors.white,
+                                  BlendMode.srcIn), // Agar warna putih
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -394,9 +442,15 @@ class _EmployeeCardState extends State<EmployeeCard> {
             Row(
               children: [
                 if (widget.showSyncIcon)
-                  const Padding(
-                    padding: EdgeInsets.only(right: 4.0),
-                    child: Icon(Icons.sync, size: 14, color: Color(0xFF1F63C7)),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4.0),
+                    child: SvgPicture.asset(
+                      'assets/icons/ic_sync.svg', // Sesuaikan path file
+                      width: 15,
+                      height: 15,
+                      colorFilter: const ColorFilter.mode(
+                          Color(0xFF1F63C7), BlendMode.srcIn), // Warna Biru
+                    ),
                   ),
                 const Text(
                   "History",
