@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+// ==========================================
+  // VARIABEL TRIGGER (GANTI NILAI DISINI UNTUK TESTING)
+  // ==========================================
+  final int testSpLevel =
+      0; // Coba ganti: 0 (Normal), 1 (Kuning), 2 (Orange), 3 (Merah)
+  final bool testSyncIcon = true; // Coba ganti: true (Ada icon), false (Hilang)
+  // ==========================================
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +56,10 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   // Di sini nanti tempat Widget Kartu Absen, Menu, dll
                   // Saya buat dummy box panjang biar kelihatan bisa discroll
-                  Container(height: 200, color: Colors.white.withOpacity(0.5)),
+                  EmployeeCard(
+                    spLevel: testSpLevel, // Menggunakan variabel trigger
+                    showSyncIcon: testSyncIcon, // Menggunakan variabel trigger
+                  ),
                   const SizedBox(height: 20),
                   Container(height: 500, color: Colors.white.withOpacity(0.5)),
                 ],
