@@ -9,7 +9,7 @@ class HomeScreen extends StatelessWidget {
   // VARIABEL TRIGGER (GANTI NILAI DISINI UNTUK TESTING)
   // ==========================================
   final int testSpLevel =
-      0; // Coba ganti: 0 (Normal), 1 (Kuning), 2 (Orange), 3 (Merah)
+      3; // Coba ganti: 0 (Normal), 1 (Kuning), 2 (Orange), 3 (Merah)
   final bool testSyncIcon = true; // Coba ganti: true (Ada icon), false (Hilang)
   // ==========================================
 
@@ -48,7 +48,7 @@ class HomeScreen extends StatelessWidget {
           // Konten ditaruh di sini agar bisa discroll
           SingleChildScrollView(
             padding: const EdgeInsets.only(
-                top: 100), // PENTING: Jarak agar tidak ketutup Header
+                top: 110), // PENTING: Jarak agar tidak ketutup Header
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
@@ -61,7 +61,7 @@ class HomeScreen extends StatelessWidget {
                     showSyncIcon: testSyncIcon, // Menggunakan variabel trigger
                   ),
                   const SizedBox(height: 20),
-                  Container(height: 500, color: Colors.white.withOpacity(0.5)),
+                  Container(height: 700, color: Colors.white.withOpacity(0.5)),
                 ],
               ),
             ),
@@ -74,101 +74,119 @@ class HomeScreen extends StatelessWidget {
             top: 0,
             left: 0,
             right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // --- BAGIAN KIRI: LOGO ---
-                    Image.asset(
-                      'assets/images/common/logo_smile_v2.png', // Sesuaikan nama file persis
-                      height: 58, // Sesuaikan tinggi agar proporsional
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        // Placeholder jika gambar belum ada
-                        return const Text("Smile V2",
-                            style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red));
-                      },
-                    ),
+            child: Container(
+              // PERBAIKAN DISINI:
+              // 1. Kita beri warna background agar tidak tembus pandang.
+              // Saya gunakan FAFAFA agar menyatu dengan gradasi paling atas.
+              color: const Color(0xFFFAFAFA),
 
-                    // --- BAGIAN KANAN: ICON & STATUS ---
-                    Row(
-                      children: [
-                        // 1. Icon Notifikasi dengan Badge
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            // Menggunakan SVG Picture
-                            SvgPicture.asset(
-                              'assets/icons/ic_notification.svg',
-                              width: 24, // Ukuran Icon
-                              height: 24,
-                              // colorFilter: const ColorFilter.mode(Colors.black87, BlendMode.srcIn), // Uncomment jika ingin mengubah warna icon lewat kodingan
-                            ),
+              // 2. Opsional: Tambahkan shadow tipis di bawah header
+              // agar terlihat terpisah dari konten saat discroll
+              // decoration: BoxDecoration(
+              //   color: const Color(0xFFFAFAFA),
+              //   boxShadow: [
+              //     BoxShadow(
+              //       color: Colors.black.withOpacity(0.05),
+              //       blurRadius: 5,
+              //       offset: const Offset(0, 2),
+              //     ),
+              //   ],
+              // ),
 
-                            // Badge Merah (Titik)
-                            Positioned(
-                              right: 1,
-                              top: 0,
-                              child: Container(
-                                width: 10,
-                                height: 10,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFF04241),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-
-                        const SizedBox(width: 16),
-
-                        // 2. Status Koneksi (Hijau)
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Lingkaran Status
-                            Container(
-                              width: 18,
-                              height: 18,
-                              decoration: BoxDecoration(
-                                  color: const Color(
-                                      0xFF74FF46), // Fill Hijau Terang
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(
-                                        0xFFDBDBDB), // Stroke Abu-abu
-                                    width: 2, // Ketebalan stroke
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    )
-                                  ]),
-                            ),
-                            const SizedBox(height: 2),
-                            // Teks "Online"
-                            const Text(
-                              "Online",
+              child: SafeArea(
+                // bottom: false memastikan padding bawah aman
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // --- BAGIAN KIRI: LOGO ---
+                      Image.asset(
+                        'assets/images/common/logo_smile_v2.png',
+                        height: 58,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Text("Smile V2",
                               style: TextStyle(
-                                color: Color(0xFF65D340), // Warna Teks Hijau
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red));
+                        },
+                      ),
+
+                      // --- BAGIAN KANAN: ICON & STATUS ---
+                      Row(
+                        children: [
+                          // 1. Icon Notifikasi
+                          Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              SvgPicture.asset(
+                                'assets/icons/ic_notification.svg',
+                                width: 24,
+                                height: 24,
                               ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
+                              Positioned(
+                                right: 1,
+                                top: 0,
+                                child: Container(
+                                  width: 10,
+                                  height: 10,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFF04241),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+
+                          const SizedBox(width: 16),
+
+                          // 2. Status Koneksi
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top:
+                                    8.0), // <--- UBAH ANGKA INI UNTUK NAIK/TURUN
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 18,
+                                  height: 18,
+                                  decoration: BoxDecoration(
+                                      color: const Color(0xFF74FF46),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: const Color(0xFFDBDBDB),
+                                        width: 2,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        )
+                                      ]),
+                                ),
+                                const SizedBox(height: 2),
+                                const Text(
+                                  "Online",
+                                  style: TextStyle(
+                                    color: Color(0xFF65D340),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

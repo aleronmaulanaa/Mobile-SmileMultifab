@@ -20,16 +20,42 @@ class _EmployeeCardState extends State<EmployeeCard> {
   bool _isLateHidden = true;
 
   // Helper untuk mendapatkan warna SP
+  // Color _getSpColor() {
+  //   switch (widget.spLevel) {
+  //     case 1:
+  //       return const Color(0xFFFFE100); // SP 1 - Kuning
+  //     case 2:
+  //       return const Color(0xFFF59642); // SP 2 - Orange
+  //     case 3:
+  //       return const Color(0xFFF04241); // SP 3 - Merah
+  //     default:
+  //       return Colors.transparent;
+  //   }
+  // }
+  // 1. Warna Background SP & Stroke Card
   Color _getSpColor() {
     switch (widget.spLevel) {
       case 1:
-        return const Color(0xFFFFE100); // SP 1 - Kuning
+        return const Color(0xFFFFDD00); // SP 1 - Kuning
       case 2:
-        return const Color(0xFFF59642); // SP 2 - Orange
+        return const Color(0xFFFF6F00); // SP 2 - Orange
       case 3:
-        return const Color(0xFFF04241); // SP 3 - Merah
+        return const Color(0xFFFF0000); // SP 3 - Merah
       default:
-        return Colors.transparent;
+        return const Color(0xFFD4D4D4).withOpacity(0.70); // Normal Stroke
+    }
+  }
+
+  // 2. Warna Teks SP
+  Color _getSpTextColor() {
+    switch (widget.spLevel) {
+      case 1:
+        return const Color(0xFF000000); // SP 1 - Hitam
+      case 2:
+      case 3:
+        return const Color(0xFFFFFB00); // SP 2 & 3 - Kuning Terang
+      default:
+        return Colors.black;
     }
   }
 
@@ -40,42 +66,51 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
   @override
   Widget build(BuildContext context) {
-    // Jika SP > 0, kita pakai container warna sebagai wrapper
-    // Jika SP == 0, kita langsung render card putihnya
-    if (widget.spLevel > 0) {
-      return Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: _getSpColor(),
-          borderRadius: BorderRadius.circular(23),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Label SP di Atas
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
+    // REVISI: Tinggi diubah menjadi 40 sesuai permintaan
+    const double headerVisibleHeight = 40.0;
+
+    return Stack(
+      children: [
+        // LAYER 1: HEADER SP (BELAKANG)
+        if (widget.spLevel > 0)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 80, // Tetap tinggi agar memanjang ke belakang
+              decoration: BoxDecoration(
+                color: _getSpColor(),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              alignment: Alignment.topCenter,
+              // REVISI: Padding top jadi 10 agar pas di tengah area 40px
+              padding: const EdgeInsets.only(top: 10),
               child: Text(
                 _getSpText(),
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: widget.spLevel == 1 ? Colors.black : Colors.white,
+                  color: _getSpTextColor(),
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
                 ),
               ),
             ),
-            // Card Putih Utama (Dimasukkan ke dalam wrapper SP)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-              child: _buildMainCard(),
-            ),
-          ],
+          ),
+
+        // LAYER 2: MAIN CARD (DEPAN)
+        Padding(
+          padding: EdgeInsets.only(
+            // Card turun sejauh 40px
+            top: widget.spLevel > 0 ? headerVisibleHeight : 0,
+          ),
+          child: _buildMainCard(),
         ),
-      );
-    } else {
-      // Versi Normal (Tanpa Wrapper SP)
-      return _buildMainCard();
-    }
+      ],
+    );
   }
 
   Widget _buildMainCard() {
@@ -85,9 +120,14 @@ class _EmployeeCardState extends State<EmployeeCard> {
       decoration: BoxDecoration(
         color: const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(23),
+        // border: Border.all(
+        //   color: const Color(0xFFD4D4D4).withOpacity(0.70), // Stroke inside 70%
+        //   width: 2,
+        // ),
         border: Border.all(
-          color: const Color(0xFFD4D4D4).withOpacity(0.70), // Stroke inside 70%
-          width: 2,
+          // Jika SP > 0 gunakan warna SP, jika 0 gunakan warna Normal
+          color: _getSpColor(),
+          width: 2, // Ketebalan tetap 2
         ),
         boxShadow: [
           BoxShadow(
@@ -262,31 +302,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
                         // ANGKA (Dibuat Center)
                         // TAMBAHKAN JARAK
                         const SizedBox(height: 4),
-
-                        // Center(
-                        //   child: RichText(
-                        //     text: const TextSpan(
-                        //       children: [
-                        //         TextSpan(
-                        //           text: "27",
-                        //           style: TextStyle(
-                        //             fontSize: 32,
-                        //             fontWeight: FontWeight.bold,
-                        //             color: Colors.white,
-                        //           ),
-                        //         ),
-                        //         TextSpan(
-                        //           text: "/30",
-                        //           style: TextStyle(
-                        //             fontSize: 15,
-                        //             fontWeight: FontWeight.bold,
-                        //             color: Colors.white,
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment:
@@ -312,10 +327,8 @@ class _EmployeeCardState extends State<EmployeeCard> {
                   // Garis Pemisah Vertikal Putih
                   Container(
                     width: 2,
-                    // height: 40,
                     height: double.infinity,
                     color: Colors.white,
-                    // margin: const EdgeInsets.symmetric(horizontal: 8),
                     margin: const EdgeInsets.only(left: 8, right: 8, top: 15),
                   ),
 
@@ -331,14 +344,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
                               .start, // Default Start untuk Label
                           children: [
                             // LABEL (Tetap Kiri)
-                            // const Text(
-                            //   "TERLAMBAT",
-                            //   style: TextStyle(
-                            //     color: Colors.white,
-                            //     fontSize: 7,
-                            //     fontWeight: FontWeight.w600,
-                            //   ),
-                            // ),
                             Padding(
                               padding: const EdgeInsets.only(
                                   left:
