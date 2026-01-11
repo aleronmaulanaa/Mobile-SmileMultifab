@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
+import 'package:mobile_smile_multifab/features/home/widgets/banner_carousel.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -60,6 +61,10 @@ class HomeScreen extends StatelessWidget {
                     spLevel: testSpLevel, // Menggunakan variabel trigger
                     showSyncIcon: testSyncIcon, // Menggunakan variabel trigger
                   ),
+                  const SizedBox(height: 20),
+
+                  const BannerCarousel(),
+
                   const SizedBox(height: 20),
                   Container(height: 700, color: Colors.white.withOpacity(0.5)),
                 ],
