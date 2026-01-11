@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/banner_carousel.dart';
+import 'package:mobile_smile_multifab/features/home/widgets/home_menu.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,7 +11,7 @@ class HomeScreen extends StatelessWidget {
   // VARIABEL TRIGGER (GANTI NILAI DISINI UNTUK TESTING)
   // ==========================================
   final int testSpLevel =
-      3; // Coba ganti: 0 (Normal), 1 (Kuning), 2 (Orange), 3 (Merah)
+      0; // Coba ganti: 0 (Normal), 1 (Kuning), 2 (Orange), 3 (Merah)
   final bool testSyncIcon = true; // Coba ganti: true (Ada icon), false (Hilang)
   // ==========================================
 
@@ -64,6 +65,12 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   const BannerCarousel(),
+
+// Jarak antara Banner dan Menu
+                  const SizedBox(height: 24),
+
+                  // 3. MENU FITUR (BARU)
+                  const HomeMenu(),
 
                   const SizedBox(height: 20),
                   Container(height: 700, color: Colors.white.withOpacity(0.5)),
