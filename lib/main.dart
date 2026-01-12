@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 import 'features/attendance/pages/attendance_page.dart';
+import 'features/attendance/services/connectivity_service.dart';
+import 'features/attendance/models/attendance_history.dart';
+import 'features/attendance/models/attendance_daily_summary.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await initializeDateFormatting('id_ID', null);
+  ConnectivityService.initialize();
+
+  await Hive.initFlutter();
+  Hive.registerAdapter(AttendanceHistoryAdapter());
+  Hive.registerAdapter(AttendanceDailySummaryAdapter());
+
+  await Hive.openBox<AttendanceHistory>('attendance_history');
+  await Hive.openBox<AttendanceDailySummary>(
+    'attendance_daily_summary',
+  );
 
   runApp(const MyApp());
 }
@@ -18,10 +33,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -49,32 +60,21 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-
-   
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-
+          children: [
+            Text('$_counter'),
             const SizedBox(height: 24),
-
-            // 🔥 TOMBOL KE HADIRAN
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const AttendancePage(),
+                    builder: (_) =>
+                        const AttendancePage(),
                   ),
                 );
               },
@@ -83,11 +83,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      // ========================================
-
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
-        tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
     );

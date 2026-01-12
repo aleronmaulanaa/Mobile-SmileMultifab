@@ -4,8 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../widgets/attendance_camera.dart';
+import '../models/attendance_history.dart';
+import '../services/attendance_history_service.dart';
+import '../services/attendance_daily_summary_service.dart';
+
 
 class RecordTimePage extends StatefulWidget {
   const RecordTimePage({super.key});
@@ -20,6 +24,12 @@ class _RecordTimePageState extends State<RecordTimePage> {
   File? _capturedImage;
   bool _isSubmitting = false;
 
+  //  TAMBAHAN (JAM FOTO)
+  DateTime? _photoTakenTime;
+
+  //  TAMBAHAN (STATUS KONEKSI)
+  bool _isOnline = true;
+
   // ================= CLOCK
   Timer? _clockTimer;
   DateTime _now = DateTime.now();
@@ -28,13 +38,17 @@ class _RecordTimePageState extends State<RecordTimePage> {
       DateFormat('HH:mm:ss').format(_now);
 
   String get _currentDate =>
-      DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(_now);
+      DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
+          .format(_now);
 
   @override
   void initState() {
     super.initState();
     _startClock();
     _getLocation();
+
+    // TAMBAHAN
+    _checkConnection();
   }
 
   void _startClock() {
@@ -59,9 +73,36 @@ class _RecordTimePageState extends State<RecordTimePage> {
     });
   }
 
+  //  FIX TOTAL: CEK INTERNET NYATA (BUKAN CUMA WIFI)
+  Future<void> _checkConnection() async {
+    final connectivityResult =
+        await Connectivity().checkConnectivity();
+
+    bool online = connectivityResult != ConnectivityResult.none;
+
+    if (online) {
+      try {
+        final result =
+            await InternetAddress.lookup('google.com');
+        online = result.isNotEmpty &&
+            result.first.rawAddress.isNotEmpty;
+      } catch (_) {
+        online = false;
+      }
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isOnline = online;
+    });
+  }
+
   void _onImageCaptured(File image) {
     setState(() {
       _capturedImage = image;
+
+      //  JAM DIAMBIL SAAT FOTO
+      _photoTakenTime = DateTime.now();
     });
   }
 
@@ -107,10 +148,12 @@ class _RecordTimePageState extends State<RecordTimePage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  "Data absensi kamu berhasil dikirim.",
+                Text(
+                  _isOnline
+                      ? "Data absensi berhasil dikirim."
+                      : "Data absensi tersimpan (offline).",
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.black54),
+                  style: const TextStyle(color: Colors.black54),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
@@ -123,6 +166,7 @@ class _RecordTimePageState extends State<RecordTimePage> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -155,7 +199,7 @@ class _RecordTimePageState extends State<RecordTimePage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // ================= JAM & TANGGAL (REAL-TIME)
+            // ================= JAM & TANGGAL
             Column(
               children: [
                 Text(
@@ -191,7 +235,7 @@ class _RecordTimePageState extends State<RecordTimePage> {
 
             const SizedBox(height: 12),
 
-            // ================= LAT LONG (SAMPINGAN)
+            // ================= LAT LONG
             Expanded(
               flex: 2,
               child: Container(
@@ -280,7 +324,7 @@ class _RecordTimePageState extends State<RecordTimePage> {
 
             const SizedBox(height: 16),
 
-            // ================= BUTTON SUBMIT
+            // ================= BUTTON SUBMIT (PUTIH)
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -289,6 +333,7 @@ class _RecordTimePageState extends State<RecordTimePage> {
                   _capturedImage == null
                       ? Icons.camera_alt
                       : Icons.check_circle,
+                  color: Colors.white,
                 ),
                 label: Text(
                   _capturedImage == null
@@ -296,6 +341,10 @@ class _RecordTimePageState extends State<RecordTimePage> {
                       : _isSubmitting
                           ? "Mengirim Absensi..."
                           : "Kirim Absensi",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 onPressed: _canSubmit
                     ? () async {
@@ -305,6 +354,17 @@ class _RecordTimePageState extends State<RecordTimePage> {
 
                         await Future.delayed(
                           const Duration(seconds: 2),
+                        );
+
+                        // 🔥 SIMPAN KE HIVE (ONLINE / OFFLINE)
+                        await AttendanceHistoryService.addHistory(
+                          AttendanceHistory(
+                            imagePath: _capturedImage!.path,
+                            checkInTime: _photoTakenTime!,
+                            latitude: _position!.latitude,
+                            longitude: _position!.longitude,
+                            isOnline: _isOnline,
+                          ),
                         );
 
                         if (!mounted) return;
@@ -319,6 +379,8 @@ class _RecordTimePageState extends State<RecordTimePage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
                       _canSubmit ? Colors.green : Colors.grey,
+                  foregroundColor: Colors.white,
+                  disabledForegroundColor: Colors.white70,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),

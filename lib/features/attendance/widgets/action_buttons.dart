@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../pages/record_time_page.dart';
+import '../pages/attendance_history_page.dart'; // 🔥 TAMBAHAN
 
 class ActionButtons extends StatelessWidget {
   const ActionButtons({super.key});
@@ -48,7 +49,12 @@ class ActionButtons extends StatelessWidget {
             ),
             label: 'History',
             onTap: () {
-              // TODO: navigate to history page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const AttendanceHistoryPage(),
+                ),
+              );
             },
           ),
         ),
@@ -80,14 +86,11 @@ class _ShadowButton extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(23),
-
-        // 🔥 SHADOW HITAM LEMBUT
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.25),
             offset: const Offset(0, 6),
             blurRadius: 12,
-            spreadRadius: 0,
           ),
         ],
       ),
