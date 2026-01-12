@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/banner_carousel.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/home_menu.dart';
+import 'package:mobile_smile_multifab/features/home/widgets/news_section.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -71,6 +73,12 @@ class HomeScreen extends StatelessWidget {
 
                   // 3. MENU FITUR (BARU)
                   const HomeMenu(),
+
+                  // Jarak antara Menu dan Berita
+                  const SizedBox(height: 24),
+
+                  // 4. ARTIKEL BERITA (BARU)
+                  const NewsSection(),
 
                   const SizedBox(height: 20),
                   Container(height: 700, color: Colors.white.withOpacity(0.5)),
