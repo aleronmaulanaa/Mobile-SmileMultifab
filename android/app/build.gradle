@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.mobile_smile_multifab"
-    compileSdk = 34 // Paksa ke SDK 34 untuk standar terbaru
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -20,22 +20,26 @@ android {
 
     defaultConfig {
         applicationId = "com.example.mobile_smile_multifab"
-        
-        // Paksa ke 21 agar jalan di Android 5.0 ke atas
-        minSdk = 21 
-        targetSdk = 34
+
+        minSdk = 21
+        targetSdk = 36
+
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        // Aktifkan Multidex untuk HP lama
-        multiDexEnabled true 
+        multiDexEnabled true
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.debug
+        }
+
         release {
             signingConfig = signingConfigs.debug
-            
-            // Tambahkan filter arsitektur agar APK support HP 32-bit & 64-bit
+            minifyEnabled false
+            shrinkResources false
+
             ndk {
                 abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
             }
@@ -48,6 +52,5 @@ flutter {
 }
 
 dependencies {
-    // Library Multidex untuk Android lama
     implementation "androidx.multidex:multidex:2.0.1"
 }
