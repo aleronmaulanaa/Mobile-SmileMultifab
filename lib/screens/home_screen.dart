@@ -4,7 +4,7 @@ import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/banner_carousel.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/home_menu.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/news_section.dart';
-
+import 'package:mobile_smile_multifab/features/home/widgets/custom_bottom_navbar.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
   // VARIABEL TRIGGER (GANTI NILAI DISINI UNTUK TESTING)
   // ==========================================
   final int testSpLevel =
-      0; // Coba ganti: 0 (Normal), 1 (Kuning), 2 (Orange), 3 (Merah)
+      3; // Coba ganti: 0 (Normal), 1 (Kuning), 2 (Orange), 3 (Merah)
   final bool testSyncIcon = true; // Coba ganti: true (Ada icon), false (Hilang)
   // ==========================================
 
@@ -51,8 +51,12 @@ class HomeScreen extends StatelessWidget {
           // ==============================
           // Konten ditaruh di sini agar bisa discroll
           SingleChildScrollView(
-            padding: const EdgeInsets.only(
-                top: 110), // PENTING: Jarak agar tidak ketutup Header
+            // padding: const EdgeInsets.only(
+            //     top: 110), // PENTING: Jarak agar tidak ketutup Header
+
+            // PERBAIKAN 1: Tambahkan padding bottom: 120
+            // Agar konten paling bawah tidak tertutup Bottom Navbar
+            padding: const EdgeInsets.only(top: 130, bottom: 120),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
@@ -80,8 +84,8 @@ class HomeScreen extends StatelessWidget {
                   // 4. ARTIKEL BERITA (BARU)
                   const NewsSection(),
 
-                  const SizedBox(height: 20),
-                  Container(height: 700, color: Colors.white.withOpacity(0.5)),
+                  // const SizedBox(height: 20),
+                  // Container(height: 700, color: Colors.white.withOpacity(0.5)),
                 ],
               ),
             ),
@@ -210,6 +214,16 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+          // ==============================
+          // LAYER 4: BOTTOM NAVIGATION BAR (BARU)
+          // ==============================
+          // PERBAIKAN 3: Menambahkan Custom Bottom Nav Bar disini
+          const Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: CustomBottomNavBar(),
           ),
         ],
       ),
