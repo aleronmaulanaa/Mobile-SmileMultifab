@@ -148,7 +148,6 @@ class _InformationCardState extends State<InformationCard> {
       ),
       child: Column(
         children: [
-          // ================= USER NAME & ID
           Row(
             children: const [
               Icon(
@@ -177,7 +176,6 @@ class _InformationCardState extends State<InformationCard> {
 
           const SizedBox(height: 8),
 
-          // ================= LATLONG + STATUS
           Row(
             children: [
               Text(
