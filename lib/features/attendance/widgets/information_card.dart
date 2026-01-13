@@ -5,8 +5,6 @@ import 'package:geolocator/geolocator.dart';
 
 import '../state/location_state.dart';
 import '../services/connectivity_service.dart';
-
-// 🔥 TAMBAHAN (HIVE)
 import '../services/attendance_history_service.dart';
 import '../models/attendance_history.dart';
 
@@ -19,10 +17,11 @@ class InformationCard extends StatefulWidget {
 }
 
 class _InformationCardState extends State<InformationCard> {
+  static const String _userName = 'M. Richie Sugestiana';
+  static const String _userId = '83493';
+
   late String _date;
   bool _isOnline = false;
-
-  // 🔥 JAM ABSEN
   String _checkInTime = '--.--';
   String _checkOutTime = '--.--';
 
@@ -33,20 +32,17 @@ class _InformationCardState extends State<InformationCard> {
   void initState() {
     super.initState();
 
-    // 🔥 STATUS AWAL
     _isOnline = ConnectivityService.currentStatus;
 
     _updateDate();
-    _loadAttendanceTimes(); // 🔥 LOAD JAM ABSEN
-    _loadLocation();        // 🔥 LOAD LOKASI (ONLINE / OFFLINE)
+    _loadAttendanceTimes();
+    _loadLocation();
 
-    // update tanggal tiap menit
     _timer = Timer.periodic(
       const Duration(minutes: 1),
       (_) => _updateDate(),
     );
 
-    // 🔥 LISTEN STATUS ONLINE / OFFLINE
     _connectionSub =
         ConnectivityService.onlineStatusStream.listen(
       (status) async {
@@ -54,7 +50,6 @@ class _InformationCardState extends State<InformationCard> {
 
         setState(() => _isOnline = status);
 
-        // 🔥 JANGAN HAPUS LOKASI SAAT OFFLINE
         await _loadLocation();
         _loadAttendanceTimes();
       },
@@ -71,7 +66,6 @@ class _InformationCardState extends State<InformationCard> {
     });
   }
 
-  // 🔥 AMBIL LOKASI ONLINE / OFFLINE
   Future<void> _loadLocation() async {
     try {
       Position? pos;
@@ -93,7 +87,6 @@ class _InformationCardState extends State<InformationCard> {
     }
   }
 
-  // 🔥 AMBIL JAM ABSEN DARI HIVE
   void _loadAttendanceTimes() {
     final List<AttendanceHistory> histories =
         AttendanceHistoryService.getAllHistory();
@@ -105,19 +98,19 @@ class _InformationCardState extends State<InformationCard> {
           e.checkInTime.month == today.month &&
           e.checkInTime.day == today.day;
     }).toList()
-      ..sort((a, b) =>
-          a.checkInTime.compareTo(b.checkInTime));
+      ..sort(
+        (a, b) =>
+            a.checkInTime.compareTo(b.checkInTime),
+      );
 
     if (todayRecords.isNotEmpty) {
-      _checkInTime =
-          DateFormat('HH.mm').format(
-              todayRecords.first.checkInTime);
+      _checkInTime = DateFormat('HH.mm')
+          .format(todayRecords.first.checkInTime);
     }
 
     if (todayRecords.length >= 2) {
-      _checkOutTime =
-          DateFormat('HH.mm').format(
-              todayRecords.last.checkInTime);
+      _checkOutTime = DateFormat('HH.mm')
+          .format(todayRecords.last.checkInTime);
     }
 
     if (mounted) setState(() {});
@@ -155,6 +148,36 @@ class _InformationCardState extends State<InformationCard> {
       ),
       child: Column(
         children: [
+          // ================= USER NAME & ID
+          Row(
+            children: const [
+              Icon(
+                Icons.person,
+                size: 16,
+                color: Colors.black54,
+              ),
+              SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'M. Richie Sugestiana',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Text(
+                'ID: 83493',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black54,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          // ================= LATLONG + STATUS
           Row(
             children: [
               Text(
@@ -177,16 +200,18 @@ class _InformationCardState extends State<InformationCard> {
                     _isOnline ? "Online" : "Offline",
                     style: TextStyle(
                       fontSize: 12,
-                      color: _isOnline
-                          ? Colors.green
-                          : Colors.red,
+                      color:
+                          _isOnline ? Colors.green : Colors.red,
                     ),
                   ),
                 ],
               ),
             ],
           ),
+
           const SizedBox(height: 10),
+
+          // ================= INFORMATION + JAM
           Row(
             children: [
               Expanded(

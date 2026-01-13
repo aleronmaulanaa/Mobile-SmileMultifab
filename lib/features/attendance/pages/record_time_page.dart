@@ -14,7 +14,7 @@ import '../services/attendance_daily_summary_service.dart';
 class RecordTimePage extends StatefulWidget {
   const RecordTimePage({super.key});
 
-  @override
+  @override 
   State<RecordTimePage> createState() => _RecordTimePageState();
 }
 
@@ -27,8 +27,10 @@ class _RecordTimePageState extends State<RecordTimePage> {
   //  TAMBAHAN (JAM FOTO)
   DateTime? _photoTakenTime;
 
+
   //  TAMBAHAN (STATUS KONEKSI)
   bool _isOnline = true;
+
 
   // ================= CLOCK
   Timer? _clockTimer;
