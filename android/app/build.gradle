@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.mobile_smile_multifab"
-    compileSdk = 34 // Paksa ke SDK 34 untuk standar terbaru
+    compileSdk = 35 // Paksa ke SDK 34 untuk standar terbaru
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
