@@ -1,3 +1,5 @@
+import 'dart:async'; // <--- PERUBAHAN: Tambah import ini untuk StreamSubscription
+import 'package:connectivity_plus/connectivity_plus.dart'; // <--- PERUBAHAN: Import library koneksi
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
@@ -6,19 +8,92 @@ import 'package:mobile_smile_multifab/features/home/widgets/home_menu.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/news_section.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/custom_bottom_navbar.dart';
 
-class HomeScreen extends StatelessWidget {
+// PERUBAHAN 1: Ubah ke StatefulWidget agar bisa update status realtime
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-// ==========================================
-  // VARIABEL TRIGGER (GANTI NILAI DISINI UNTUK TESTING)
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   // ==========================================
-  final int testSpLevel =
-      3; // Coba ganti: 0 (Normal), 1 (Kuning), 2 (Orange), 3 (Merah)
-  final bool testSyncIcon = true; // Coba ganti: true (Ada icon), false (Hilang)
+  // VARIABEL LOGIKA KONEKSI
   // ==========================================
+  bool _isOnline = true; // Default anggap online dulu
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  // Variabel Dummy (Tetap ada)
+  final int testSpLevel = 3;
+  final bool testSyncIcon = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // 1. Cek status awal saat aplikasi dibuka
+    _initConnectivity();
+
+    // 2. Dengarkan perubahan (misal: user mematikan wifi/data)
+    _connectivitySubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((List<ConnectivityResult> results) {
+      _updateConnectionStatus(results);
+    });
+  }
+
+  @override
+  void dispose() {
+    // Matikan pendengar saat halaman ditutup agar hemat memori
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  // Fungsi untuk cek status awal
+  Future<void> _initConnectivity() async {
+    late List<ConnectivityResult> results;
+    try {
+      results = await Connectivity().checkConnectivity();
+    } catch (e) {
+      return;
+    }
+    if (!mounted) return;
+    _updateConnectionStatus(results);
+  }
+
+  // Fungsi Logika Penentuan Online/Offline
+  void _updateConnectionStatus(List<ConnectivityResult> results) {
+    // Jika list mengandung none, berarti tidak ada koneksi
+    if (results.contains(ConnectivityResult.none)) {
+      setState(() {
+        _isOnline = false;
+      });
+    } else {
+      // Jika ada mobile, wifi, ethernet, vpn, dll -> Online
+      setState(() {
+        _isOnline = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // ==========================================
+    // LOGIKA WARNA & TEXT (SESUAI REQUEST)
+    // ==========================================
+
+    // 1. Teks Status
+    final String statusText = _isOnline ? "Online" : "Offline";
+
+    // 2. Warna Lingkaran (Bulatan)
+    // Online: Hijau Terang (74FF46) | Offline: Merah Request (FF4646)
+    final Color statusCircleColor =
+        _isOnline ? const Color(0xFF74FF46) : const Color(0xFFFF4646);
+
+    // 3. Warna Teks
+    // Online: Hijau Gelap (65D340) | Offline: Merah Gelap Request (D34040)
+    final Color statusTextColor =
+        _isOnline ? const Color(0xFF65D340) : const Color(0xFFD34040);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
       body: Stack(
@@ -49,43 +124,23 @@ class HomeScreen extends StatelessWidget {
           // ==============================
           // LAYER 2: SCROLLABLE CONTENT
           // ==============================
-          // Konten ditaruh di sini agar bisa discroll
           SingleChildScrollView(
-            // padding: const EdgeInsets.only(
-            //     top: 110), // PENTING: Jarak agar tidak ketutup Header
-
-            // PERBAIKAN 1: Tambahkan padding bottom: 120
-            // Agar konten paling bawah tidak tertutup Bottom Navbar
             padding: const EdgeInsets.only(top: 130, bottom: 120),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 children: [
                   const SizedBox(height: 20),
-                  // Di sini nanti tempat Widget Kartu Absen, Menu, dll
-                  // Saya buat dummy box panjang biar kelihatan bisa discroll
                   EmployeeCard(
-                    spLevel: testSpLevel, // Menggunakan variabel trigger
-                    showSyncIcon: testSyncIcon, // Menggunakan variabel trigger
+                    spLevel: testSpLevel,
+                    showSyncIcon: testSyncIcon,
                   ),
                   const SizedBox(height: 20),
-
                   const BannerCarousel(),
-
-// Jarak antara Banner dan Menu
                   const SizedBox(height: 24),
-
-                  // 3. MENU FITUR (BARU)
                   const HomeMenu(),
-
-                  // Jarak antara Menu dan Berita
                   const SizedBox(height: 24),
-
-                  // 4. ARTIKEL BERITA (BARU)
                   const NewsSection(),
-
-                  // const SizedBox(height: 20),
-                  // Container(height: 700, color: Colors.white.withOpacity(0.5)),
                 ],
               ),
             ),
@@ -99,26 +154,8 @@ class HomeScreen extends StatelessWidget {
             left: 0,
             right: 0,
             child: Container(
-              // PERBAIKAN DISINI:
-              // 1. Kita beri warna background agar tidak tembus pandang.
-              // Saya gunakan FAFAFA agar menyatu dengan gradasi paling atas.
               color: const Color(0xFFFAFAFA),
-
-              // 2. Opsional: Tambahkan shadow tipis di bawah header
-              // agar terlihat terpisah dari konten saat discroll
-              // decoration: BoxDecoration(
-              //   color: const Color(0xFFFAFAFA),
-              //   boxShadow: [
-              //     BoxShadow(
-              //       color: Colors.black.withOpacity(0.05),
-              //       blurRadius: 5,
-              //       offset: const Offset(0, 2),
-              //     ),
-              //   ],
-              // ),
-
               child: SafeArea(
-                // bottom: false memastikan padding bawah aman
                 bottom: false,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -169,37 +206,40 @@ class HomeScreen extends StatelessWidget {
 
                           const SizedBox(width: 16),
 
-                          // 2. Status Koneksi
+                          // 2. Status Koneksi (DINAMIS DENGAN WARNA BARU)
                           Padding(
-                            padding: const EdgeInsets.only(
-                                top:
-                                    8.0), // <--- UBAH ANGKA INI UNTUK NAIK/TURUN
+                            padding: const EdgeInsets.only(top: 8.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                // BULATAN INDIKATOR
                                 Container(
                                   width: 18,
                                   height: 18,
                                   decoration: BoxDecoration(
-                                      color: const Color(0xFF74FF46),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: const Color(0xFFDBDBDB),
-                                        width: 2,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 4,
-                                          offset: const Offset(0, 2),
-                                        )
-                                      ]),
+                                    color:
+                                        statusCircleColor, // <--- Pakai Warna Lingkaran
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: const Color(0xFFDBDBDB),
+                                      width: 2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      )
+                                    ],
+                                  ),
                                 ),
                                 const SizedBox(height: 2),
-                                const Text(
-                                  "Online",
+                                // TEKS ONLINE / OFFLINE
+                                Text(
+                                  statusText,
                                   style: TextStyle(
-                                    color: Color(0xFF65D340),
+                                    color:
+                                        statusTextColor, // <--- Pakai Warna Teks
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -215,10 +255,10 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+
           // ==============================
-          // LAYER 4: BOTTOM NAVIGATION BAR (BARU)
+          // LAYER 4: BOTTOM NAVIGATION BAR
           // ==============================
-          // PERBAIKAN 3: Menambahkan Custom Bottom Nav Bar disini
           const Positioned(
             bottom: 0,
             left: 0,
