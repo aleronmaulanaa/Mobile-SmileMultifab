@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // LAYER 2: SCROLLABLE CONTENT
           // ==============================
           SingleChildScrollView(
-            padding: const EdgeInsets.only(top: 130, bottom: 120),
+            padding: const EdgeInsets.only(top: 115, bottom: 125),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
