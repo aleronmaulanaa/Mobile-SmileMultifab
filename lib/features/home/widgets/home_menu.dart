@@ -6,7 +6,6 @@ class HomeMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Data Menu Utama (6 Item)
     final List<Map<String, String>> mainMenuItems = [
       {'title': 'Kalender', 'icon': 'assets/images/home/calendar.webp'},
       {'title': 'PKB', 'icon': 'assets/images/home/book.webp'},
@@ -18,26 +17,21 @@ class HomeMenu extends StatelessWidget {
 
     return Column(
       children: [
-        // ===========================
-        // 1. HEADER (Menu & More Apps)
-        // ===========================
 
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Text "Menu"
               const Text(
                 "Menu",
                 style: TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w500, // Medium
-                  color: Colors.black, // 000000 100%
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
                 ),
               ),
 
-              // Text "More Apps" (Clickable)
               GestureDetector(
                 onTap: () {
                   _showMoreAppsDialog(context);
@@ -46,9 +40,9 @@ class HomeMenu extends StatelessWidget {
                   "More Apps",
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w500, // Medium
-                    color: Color(0xFF1F63C7), // 1F63C7 100%
-                    decoration: TextDecoration.underline, // Garis bawah
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF1F63C7),
+                    decoration: TextDecoration.underline,
                     decorationColor: Color(0xFF1F63C7),
                   ),
                 ),
@@ -57,11 +51,7 @@ class HomeMenu extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(height: 16), // Jarak antara Header Menu dan Grid Icon
-
-        // ===========================
-        // 2. GRID MENU UTAMA
-        // ===========================
+        const SizedBox(height: 16),
 
         GridView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -71,12 +61,10 @@ class HomeMenu extends StatelessWidget {
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
 
-            // 1. KURANGI JARAK ANTAR BARIS
             mainAxisSpacing: 0,
 
             crossAxisSpacing: 10,
 
-            // 2. NAIKKAN RASIO ASPEK (AGAR KOTAK LEBIH PENDEK)
             childAspectRatio: 1.0,
           ),
           itemBuilder: (context, index) {
@@ -90,22 +78,16 @@ class HomeMenu extends StatelessWidget {
     );
   }
 
-  // =========================================
-  // HELPER: BUILD MENU ITEM (ICON + TEXT)
-  // =========================================
-
   Widget _buildMenuItem({
     required String title,
     required String iconPath,
-    int maxLines = 1, // Default 1 baris
+    int maxLines = 1,
     Color backgroundColor = Colors.white,
   }) {
-    // LOGIKA PENGECEKAN: Apakah ini URL Online?
     bool isNetworkImage = iconPath.startsWith('http');
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // KOTAK ICON
         Container(
           width: 53,
           height: 53,
@@ -121,14 +103,12 @@ class HomeMenu extends StatelessWidget {
             ],
           ),
           child: Center(
-            // PILIH WIDGET BERDASARKAN TIPE LINK
             child: isNetworkImage
                 ? Image.network(
-                    iconPath, // Ini URL
+                    iconPath,
                     width: 39,
                     height: 39,
                     fit: BoxFit.contain,
-                    // Tampilkan loading putar saat gambar sedang didownload
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return const SizedBox(
@@ -136,13 +116,12 @@ class HomeMenu extends StatelessWidget {
                           height: 15,
                           child: CircularProgressIndicator(strokeWidth: 2));
                     },
-                    // Tampilkan icon rusak jika URL error/mati
                     errorBuilder: (context, error, stackTrace) {
                       return const Icon(Icons.broken_image, color: Colors.grey);
                     },
                   )
                 : Image.asset(
-                    iconPath, // Ini Asset Lokal
+                    iconPath,
                     width: 39,
                     height: 39,
                     fit: BoxFit.contain,
@@ -156,7 +135,6 @@ class HomeMenu extends StatelessWidget {
 
         const SizedBox(height: 11),
 
-        // TEXT MENU
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2.0),
           child: FittedBox(
@@ -177,10 +155,6 @@ class HomeMenu extends StatelessWidget {
       ],
     );
   }
-
-  // =========================================
-  // POP-UP DIALOG (MORE APPS)
-  // =========================================
 
   void _showMoreAppsDialog(BuildContext context) {
     final List<Map<String, String>> moreAppsItems = [
@@ -210,7 +184,6 @@ class HomeMenu extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: true,
-      // barrierColor: Colors.black.withOpacity(0.35),
       barrierColor: const Color(0x59000000),
       builder: (context) {
         return Dialog(
@@ -228,7 +201,6 @@ class HomeMenu extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // ICON CLOSE
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: SvgPicture.asset(
@@ -238,15 +210,12 @@ class HomeMenu extends StatelessWidget {
                   ),
                 ),
 
-                // Jarak dihapus total
                 const SizedBox(height: 4),
 
-                // GRID MENU TAMBAHAN
                 Expanded(
                   child: GridView.builder(
-                    padding: EdgeInsets.zero, // Padding 0 agar mepet icon close
+                    padding: EdgeInsets.zero,
 
-                    // SOLUSI 1: Matikan Scroll agar statis (Fit)
                     physics: const NeverScrollableScrollPhysics(),
 
                     itemCount: moreAppsItems.length,
@@ -256,7 +225,6 @@ class HomeMenu extends StatelessWidget {
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 0,
 
-                      // SOLUSI 2: Ubah rasio jadi 1.1
                       childAspectRatio: 1.1,
                     ),
                     itemBuilder: (context, index) {

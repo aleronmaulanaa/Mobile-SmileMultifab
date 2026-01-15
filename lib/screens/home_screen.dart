@@ -1,5 +1,5 @@
-import 'dart:async'; // <--- PERUBAHAN: Tambah import ini untuk StreamSubscription
-import 'package:connectivity_plus/connectivity_plus.dart'; // <--- PERUBAHAN: Import library koneksi
+import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
@@ -8,7 +8,6 @@ import 'package:mobile_smile_multifab/features/home/widgets/home_menu.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/news_section.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/custom_bottom_navbar.dart';
 
-// PERUBAHAN 1: Ubah ke StatefulWidget agar bisa update status realtime
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -17,23 +16,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // ==========================================
-  // VARIABEL LOGIKA KONEKSI
-  // ==========================================
-  bool _isOnline = true; // Default anggap online dulu
+
+  bool _isOnline = true;
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
-  // Variabel Dummy (Tetap ada)
   final int testSpLevel = 3;
   final bool testSyncIcon = true;
 
   @override
   void initState() {
     super.initState();
-    // 1. Cek status awal saat aplikasi dibuka
+
     _initConnectivity();
 
-    // 2. Dengarkan perubahan (misal: user mematikan wifi/data)
     _connectivitySubscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> results) {
@@ -43,12 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // Matikan pendengar saat halaman ditutup agar hemat memori
     _connectivitySubscription.cancel();
     super.dispose();
   }
 
-  // Fungsi untuk cek status awal
   Future<void> _initConnectivity() async {
     late List<ConnectivityResult> results;
     try {
@@ -60,15 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
     _updateConnectionStatus(results);
   }
 
-  // Fungsi Logika Penentuan Online/Offline
   void _updateConnectionStatus(List<ConnectivityResult> results) {
-    // Jika list mengandung none, berarti tidak ada koneksi
     if (results.contains(ConnectivityResult.none)) {
       setState(() {
         _isOnline = false;
       });
     } else {
-      // Jika ada mobile, wifi, ethernet, vpn, dll -> Online
       setState(() {
         _isOnline = true;
       });
@@ -77,20 +67,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ==========================================
-    // LOGIKA WARNA & TEXT (SESUAI REQUEST)
-    // ==========================================
 
-    // 1. Teks Status
     final String statusText = _isOnline ? "Online" : "Offline";
 
-    // 2. Warna Lingkaran (Bulatan)
-    // Online: Hijau Terang (74FF46) | Offline: Merah Request (FF4646)
     final Color statusCircleColor =
         _isOnline ? const Color(0xFF74FF46) : const Color(0xFFFF4646);
 
-    // 3. Warna Teks
-    // Online: Hijau Gelap (65D340) | Offline: Merah Gelap Request (D34040)
     final Color statusTextColor =
         _isOnline ? const Color(0xFF65D340) : const Color(0xFFD34040);
 
@@ -98,9 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xFFF3F4F6),
       body: Stack(
         children: [
-          // ==============================
-          // LAYER 1: BACKGROUND GRADIENT
-          // ==============================
           ClipPath(
             clipper: HeaderCurveClipper(),
             child: Container(
@@ -121,9 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // ==============================
-          // LAYER 2: SCROLLABLE CONTENT
-          // ==============================
           SingleChildScrollView(
             padding: const EdgeInsets.only(top: 115, bottom: 125),
             child: Padding(
@@ -146,9 +122,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // ==============================
-          // LAYER 3: FIXED HEADER (Top Bar)
-          // ==============================
           Positioned(
             top: 0,
             left: 0,
@@ -163,7 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // --- BAGIAN KIRI: LOGO ---
                       Image.asset(
                         'assets/images/common/logo_smile_v2.png',
                         height: 58,
@@ -177,10 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
 
-                      // --- BAGIAN KANAN: ICON & STATUS ---
                       Row(
                         children: [
-                          // 1. Icon Notifikasi
                           Stack(
                             clipBehavior: Clip.none,
                             children: [
@@ -206,19 +176,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           const SizedBox(width: 16),
 
-                          // 2. Status Koneksi (DINAMIS DENGAN WARNA BARU)
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // BULATAN INDIKATOR
                                 Container(
                                   width: 18,
                                   height: 18,
                                   decoration: BoxDecoration(
                                     color:
-                                        statusCircleColor, // <--- Pakai Warna Lingkaran
+                                        statusCircleColor,
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: const Color(0xFFDBDBDB),
@@ -234,12 +202,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 2),
-                                // TEKS ONLINE / OFFLINE
                                 Text(
                                   statusText,
                                   style: TextStyle(
                                     color:
-                                        statusTextColor, // <--- Pakai Warna Teks
+                                        statusTextColor,
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -256,9 +223,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // ==============================
-          // LAYER 4: BOTTOM NAVIGATION BAR
-          // ==============================
           const Positioned(
             bottom: 0,
             left: 0,
@@ -271,7 +235,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Custom Clipper (Tidak Berubah)
 class HeaderCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

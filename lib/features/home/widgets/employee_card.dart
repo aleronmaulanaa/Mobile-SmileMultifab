@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart'; // Pastikan import ini ada
+import 'package:flutter_svg/flutter_svg.dart';
 
 class EmployeeCard extends StatefulWidget {
-  final int spLevel; // 0 = Normal, 1 = Kuning, 2 = Orange, 3 = Merah
-  final bool showSyncIcon; // Trigger untuk icon sync
+  final int spLevel;
+  final bool showSyncIcon;
 
   const EmployeeCard({
     super.key,
-    this.spLevel = 0, // Default normal
+    this.spLevel = 0,
     this.showSyncIcon = true,
   });
 
@@ -16,69 +16,51 @@ class EmployeeCard extends StatefulWidget {
 }
 
 class _EmployeeCardState extends State<EmployeeCard> {
-  // State untuk mata (Hide/Unhide)
+
   bool _isLateHidden = true;
 
-  // Helper untuk mendapatkan warna SP
-  // Color _getSpColor() {
-  //   switch (widget.spLevel) {
-  //     case 1:
-  //       return const Color(0xFFFFE100); // SP 1 - Kuning
-  //     case 2:
-  //       return const Color(0xFFF59642); // SP 2 - Orange
-  //     case 3:
-  //       return const Color(0xFFF04241); // SP 3 - Merah
-  //     default:
-  //       return Colors.transparent;
-  //   }
-  // }
-  // 1. Warna Background SP & Stroke Card
   Color _getSpColor() {
     switch (widget.spLevel) {
       case 1:
-        return const Color(0xFFFFDD00); // SP 1 - Kuning
+        return const Color(0xFFFFDD00);
       case 2:
-        return const Color(0xFFFF6F00); // SP 2 - Orange
+        return const Color(0xFFFF6F00);
       case 3:
-        return const Color(0xFFFF0000); // SP 3 - Merah
+        return const Color(0xFFFF0000);
       default:
-        return const Color(0xFFD4D4D4).withOpacity(0.70); // Normal Stroke
+        return const Color(0xFFD4D4D4).withOpacity(0.70);
     }
   }
 
-  // 2. Warna Teks SP
   Color _getSpTextColor() {
     switch (widget.spLevel) {
       case 1:
-        return const Color(0xFF000000); // SP 1 - Hitam
+        return const Color(0xFF000000);
       case 2:
       case 3:
-        return const Color(0xFFFFFB00); // SP 2 & 3 - Kuning Terang
+        return const Color(0xFFFFFB00);
       default:
         return Colors.black;
     }
   }
 
-  // Helper untuk mendapatkan text SP
   String _getSpText() {
     return "Surat Peringatan (SP) : ${widget.spLevel}";
   }
 
   @override
   Widget build(BuildContext context) {
-    // REVISI: Tinggi diubah menjadi 40 sesuai permintaan
     const double headerVisibleHeight = 40.0;
 
     return Stack(
       children: [
-        // LAYER 1: HEADER SP (BELAKANG)
         if (widget.spLevel > 0)
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
-              height: 80, // Tetap tinggi agar memanjang ke belakang
+              height: 80,
               decoration: BoxDecoration(
                 color: _getSpColor(),
                 borderRadius: const BorderRadius.only(
@@ -87,7 +69,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
                 ),
               ),
               alignment: Alignment.topCenter,
-              // REVISI: Padding top jadi 10 agar pas di tengah area 40px
               padding: const EdgeInsets.only(top: 10),
               child: Text(
                 _getSpText(),
@@ -101,10 +82,8 @@ class _EmployeeCardState extends State<EmployeeCard> {
             ),
           ),
 
-        // LAYER 2: MAIN CARD (DEPAN)
         Padding(
           padding: EdgeInsets.only(
-            // Card turun sejauh 40px
             top: widget.spLevel > 0 ? headerVisibleHeight : 0,
           ),
           child: _buildMainCard(),
@@ -116,24 +95,18 @@ class _EmployeeCardState extends State<EmployeeCard> {
   Widget _buildMainCard() {
     return Container(
       width: double.infinity,
-      // H = 297 (Flexible height mengikuti konten agar aman)
       decoration: BoxDecoration(
         color: const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(23),
-        // border: Border.all(
-        //   color: const Color(0xFFD4D4D4).withOpacity(0.70), // Stroke inside 70%
-        //   width: 2,
-        // ),
         border: Border.all(
-          // Jika SP > 0 gunakan warna SP, jika 0 gunakan warna Normal
           color: _getSpColor(),
-          width: 2, // Ketebalan tetap 2
+          width: 2,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF000000).withOpacity(0.25), // Shadow 25%
+            color: const Color(0xFF000000).withOpacity(0.25),
             blurRadius: 7,
-            offset: const Offset(0, 7), // x=0 y=7
+            offset: const Offset(0, 7),
           ),
         ],
       ),
@@ -141,16 +114,10 @@ class _EmployeeCardState extends State<EmployeeCard> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            // ===========================
-            // BAGIAN 1: PROFILE RED BOX
-            // ===========================
             _buildProfileSection(),
 
             const SizedBox(height: 12),
 
-            // ===========================
-            // BAGIAN 2: ABSENCE INFO
-            // ===========================
             _buildAbsenceSection(),
           ],
         ),
@@ -159,8 +126,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
   }
 
   Widget _buildProfileSection() {
-    // Simulasi URL dari API (Nanti diganti dengan variabel dari API)
-    // Jika string ini kosong atau link mati, otomatis pakai gambar aset
     String? profilePhotoUrl = "https://scontent-cgk2-1.cdninstagram.com/v/t51.2885-19/583200018_18367273294084132_5580250522120237473_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=scontent-cgk2-1.cdninstagram.com&_nc_cat=104&_nc_oc=Q6cZ2QEAnMLp6Rv_03ZnupTqsO-onjAHif4wmqieAMnfciumvwi2vDwIZQbB2kdkO6uN1jc&_nc_ohc=NK84TGEQmXIQ7kNvwFA2ojB&_nc_gid=SWQ23CyaPbKWBRIdzpxxIg&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfqXaQeHZnRS3JqVOw4ctwaxzLpC0B_VBjtFUWHKmeApkQ&oe=696E328F&_nc_sid=7a9f4b";
 
     return Container(
@@ -171,32 +136,25 @@ class _EmployeeCardState extends State<EmployeeCard> {
       ),
       child: Column(
         children: [
-          // --- Baris Atas (Foto, Nama, Approval) ---
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ===========================
-                // FOTO PROFILE (LOGIKA OFFLINE)
-                // ===========================
                 Container(
                   width: 47,
                   height: 47,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    // Tambahkan warna dasar agar rapi saat loading
                     color: Colors.white,
                   ),
-                  // Gunakan ClipOval agar gambar tetap bulat
                   child: ClipOval(
                     child: Image.network(
-                      profilePhotoUrl, // URL dari API
+                      profilePhotoUrl,
                       fit: BoxFit.cover,
                       width: 47,
                       height: 47,
-                      // 1. Loading Builder: Tampilkan Aset saat sedang download (biar tidak blank)
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Image.asset(
@@ -204,10 +162,9 @@ class _EmployeeCardState extends State<EmployeeCard> {
                           fit: BoxFit.cover,
                         );
                       },
-                      // 2. Error Builder: Tampilkan Aset saat OFFLINE atau GAGAL
                       errorBuilder: (context, error, stackTrace) {
                         return Image.asset(
-                          'assets/images/home/default-user.jpg', // Foto Default
+                          'assets/images/home/default-user.jpg',
                           fit: BoxFit.cover,
                         );
                       },
@@ -217,7 +174,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
                 const SizedBox(width: 10),
 
-                // Nama & NIP
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -244,7 +200,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
                 const Spacer(),
 
-                // Tombol Approval
                 Container(
                   width: 59,
                   height: 17,
@@ -294,7 +249,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
             ),
           ),
 
-          // Garis Pemisah Merah Gelap
           Container(
             height: 1,
             width: double.infinity,
@@ -302,7 +256,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
             margin: const EdgeInsets.symmetric(horizontal: 10),
           ),
 
-          // --- Baris Bawah (Statistik Kehadiran) ---
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
@@ -310,7 +263,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // === KOLOM KIRI: KEHADIRAN ===
                   Expanded(
                     flex: 4,
                     child: Column(
@@ -346,7 +298,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
                     ),
                   ),
 
-                  // Garis Pemisah Vertikal Putih
                   Container(
                     width: 2,
                     height: double.infinity,
@@ -354,7 +305,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
                     margin: const EdgeInsets.only(left: 8, right: 8, top: 15),
                   ),
 
-                  // === KOLOM KANAN: TERLAMBAT ===
                   Expanded(
                     flex: 6,
                     child: Stack(
@@ -438,9 +388,8 @@ class _EmployeeCardState extends State<EmployeeCard> {
   Widget _buildAbsenceSection() {
     return Column(
       crossAxisAlignment:
-          CrossAxisAlignment.start, // Pastikan align default start
+          CrossAxisAlignment.start,
       children: [
-        // Baris Tanggal & History (Tidak Berubah)
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -448,7 +397,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
               "Wednesday, 7 January 2026",
               style: TextStyle(
                 fontSize: 12,
-                fontWeight: FontWeight.w500, // Medium
+                fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),
             ),
@@ -458,18 +407,18 @@ class _EmployeeCardState extends State<EmployeeCard> {
                   Padding(
                     padding: const EdgeInsets.only(right: 4.0),
                     child: SvgPicture.asset(
-                      'assets/icons/ic_sync.svg', // Sesuaikan path file
+                      'assets/icons/ic_sync.svg',
                       width: 15,
                       height: 15,
                       colorFilter: const ColorFilter.mode(
-                          Color(0xFF1F63C7), BlendMode.srcIn), // Warna Biru
+                          Color(0xFF1F63C7), BlendMode.srcIn),
                     ),
                   ),
                 const Text(
                   "History",
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.w500, // Medium
+                    fontWeight: FontWeight.w500,
                     color: Color(0xFF1F63C7),
                   ),
                 ),
@@ -480,22 +429,17 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
         const SizedBox(height: 10),
 
-        // WRAPPER UTAMA DENGAN PADDING (MARGIN KANAN KIRI)
-        // Ini yang membuat kotak terlihat "menjorok ke dalam" dan lebih pendek
         Padding(
           padding:
-              const EdgeInsets.symmetric(horizontal: 16.0), // Margin kiri-kanan
+              const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- KOTAK ABSEN (HIJAU & ORANGE) ---
-              // Kembali menggunakan Expanded agar responsif tapi terhimpit padding
               Row(
                 children: [
-                  // KOTAK HIJAU (Check In)
                   Expanded(
                     child: Container(
-                      height: 78, // Tinggi tetap
+                      height: 78,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
                         color: const Color(0xFF36CA95),
@@ -542,12 +486,11 @@ class _EmployeeCardState extends State<EmployeeCard> {
                     ),
                   ),
 
-                  const SizedBox(width: 12), // Jarak tengah antar kotak
+                  const SizedBox(width: 12),
 
-                  // KOTAK ORANGE (Check Out)
                   Expanded(
                     child: Container(
-                      height: 78, // Tinggi tetap
+                      height: 78,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF59642),
@@ -598,14 +541,12 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
               const SizedBox(height: 12),
 
-              // --- INFO SHIFT ---
-              // Background lebih pipih (padding vertical dikurangi)
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 4), // Vertical 4 agar pipih
+                    horizontal: 14, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(50), // Sudut kapsul
+                  borderRadius: BorderRadius.circular(50),
                 ),
                 child: const Text(
                   "Shift : Normal [07.00 - 17.00]",
