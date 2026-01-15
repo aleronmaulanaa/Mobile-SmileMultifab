@@ -210,7 +210,8 @@ class HomeMenu extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: true,
-      barrierColor: Colors.black.withOpacity(0.35),
+      // barrierColor: Colors.black.withOpacity(0.35),
+      barrierColor: const Color(0x59000000),
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
