@@ -159,6 +159,10 @@ class _EmployeeCardState extends State<EmployeeCard> {
   }
 
   Widget _buildProfileSection() {
+    // Simulasi URL dari API (Nanti diganti dengan variabel dari API)
+    // Jika string ini kosong atau link mati, otomatis pakai gambar aset
+    String? profilePhotoUrl = "https://scontent-cgk2-1.cdninstagram.com/v/t51.2885-19/583200018_18367273294084132_5580250522120237473_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=scontent-cgk2-1.cdninstagram.com&_nc_cat=104&_nc_oc=Q6cZ2QEAnMLp6Rv_03ZnupTqsO-onjAHif4wmqieAMnfciumvwi2vDwIZQbB2kdkO6uN1jc&_nc_ohc=NK84TGEQmXIQ7kNvwFA2ojB&_nc_gid=SWQ23CyaPbKWBRIdzpxxIg&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfqXaQeHZnRS3JqVOw4ctwaxzLpC0B_VBjtFUWHKmeApkQ&oe=696E328F&_nc_sid=7a9f4b";
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -174,18 +178,43 @@ class _EmployeeCardState extends State<EmployeeCard> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Foto Profile
+                // ===========================
+                // FOTO PROFILE (LOGIKA OFFLINE)
+                // ===========================
                 Container(
                   width: 47,
                   height: 47,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/home/profile_user.jpeg'),
+                    // Tambahkan warna dasar agar rapi saat loading
+                    color: Colors.white,
+                  ),
+                  // Gunakan ClipOval agar gambar tetap bulat
+                  child: ClipOval(
+                    child: Image.network(
+                      profilePhotoUrl, // URL dari API
                       fit: BoxFit.cover,
+                      width: 47,
+                      height: 47,
+                      // 1. Loading Builder: Tampilkan Aset saat sedang download (biar tidak blank)
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Image.asset(
+                          'assets/images/home/default-user.jpg',
+                          fit: BoxFit.cover,
+                        );
+                      },
+                      // 2. Error Builder: Tampilkan Aset saat OFFLINE atau GAGAL
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'assets/images/home/default-user.jpg', // Foto Default
+                          fit: BoxFit.cover,
+                        );
+                      },
                     ),
                   ),
                 ),
+
                 const SizedBox(width: 10),
 
                 // Nama & NIP
@@ -279,18 +308,14 @@ class _EmployeeCardState extends State<EmployeeCard> {
                 const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
             child: IntrinsicHeight(
               child: Row(
-                // SOLUSI: Tambahkan ini agar kedua kolom dipaksa rata atas
                 crossAxisAlignment: CrossAxisAlignment.start,
-
                 children: [
                   // === KOLOM KIRI: KEHADIRAN ===
                   Expanded(
                     flex: 4,
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start, // Default Start untuk Label
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // LABEL (Tetap Kiri)
                         const Text(
                           "KEHADIRAN PER BULAN",
                           style: TextStyle(
@@ -299,13 +324,10 @@ class _EmployeeCardState extends State<EmployeeCard> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        // ANGKA (Dibuat Center)
-                        // TAMBAHKAN JARAK
                         const SizedBox(height: 4),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment:
-                              CrossAxisAlignment.baseline, // Kunci kesejajaran
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
                           textBaseline: TextBaseline.alphabetic,
                           children: const [
                             Text("27",
@@ -336,18 +358,13 @@ class _EmployeeCardState extends State<EmployeeCard> {
                   Expanded(
                     flex: 6,
                     child: Stack(
-                      clipBehavior:
-                          Clip.none, // Agar icon aman jika geser-geser
+                      clipBehavior: Clip.none,
                       children: [
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment
-                              .start, // Default Start untuk Label
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // LABEL (Tetap Kiri)
                             Padding(
-                              padding: const EdgeInsets.only(
-                                  left:
-                                      10.0), // Ubah angka 10 sesuai kebutuhan gesernya
+                              padding: const EdgeInsets.only(left: 10.0),
                               child: const Text(
                                 "TERLAMBAT",
                                 style: TextStyle(
@@ -357,17 +374,11 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                 ),
                               ),
                             ),
-
-                            // 2. JARAK (SIZEDBOX) - Ditaruh SETELAH Padding selesai
                             const SizedBox(height: 4),
-
-                            // ANGKA & TEKS KALI (Dibuat Center)
                             Center(
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment
-                                    .center, // Center Horizontal
-                                crossAxisAlignment: CrossAxisAlignment
-                                    .baseline, // Sejajar Garis Bawah Font
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
                                 textBaseline: TextBaseline.alphabetic,
                                 children: [
                                   Text(
@@ -392,12 +403,9 @@ class _EmployeeCardState extends State<EmployeeCard> {
                             ),
                           ],
                         ),
-
-                        // ICON MATA (HIDE/UNHIDE)
                         Positioned(
                           right: 0,
-                          top:
-                              18, // REVISI: Diturunkan agar sejajar dengan text "Kali"
+                          top: 18,
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
@@ -406,12 +414,12 @@ class _EmployeeCardState extends State<EmployeeCard> {
                             },
                             child: SvgPicture.asset(
                               _isLateHidden
-                                  ? 'assets/icons/ic_hide_white.svg' // Icon saat tersembunyi
-                                  : 'assets/icons/ic_show_white.svg', // Icon saat terlihat
+                                  ? 'assets/icons/ic_hide_white.svg'
+                                  : 'assets/icons/ic_show_white.svg',
                               width: 21,
                               height: 21,
-                              colorFilter: const ColorFilter.mode(Colors.white,
-                                  BlendMode.srcIn), // Agar warna putih
+                              colorFilter: const ColorFilter.mode(
+                                  Colors.white, BlendMode.srcIn),
                             ),
                           ),
                         )
