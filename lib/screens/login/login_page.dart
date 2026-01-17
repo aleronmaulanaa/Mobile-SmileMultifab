@@ -13,117 +13,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _rememberMe = false;
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   final screenHeight = MediaQuery.of(context).size.height;
-
-  //   return Scaffold(
-  //     resizeToAvoidBottomInset: false,
-  //     body: SingleChildScrollView(
-  //       child: SizedBox(
-  //         height: screenHeight,
-  //         child: Stack(
-  //           children: [
-  //             // ===========================
-  //             // 1. BACKGROUND IMAGE
-  //             // ===========================
-  //             Positioned.fill(
-  //               child: Image.asset(
-  //                 'assets/images/login/bg_login_page.JPEG',
-  //                 fit: BoxFit.cover,
-  //               ),
-  //             ),
-
-  //             // ===========================
-  //             // 2. LOGO
-  //             // ===========================
-  //             Positioned(
-  //               top: 50,
-  //               left: 24,
-  //               child: Image.asset(
-  //                 'assets/images/login/logo_smile_v2.png',
-  //                 width: 133,
-  //                 height: 58,
-  //                 fit: BoxFit.contain,
-  //               ),
-  //             ),
-
-  //             // ===========================
-  //             // 3. KONTEN TENGAH (JUDUL & CARD)
-  //             // ===========================
-  //             // REVISI: Ganti Center dengan Positioned agar bisa diatur tingginya
-  //             Positioned(
-  //               // ATUR ANGKA INI: Semakin KECIL, semakin KE ATAS posisinya.
-  //               // Logo berakhir di sekitar 108 (50+58), jadi kita mulai di 125 agar ada jarak.
-  //               top: 200,
-  //               left: 0,
-  //               right: 0,
-  //               child: Column(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 children: [
-  //                   const Text(
-  //                     'Login',
-  //                     style: TextStyle(
-  //                       fontFamily: 'Poppins',
-  //                       fontWeight: FontWeight.w600,
-  //                       fontSize: 24,
-  //                       color: Color(0xFFFA0209),
-  //                     ),
-  //                   ),
-  //                   const SizedBox(height: 9),
-  //                   const Text(
-  //                     'Please Login to continue',
-  //                     style: TextStyle(
-  //                       fontFamily: 'Poppins',
-  //                       fontWeight: FontWeight.w600,
-  //                       fontSize: 13,
-  //                       color: Color(0xFF991B1C),
-  //                     ),
-  //                   ),
-  //                   const SizedBox(height: 20),
-  //                   _buildLoginCard(),
-  //                 ],
-  //               ),
-  //             ),
-
-  //             // ===========================
-  //             // 4. FOOTER (POWERED BY) - POSISI DIPERBAIKI
-  //             // ===========================
-  //             Positioned(
-  //               bottom:
-  //                   120, // REVISI: Dinaikkan dari 30 ke 60 agar lebih ke atas
-  //               left: 0,
-  //               right: 0,
-  //               child: Column(
-  //                 children: const [
-  //                   Text(
-  //                     'Powered by',
-  //                     style: TextStyle(
-  //                       fontFamily: 'Poppins',
-  //                       fontWeight: FontWeight.w600,
-  //                       fontSize: 13,
-  //                       color: Color(0xFF97656E),
-  //                     ),
-  //                   ),
-  //                   SizedBox(height: 11),
-  //                   Text(
-  //                     'Dept. Information of Technology',
-  //                     style: TextStyle(
-  //                       fontFamily: 'Poppins',
-  //                       fontWeight: FontWeight.w600,
-  //                       fontSize: 13,
-  //                       color: Color(0xFF995565),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -164,6 +53,37 @@ class _LoginPageState extends State<LoginPage> {
                     fit: BoxFit.contain,
                   ),
                 ),
+                // ===========================
+                // 4. FOOTER (POWERED BY)
+                // ===========================
+                Positioned(
+                  bottom: 120, // Sesuai kode Anda
+                  left: 0,
+                  right: 0,
+                  child: Column(
+                    children: const [
+                      Text(
+                        'Powered by',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: Color(0xFF97656E),
+                        ),
+                      ),
+                      SizedBox(height: 11),
+                      Text(
+                        'Dept. Information of Technology',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: Color(0xFF995565),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
                 // ===========================
                 // 3. KONTEN TENGAH (JUDUL & CARD)
@@ -197,38 +117,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 20),
                       _buildLoginCard(),
-                    ],
-                  ),
-                ),
-
-                // ===========================
-                // 4. FOOTER (POWERED BY)
-                // ===========================
-                Positioned(
-                  bottom: 120, // Sesuai kode Anda
-                  left: 0,
-                  right: 0,
-                  child: Column(
-                    children: const [
-                      Text(
-                        'Powered by',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: Color(0xFF97656E),
-                        ),
-                      ),
-                      SizedBox(height: 11),
-                      Text(
-                        'Dept. Information of Technology',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: Color(0xFF995565),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -397,6 +285,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(width: 4),
+              // Di bagian Forgot Password Row
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -406,13 +295,19 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 },
-                child: const Text(
-                  'Click here',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 10,
-                    color: Color(0xFF1F63C7),
+                // Tambahkan baris ini:
+                behavior: HitTestBehavior.opaque,
+                child: const Padding(
+                  // Bungkus Text dengan Padding agar area sentuh lebih luas
+                  padding: EdgeInsets.all(4.0),
+                  child: Text(
+                    'Click here',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 10,
+                      color: Color(0xFF1F63C7),
+                    ),
                   ),
                 ),
               ),
