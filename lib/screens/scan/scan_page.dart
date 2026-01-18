@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'widgets/scan_overlay.dart';
 import 'widgets/scan_bottom_card.dart';
@@ -29,6 +30,7 @@ class _ScanPageState extends State<ScanPage> {
     _requestCameraPermission();
   }
 
+  // ===== CAMERA PERMISSION =====
   Future<void> _requestCameraPermission() async {
     final status = await Permission.camera.request();
     if (status.isGranted) {
@@ -36,12 +38,14 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
+  // ===== SCAN DETECT =====
   void _onDetect(BarcodeCapture capture) {
     if (isProcessing) return;
 
     final String? value = capture.barcodes.first.rawValue;
     if (value == null) return;
 
+    // Saat ini dibatasi URL (bisa diperluas nanti)
     if (!value.startsWith('http')) return;
 
     isProcessing = true;
@@ -58,6 +62,17 @@ class _ScanPageState extends State<ScanPage> {
         setState(() => showPopup = false);
       }
     });
+  }
+
+  // ===== OPEN URL =====
+  Future<void> openUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
+      debugPrint('Could not launch $url');
+    }
   }
 
   @override
@@ -78,7 +93,7 @@ class _ScanPageState extends State<ScanPage> {
             onDetect: _onDetect,
           ),
 
-          /// ===== SCAN BOX =====
+          /// ===== SCAN OVERLAY =====
           const Center(child: ScanOverlay()),
 
           /// ===== BOTTOM CARD =====
@@ -87,6 +102,7 @@ class _ScanPageState extends State<ScanPage> {
             child: ScanBottomCard(
               isDetected: isDetected,
               scannedUrl: scannedUrl,
+              onOpenUrl: openUrl, // 🔥 INI YANG KURANG
             ),
           ),
 
