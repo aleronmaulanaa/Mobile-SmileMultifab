@@ -17,35 +17,27 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // 1. GESTURE DETECTOR UNTUK TUTUP KEYBOARD
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
         resizeToAvoidBottomInset:
-            false, // Background tetap diam saat keyboard muncul
+            false,
         body: SingleChildScrollView(
           child: SizedBox(
             height: screenHeight,
             child: Stack(
               children: [
-                // ===========================
-                // 1. BACKGROUND IMAGE (RESPONSIF)
-                // ===========================
                 Positioned.fill(
                   child: Image.asset(
                     'assets/images/login/bg_login_page.JPEG',
-                    // BoxFit.cover membuat gambar menyesuaikan layar tanpa gepeng
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
                         Container(color: Colors.white),
                   ),
                 ),
 
-                // ===========================
-                // 2. LOGO
-                // ===========================
                 Positioned(
                   top: 50,
                   left: 24,
@@ -57,12 +49,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                // ===========================
-                // 3. FOOTER (POWERED BY) - POSISI BAWAH
-                // ===========================
-                // Disimpan sebelum Konten Utama agar layer-nya di bawah (aman)
                 Positioned(
-                  bottom: 120, // Selalu berjarak 120px dari bawah layar apapun
+                  bottom: 120,
                   left: 0,
                   right: 0,
                   child: Column(
@@ -90,13 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                // ===========================
-                // 4. KONTEN UTAMA (JUDUL & CARD)
-                // ===========================
                 Positioned(
-                  // Tetap gunakan 200 (atau sesuaikan jika ingin lebih turun/naik)
-                  // Karena Logo (58px) lebih kecil dari Gambar Forgot (114px),
-                  // angka 200 di sini visualnya akan mirip dengan 188 di halaman lain.
                   top: 200,
                   left: 0,
                   right: 0,
@@ -124,7 +106,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 20),
 
-                      // CARD LOGIN
                       _buildLoginCard(),
                     ],
                   ),
@@ -160,7 +141,6 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // FORM EMAIL
           const Text(
             'Email Address',
             style: TextStyle(
@@ -179,7 +159,6 @@ class _LoginPageState extends State<LoginPage> {
 
           const SizedBox(height: 18),
 
-          // FORM PASSWORD
           const Text(
             'Password',
             style: TextStyle(
@@ -198,7 +177,6 @@ class _LoginPageState extends State<LoginPage> {
 
           const SizedBox(height: 12),
 
-          // === REMEMBER ME ===
           GestureDetector(
             onTap: () {
               setState(() {
@@ -242,9 +220,8 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
 
-          const Spacer(), // Mendorong tombol ke bawah
+          const Spacer(),
 
-          // TOMBOL LOGIN
           Center(
             child: SizedBox(
               width: 262,
@@ -258,7 +235,6 @@ class _LoginPageState extends State<LoginPage> {
                   elevation: 0,
                 ),
                 onPressed: () {
-                  // Aksi Login
                 },
                 child: const Text(
                   'Login',
@@ -275,7 +251,6 @@ class _LoginPageState extends State<LoginPage> {
 
           const SizedBox(height: 13),
 
-          // FORGOT PASSWORD
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -290,7 +265,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(width: 4),
 
-              // LINK KLIK DISINI (Fix Freeze: Behavior Opaque + Padding)
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -321,7 +295,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // WIDGET INPUT FIELD (SAMA PERSIS DENGAN SEBELUMNYA)
   Widget _buildInputField({
     required String hintText,
     required String iconPath,

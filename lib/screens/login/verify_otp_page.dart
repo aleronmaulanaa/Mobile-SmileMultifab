@@ -34,7 +34,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
             height: screenHeight,
             child: Stack(
               children: [
-                // 1. BACKGROUND
                 Positioned.fill(
                   child: Image.asset(
                     'assets/images/login/bg_login_page.JPEG',
@@ -44,11 +43,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                   ),
                 ),
 
-                // ============================================
-                // 2. TOMBOL BACK (DIATUR DISINI)
-                // ============================================
                 Positioned(
-                  // GANTI DARI 60 KE 78 (Agar sama dengan ForgotPasswordPage)
                   top: 78,
 
                   left: 0,
@@ -92,12 +87,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                   ),
                 ),
 
-                // ============================================
-                // 3. KONTEN UTAMA (DIATUR DISINI)
-                // ============================================
                 Positioned(
-                  // GANTI DARI 150 KE 188 (Agar sama dengan ForgotPasswordPage)
-                  // Semakin besar angka, semakin turun ke bawah.
                   top: 184,
 
                   left: 0,
@@ -105,7 +95,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // --- GAMBAR ---
                       Image.asset(
                         'assets/images/login/verify_otp.png',
                         width: 114,
@@ -119,7 +108,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
                       const SizedBox(height: 27),
 
-                      // --- TEXT 1 ---
                       const Text(
                         'Verify OTP Now',
                         style: TextStyle(
@@ -132,7 +120,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
                       const SizedBox(height: 16),
 
-                      // --- TEXT 2 ---
                       const Text(
                         'Enter the 5-Digit Code Sent to You',
                         style: TextStyle(
@@ -145,7 +132,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
                       const SizedBox(height: 38),
 
-                      // --- 5 KOTAK OTP ---
                       SizedBox(
                         width: 377,
                         height: 69,
@@ -202,7 +188,6 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
 
                       const SizedBox(height: 53),
 
-                      // --- TOMBOL VERIFY ---
                       SizedBox(
                         width: 262,
                         height: 36,

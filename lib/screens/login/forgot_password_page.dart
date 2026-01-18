@@ -9,20 +9,16 @@ class ForgotPasswordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // GestureDetector untuk menutup keyboard saat tap background
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         resizeToAvoidBottomInset:
-            false, // Mencegah background terdorong keyboard
+            false,
         body: SingleChildScrollView(
           child: SizedBox(
             height: screenHeight,
             child: Stack(
               children: [
-                // ===========================
-                // 1. BACKGROUND
-                // ===========================
                 Positioned.fill(
                   child: Image.asset(
                     'assets/images/login/bg_login_page.JPEG',
@@ -33,16 +29,13 @@ class ForgotPasswordPage extends StatelessWidget {
                   ),
                 ),
 
-                // ===========================
-                // 2. TOMBOL BACK (KONSISTEN: TOP 78)
-                // ===========================
                 Positioned(
-                  top: 78, // SAMA DENGAN VERIFY OTP
+                  top: 78,
                   left: 0,
                   right: 0,
                   child: Center(
                     child: SizedBox(
-                      width: 347, // Wrapper agar sejajar dengan Card
+                      width: 347,
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: GestureDetector(
@@ -79,17 +72,13 @@ class ForgotPasswordPage extends StatelessWidget {
                   ),
                 ),
 
-                // ===========================
-                // 3. KONTEN UTAMA (KONSISTEN: TOP 188)
-                // ===========================
                 Positioned(
-                  top: 188, // SAMA DENGAN VERIFY OTP
+                  top: 188,
                   left: 0,
                   right: 0,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // --- IMAGE ---
                       Image.asset(
                         'assets/images/login/forgot_password.png',
                         width: 114,
@@ -102,9 +91,6 @@ class ForgotPasswordPage extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 24),
-
-                      // --- WRAPPER TEXT ---
-                      // (Kita bungkus teks agar rata kiri terhadap Card 347px)
                       SizedBox(
                         width: 347,
                         child: Column(
@@ -135,7 +121,6 @@ class ForgotPasswordPage extends StatelessWidget {
 
                       const SizedBox(height: 21),
 
-                      // --- CARD ---
                       _buildForgotCard(context),
                     ],
                   ),
@@ -151,7 +136,7 @@ class ForgotPasswordPage extends StatelessWidget {
   Widget _buildForgotCard(BuildContext context) {
     return Container(
       width: 347,
-      height: 240, // Tinggi fix agar muat konten + padding
+      height: 240,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 54),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -171,7 +156,6 @@ class ForgotPasswordPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // LABEL EMAIL
           const Text(
             'Email Address',
             style: TextStyle(
@@ -184,7 +168,6 @@ class ForgotPasswordPage extends StatelessWidget {
 
           const SizedBox(height: 8),
 
-          // INPUT FIELD
           _buildInputField(
             hintText: 'email@multifab.com',
             iconPath: 'assets/icons/ic_email.svg',
@@ -192,7 +175,6 @@ class ForgotPasswordPage extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // TOMBOL SUBMIT
           Center(
             child: SizedBox(
               width: 262,
