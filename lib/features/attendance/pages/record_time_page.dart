@@ -9,6 +9,7 @@ import '../widgets/attendance_camera.dart';
 import '../models/attendance_history.dart';
 import '../services/attendance_history_service.dart';
 import '../services/attendance_daily_summary_service.dart';
+import '../services/attendance_online_service.dart';
 
 
 class RecordTimePage extends StatefulWidget {
@@ -26,6 +27,8 @@ class _RecordTimePageState extends State<RecordTimePage> {
 
   //  TAMBAHAN (JAM FOTO)
   DateTime? _photoTakenTime;
+
+
 
 
   //  TAMBAHAN (STATUS KONEKSI)
@@ -64,6 +67,21 @@ class _RecordTimePageState extends State<RecordTimePage> {
       },
     );
   }
+
+// ================= DETEKSI FAKE GPS (ANDROID NATIVE)
+Future<bool> _isUsingFakeGps() async {
+  try {
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    // TRUE = Fake GPS / Mock Location aktif
+    return position.isMocked;
+  } catch (_) {
+    return false;
+  }
+}
+
 
   Future<void> _getLocation() async {
     final position = await Geolocator.getCurrentPosition(
@@ -357,17 +375,64 @@ class _RecordTimePageState extends State<RecordTimePage> {
                         await Future.delayed(
                           const Duration(seconds: 2),
                         );
+final bool isFakeGps = await _isUsingFakeGps();
+if (isFakeGps) {
+  setState(() {
+    _isSubmitting = false;
+  });
 
-                        // 🔥 SIMPAN KE HIVE (ONLINE / OFFLINE)
-                        await AttendanceHistoryService.addHistory(
-                          AttendanceHistory(
-                            imagePath: _capturedImage!.path,
-                            checkInTime: _photoTakenTime!,
-                            latitude: _position!.latitude,
-                            longitude: _position!.longitude,
-                            isOnline: _isOnline,
-                          ),
-                        );
+  showDialog(
+    context: context,
+    builder: (_) => const AlertDialog(
+      title: Text('Fake GPS Terdeteksi'),
+      content: Text(
+        'Silakan matikan Fake GPS atau Mock Location.',
+      ),
+    ),
+  );
+  return; // STOP di sini
+}
+// ================= ABSENSI ONLINE / OFFLINE (AMAN TOTAL)
+
+// ================= ABSENSI ONLINE / OFFLINE (REALTIME SAFE)
+
+// 🔥 CEK KONEKSI SAAT TOMBOL DIKLIK
+final isOnlineNow = await _checkConnectionNow();
+
+if (isOnlineNow) {
+  try {
+    // 🔥 ONLINE → KIRIM KE SERVER
+    await AttendanceOnlineService.submitCheckIn(
+      userId: 'test_user', // nanti auth
+      latitude: _position!.latitude,
+      longitude: _position!.longitude,
+    );
+  } catch (e) {
+    // ❌ ONLINE TAPI GAGAL → JATUH KE HIVE
+    await AttendanceHistoryService.addHistory(
+      AttendanceHistory(
+        imagePath: _capturedImage!.path,
+        checkInTime: _photoTakenTime!,
+        latitude: _position!.latitude,
+        longitude: _position!.longitude,
+        isOnline: false,
+      ),
+    );
+  }
+} else {
+  // 🔥 OFFLINE REALTIME → LANGSUNG KE HIVE
+  await AttendanceHistoryService.addHistory(
+    AttendanceHistory(
+      imagePath: _capturedImage!.path,
+      checkInTime: _photoTakenTime!,
+      latitude: _position!.latitude,
+      longitude: _position!.longitude,
+      isOnline: false,
+    ),
+  );
+}
+
+
 
                         if (!mounted) return;
 
@@ -393,5 +458,24 @@ class _RecordTimePageState extends State<RecordTimePage> {
         ),
       ),
     );
+  }
+  Future<bool> _checkConnectionNow() async {
+  final connectivityResult =
+      await Connectivity().checkConnectivity();
+
+  bool online = connectivityResult != ConnectivityResult.none;
+
+  if (online) {
+    try {
+      final result =
+          await InternetAddress.lookup('google.com');
+      online = result.isNotEmpty &&
+          result.first.rawAddress.isNotEmpty;
+    } catch (_) {
+      online = false;
+    }
+  }
+
+  return online;
   }
 }

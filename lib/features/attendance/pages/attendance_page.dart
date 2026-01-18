@@ -5,6 +5,8 @@ import '../widgets/back_button_map.dart';
 import '../widgets/time_status.dart';
 import '../widgets/information_card.dart';
 import '../widgets/action_buttons.dart';
+import '../services/location_tracking_service.dart';
+
 
 class AttendancePage extends StatelessWidget {
   const AttendancePage({super.key});
@@ -13,6 +15,9 @@ class AttendancePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     WidgetsBinding.instance.addPostFrameCallback((_) {
+      LocationTrackingService.startTracking();
+    });
     return Scaffold(
       body: Stack(
         children: [

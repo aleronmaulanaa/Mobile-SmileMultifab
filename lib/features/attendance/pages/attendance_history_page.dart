@@ -1,19 +1,19 @@
 import 'dart:io';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../models/attendance_history.dart';
 import '../services/attendance_history_service.dart';
+import '../services/attendance_online_service.dart';
 
 class AttendanceHistoryPage extends StatelessWidget {
   const AttendanceHistoryPage({super.key});
 
-  // 🔥 TAMBAHAN: CEK INTERNET NYATA
+  // 🔥 CEK INTERNET NYATA
   Future<bool> _hasInternet() async {
     try {
-      final result =
-          await InternetAddress.lookup('google.com');
+      final result = await InternetAddress.lookup('google.com');
       return result.isNotEmpty &&
           result.first.rawAddress.isNotEmpty;
     } catch (_) {
@@ -21,10 +21,11 @@ class AttendanceHistoryPage extends StatelessWidget {
     }
   }
 
+  // 🔥 KIRIM DATA OFFLINE KE SERVER
   Future<void> _sendToServer(BuildContext context) async {
-    // 🔥 BLOKIR JIKA OFFLINE
     final online = await _hasInternet();
 
+    // ❌ BLOKIR JIKA OFFLINE
     if (!online) {
       showDialog(
         context: context,
@@ -38,6 +39,12 @@ class AttendanceHistoryPage extends StatelessWidget {
       return;
     }
 
+    final histories =
+        AttendanceHistoryService.getAllHistory();
+
+    if (histories.isEmpty) return;
+
+    // 🔄 LOADING
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -46,30 +53,60 @@ class AttendanceHistoryPage extends StatelessWidget {
       ),
     );
 
-    await Future.delayed(const Duration(seconds: 2));
-    Navigator.pop(context);
+    try {
+      // 🔥 KIRIM SATU PER SATU KE SERVER
+      for (AttendanceHistory data in histories) {
+        await AttendanceOnlineService.submitCheckIn(
+          userId: 'test_user', // nanti dari auth
+          latitude: data.latitude,
+          longitude: data.longitude,
+        );
+      }
 
-    // 🔥 HAPUS HIVE HANYA JIKA ONLINE
-    await AttendanceHistoryService.clearHistory();
+      // 🔥 JIKA SEMUA SUKSES → HAPUS HIVE
+      await AttendanceHistoryService.clearHistory();
 
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Berhasil'),
-        content: const Text(
-          'Data absensi berhasil dikirim ke server.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('OK'),
+      Navigator.pop(context); // tutup loading
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Berhasil'),
+          content: const Text(
+            'Semua data absensi offline berhasil dikirim ke server.',
           ),
-        ],
-      ),
-    );
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      // ❌ JIKA ADA YANG GAGAL → JANGAN HAPUS HIVE
+      Navigator.pop(context);
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Gagal'),
+          content: const Text(
+            'Terjadi kesalahan saat mengirim data ke server. '
+            'Data tetap tersimpan di perangkat.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -141,28 +178,20 @@ class AttendanceHistoryPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 6),
 
-                            // 🔥 STATUS ONLINE / OFFLINE
+                            // 🔥 STATUS OFFLINE (KHUSUS PAGE INI)
                             Row(
                               children: [
-                                Icon(
-                                  data.isOnline
-                                      ? Icons.wifi
-                                      : Icons.wifi_off,
+                                const Icon(
+                                  Icons.wifi_off,
                                   size: 14,
-                                  color: data.isOnline
-                                      ? Colors.green
-                                      : Colors.orange,
+                                  color: Colors.orange,
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
-                                  data.isOnline
-                                      ? 'Online'
-                                      : 'Offline',
+                                const Text(
+                                  'Offline',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: data.isOnline
-                                        ? Colors.green
-                                        : Colors.orange,
+                                    color: Colors.orange,
                                   ),
                                 ),
                               ],
