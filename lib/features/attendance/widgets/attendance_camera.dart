@@ -27,41 +27,54 @@ class _AttendanceCameraState extends State<AttendanceCamera> {
     _initCamera();
   }
 
-  Future<void> _initCamera() async {
+Future<void> _initCamera() async {
+  try {
+    final cameras = await availableCameras();
+
+    if (cameras.isEmpty) {
+      setState(() {
+        _isCameraAvailable = false;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    // 🔥 PRIORITAS KAMERA DEPAN
+    CameraDescription selectedCamera;
+
     try {
-      final cameras = await availableCameras();
-
-      if (cameras.isEmpty) {
-        setState(() {
-          _isCameraAvailable = false;
-          _isLoading = false;
-        });
-        return;
-      }
-
-      _controller = CameraController(
-        cameras.first,
-        ResolutionPreset.medium,
-        enableAudio: false,
+      selectedCamera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front,
       );
+    } catch (_) {
+      // fallback → kamera belakang
+      selectedCamera = cameras.first;
+    }
 
-      await _controller!.initialize();
+    _controller = CameraController(
+      selectedCamera,
+      ResolutionPreset.medium,
+      enableAudio: false,
+    );
 
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint("Camera error: $e");
-      if (mounted) {
-        setState(() {
-          _isCameraAvailable = false;
-          _isLoading = false;
-        });
-      }
+    await _controller!.initialize();
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  } catch (e) {
+    debugPrint("Camera error: $e");
+    if (mounted) {
+      setState(() {
+        _isCameraAvailable = false;
+        _isLoading = false;
+      });
     }
   }
+}
+
 
   Future<void> _takePicture() async {
     if (_controller == null ||
