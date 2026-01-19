@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'widgets/scan_overlay.dart';
+import 'widgets/scan_mask_overlay.dart'; // 🔥 MASK TRANSPARAN
 import 'widgets/scan_bottom_card.dart';
 import 'widgets/scan_success_popup.dart';
 
@@ -20,9 +21,9 @@ class _ScanPageState extends State<ScanPage> {
 
   bool isDetected = false;
   bool showPopup = false;
-  bool isProcessing = false;
 
   String scannedUrl = '';
+  String? lastScannedValue; // 🔒 barcode terakhir
 
   @override
   void initState() {
@@ -38,25 +39,25 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
-  // ===== SCAN DETECT =====
+  // ===== SCAN DETECT (DYNAMIC & SMART) =====
   void _onDetect(BarcodeCapture capture) {
-    if (isProcessing) return;
-
     final String? value = capture.barcodes.first.rawValue;
     if (value == null) return;
 
-    // Saat ini dibatasi URL (bisa diperluas nanti)
+    // sementara hanya URL
     if (!value.startsWith('http')) return;
 
-    isProcessing = true;
-    scannerController.stop();
+    // 🔒 jika barcode sama, abaikan
+    if (value == lastScannedValue) return;
 
     setState(() {
+      lastScannedValue = value;
       scannedUrl = value;
       isDetected = true;
       showPopup = true;
     });
 
+    // popup auto close
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
         setState(() => showPopup = false);
@@ -75,6 +76,15 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
+  // ===== OPTIONAL: RESET SCAN =====
+  void resetScan() {
+    setState(() {
+      isDetected = false;
+      scannedUrl = '';
+      lastScannedValue = null;
+    });
+  }
+
   @override
   void dispose() {
     scannerController.dispose();
@@ -87,13 +97,16 @@ class _ScanPageState extends State<ScanPage> {
       backgroundColor: const Color(0xFF4A4A4A),
       body: Stack(
         children: [
-          /// ===== CAMERA =====
+          /// ===== CAMERA (LIVE) =====
           MobileScanner(
             controller: scannerController,
             onDetect: _onDetect,
           ),
 
-          /// ===== SCAN OVERLAY =====
+          /// ===== MASK TRANSPARAN (FOKUS KE TENGAH) =====
+          const ScanMaskOverlay(),
+
+          /// ===== SCAN OVERLAY (CORNER + LINE) =====
           const Center(child: ScanOverlay()),
 
           /// ===== BOTTOM CARD =====
@@ -102,7 +115,7 @@ class _ScanPageState extends State<ScanPage> {
             child: ScanBottomCard(
               isDetected: isDetected,
               scannedUrl: scannedUrl,
-              onOpenUrl: openUrl, // 🔥 INI YANG KURANG
+              onOpenUrl: openUrl,
             ),
           ),
 
