@@ -11,22 +11,34 @@ import '../models/location_tracking.dart';
 
 class LocationTrackingService {
   static Timer? _timer;
+  static bool _isRunning = false;
 
+  /// ===============================
   /// JAM KERJA (08.00 - 17.00)
+  /// ===============================
+  /// NOTE:
+  /// - Jangan MEMATIKAN tracking di sini
+  /// - Cukup skip kirim data jika di luar jam kerja
   static bool _isWorkingHour() {
     final now = DateTime.now();
     return now.hour >= 8 && now.hour < 17;
   }
 
+  /// ===============================
   /// START TRACKING
+  /// ===============================
   static Future<void> startTracking() async {
-    // cegah double timer
-    if (_timer != null) return;
+    if (_isRunning) {
+      // tracking sudah jalan
+      return;
+    }
+
+    _isRunning = true;
 
     // tampilkan notifikasi GPS
     await NotificationService.showGpsTrackingNotification();
 
-    // ambil lokasi langsung sekali
+    // tracking pertama (langsung)
     await _trackOnce();
 
     // ulang tiap 5 menit
@@ -38,22 +50,28 @@ class LocationTrackingService {
     );
   }
 
+  /// ===============================
   /// STOP TRACKING
+  /// ===============================
   static Future<void> stopTracking() async {
     _timer?.cancel();
     _timer = null;
+    _isRunning = false;
+
     await NotificationService.cancelGpsNotification();
   }
 
+  /// ===============================
   /// TRACK SEKALI (ONLINE / OFFLINE)
+  /// ===============================
   static Future<void> _trackOnce() async {
-    // stop otomatis di luar jam kerja
+    // ⛔ DI LUAR JAM KERJA → JANGAN KIRIM DATA
     if (!_isWorkingHour()) {
-      await stopTracking();
-      return;
+      return; // ❗ JANGAN stopTracking()
     }
 
     try {
+      // ambil lokasi
       final Position position =
           await LocationService.getCurrentLocation();
 
@@ -61,14 +79,14 @@ class LocationTrackingService {
           ConnectivityService.currentStatus;
 
       if (isOnline) {
-        // ================= ONLINE → FIREBASE
-        await AttendanceOnlineService.submitCheckIn(
+        // ================= ONLINE → FIRESTORE (TRACKING)
+        await AttendanceOnlineService.submitTracking(
           userId: 'test_user', // nanti dari auth
           latitude: position.latitude,
           longitude: position.longitude,
         );
       } else {
-        // ================= OFFLINE → TRACKING BUFFER (HIDDEN)
+        // ================= OFFLINE → BUFFER (HIVE)
         await TrackingBufferService.add(
           LocationTracking(
             latitude: position.latitude,
@@ -77,8 +95,9 @@ class LocationTrackingService {
           ),
         );
       }
-    } catch (_) {
-      // sengaja diabaikan agar app tetap stabil
+    } catch (e) {
+      // jangan sampai app crash
+      // log boleh ditambah saat debugging
     }
   }
 }

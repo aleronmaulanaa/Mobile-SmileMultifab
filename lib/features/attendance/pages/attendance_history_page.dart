@@ -56,11 +56,13 @@ class AttendanceHistoryPage extends StatelessWidget {
     try {
       // 🔥 KIRIM SATU PER SATU KE SERVER
       for (AttendanceHistory data in histories) {
-        await AttendanceOnlineService.submitCheckIn(
-          userId: 'test_user', // nanti dari auth
-          latitude: data.latitude,
-          longitude: data.longitude,
-        );
+    await AttendanceOnlineService.submitAttendance(
+    userId: 'test_user',
+    latitude: data.latitude,
+    longitude: data.longitude,
+    type: 'checkin',
+      );
+
       }
 
       // 🔥 JIKA SEMUA SUKSES → HAPUS HIVE

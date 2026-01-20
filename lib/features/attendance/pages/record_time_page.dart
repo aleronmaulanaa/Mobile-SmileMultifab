@@ -402,11 +402,13 @@ final isOnlineNow = await _checkConnectionNow();
 if (isOnlineNow) {
   try {
     // 🔥 ONLINE → KIRIM KE SERVER
-    await AttendanceOnlineService.submitCheckIn(
-      userId: 'test_user', // nanti auth
-      latitude: _position!.latitude,
-      longitude: _position!.longitude,
-    );
+await AttendanceOnlineService.submitAttendance(
+  userId: 'test_user',
+  latitude: _position!.latitude,
+  longitude: _position!.longitude,
+  type: 'checkin',
+);
+
   } catch (e) {
     // ❌ ONLINE TAPI GAGAL → JATUH KE HIVE
     await AttendanceHistoryService.addHistory(
