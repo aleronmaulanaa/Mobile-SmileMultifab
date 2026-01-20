@@ -4,10 +4,11 @@
 // // Import Navbar
 // import 'package:mobile_smile_multifab/features/home/widgets/custom_bottom_navbar.dart';
 
-// // Import Home Screen (Tidak digunakan untuk navigasi sementara, tapi tetap di-import jika needed)
+// // Import Home Screen (Untuk navigasi balik)
 // import 'package:mobile_smile_multifab/screens/home_screen.dart';
 
-// import 'package:mobile_smile_multifab/features/profile/widgets/profile_card.dart'; // <--- Tambahkan Import ini
+// // Import Profile Card
+// import 'package:mobile_smile_multifab/features/profile/widgets/profile_card.dart';
 
 // class ProfileScreen extends StatefulWidget {
 //   const ProfileScreen({super.key});
@@ -17,27 +18,33 @@
 // }
 
 // class _ProfileScreenState extends State<ProfileScreen> {
-//   // Status online dummy (statis)
 //   final bool _isOnline = true;
 
 //   @override
 //   Widget build(BuildContext context) {
-//     // Setup warna status (sama seperti Home)
+//     // Setup warna status
 //     final String statusText = _isOnline ? "Online" : "Offline";
 //     final Color statusCircleColor =
 //         _isOnline ? const Color(0xFF74FF46) : const Color(0xFFFF4646);
 //     final Color statusTextColor =
 //         _isOnline ? const Color(0xFF65D340) : const Color(0xFFD34040);
 
+//     // Konfigurasi Ukuran & Posisi
+//     // Anda bisa mengubah angka ini untuk mengatur jarak
+//     const double headerTopPosition = 200.0; // Jarak Card dari atas layar
+//     const double cardHeight = 115.0; // Tinggi Card
+//     // Padding untuk konten scroll di bawah (Jarak Card + Tinggi Card + Spasi)
+//     const double contentTopPadding = headerTopPosition + cardHeight + 20.0;
+
 //     return Scaffold(
 //       backgroundColor: const Color(0xFFF3F4F6),
-//       // Gunakan SizedBox.expand agar Stack memenuhi seluruh layar
 //       body: SizedBox.expand(
 //         child: Stack(
 //           children: [
 //             // ===========================
 //             // 1. BACKGROUND HEADER (GRADIENT & CURVE)
 //             // ===========================
+//             // Posisi: Paling Belakang (Layer 0)
 //             ClipPath(
 //               clipper: HeaderCurveClipper(),
 //               child: Container(
@@ -59,59 +66,67 @@
 //             ),
 
 //             // ===========================
-//             // 2. MAIN CONTENT (BODY)
+//             // 2. SCROLLABLE CONTENT (BAGIAN BAWAH)
 //             // ===========================
-//             SingleChildScrollView(
-//               padding: const EdgeInsets.only(top: 115, bottom: 125),
-//               child: Padding(
-//                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
-//                 child: Column(
-//                   children: [
-//                     const SizedBox(height: 20),
-//                     // --- PLACEHOLDER KONTEN PROFILE ---
+//             // Posisi: Layer 1 (Di bawah card header)
+//             // SingleChildScrollView(
+//             //   // Padding atas dibuat besar agar konten mulai DI BAWAH card statis
+//             //   padding: const EdgeInsets.only(
+//             //       top: contentTopPadding, bottom: 130, left: 24, right: 24),
+//             //   child: Column(
+//             //     children: [
+//             //       // --- PLACEHOLDER KONTEN BAWAH (NANTINYA BAGIAN 2) ---
+//             //       Container(
+//             //         width: double.infinity,
+//             //         height: 500, // Tinggi diperbesar untuk simulasi scroll
+//             //         decoration: BoxDecoration(
+//             //           color: Colors.white,
+//             //           borderRadius: BorderRadius.circular(20),
+//             //           boxShadow: [
+//             //             BoxShadow(
+//             //               color: Colors.black.withOpacity(0.05),
+//             //               blurRadius: 10,
+//             //               offset: const Offset(0, 4),
+//             //             ),
+//             //           ],
+//             //         ),
+//             //         child: Center(
+//             //           child: Text(
+//             //             "Area Scrollable (Bagian 2)\nCard di atas tetap diam.",
+//             //             textAlign: TextAlign.center,
+//             //             style: TextStyle(
+//             //               color: Colors.grey[400],
+//             //               fontWeight: FontWeight.bold,
+//             //             ),
+//             //           ),
+//             //         ),
+//             //       ),
+//             //     ],
+//             //   ),
+//             // ),
 
-//                     const ProfileHeaderCard(),
-
-//                     const SizedBox(height: 20),
-
-//                     Container(
-//                       width: double.infinity,
-//                       height: 400, // Tinggi sementara visualisasi
-//                       decoration: BoxDecoration(
-//                         color: Colors.white,
-//                         borderRadius: BorderRadius.circular(20),
-//                         boxShadow: [
-//                           BoxShadow(
-//                             color: Colors.black.withOpacity(0.05),
-//                             blurRadius: 10,
-//                             offset: const Offset(0, 4),
-//                           ),
-//                         ],
-//                       ),
-//                       child: Center(
-//                         child: Text(
-//                           "Konten Profile Disini",
-//                           style: TextStyle(
-//                             color: Colors.grey[400],
-//                             fontWeight: FontWeight.bold,
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
+//             // ===========================
+//             // 3. PROFILE HEADER CARD (STATIS)
+//             // ===========================
+//             // Posisi: Layer 2 (Fixed Position)
+//             Positioned(
+//               top:
+//                   headerTopPosition, // Jarak dari atas (diatur di variabel atas)
+//               left: 24,
+//               right: 24,
+//               child: const ProfileHeaderCard(),
 //             ),
 
 //             // ===========================
-//             // 3. TOP HEADER (LOGO & NOTIFICATION)
+//             // 4. TOP HEADER (LOGO & NOTIFICATION)
 //             // ===========================
+//             // Posisi: Layer 3 (Paling Atas)
 //             Positioned(
 //               top: 0,
 //               left: 0,
 //               right: 0,
 //               child: Container(
-//                 color: const Color(0xFFFAFAFA), // Background status bar
+//                 color: const Color(0xFFFAFAFA),
 //                 child: SafeArea(
 //                   bottom: false,
 //                   child: Padding(
@@ -130,7 +145,6 @@
 //                         // NOTIFICATION & STATUS
 //                         Row(
 //                           children: [
-//                             // Notification Icon
 //                             Stack(
 //                               clipBehavior: Clip.none,
 //                               children: [
@@ -153,10 +167,7 @@
 //                                 )
 //                               ],
 //                             ),
-
 //                             const SizedBox(width: 16),
-
-//                             // Online Status
 //                             Padding(
 //                               padding: const EdgeInsets.only(top: 8.0),
 //                               child: Column(
@@ -203,34 +214,21 @@
 //             ),
 
 //             // ===========================
-//             // 4. BOTTOM NAVIGATION BAR
+//             // 5. BOTTOM NAVIGATION BAR
 //             // ===========================
 //             Positioned(
 //               bottom: 0,
 //               left: 0,
 //               right: 0,
 //               child: CustomBottomNavBar(
-//                 // Index 1 = Profile (Agar icon Profile menyala)
 //                 selectedIndex: 1,
-
 //                 onItemTapped: (index) {
-//                   // ▼▼▼ LOGIKA NAVIGASI DINONAKTIFKAN SEMENTARA ▼▼▼
+//                   // Logika Navigasi Sementara Nonaktif
 //                   if (index == 0) {
-//                     debugPrint("Tombol Home ditekan (Navigasi Nonaktif)");
-//                     // Logika pindah halaman di-comment agar tetap di Profile
-//                     /*
-//                     Navigator.pushReplacement(
-//                       context,
-//                       MaterialPageRoute(
-//                           builder: (context) => const HomeScreen()),
-//                     );
-//                     */
+//                     // Navigator.pushReplacement(...)
 //                   }
-//                   // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 //                 },
-//                 onScanTap: () {
-//                   debugPrint("Scan Button Tapped on Profile");
-//                 },
+//                 onScanTap: () {},
 //               ),
 //             ),
 //           ],
@@ -240,7 +238,7 @@
 //   }
 // }
 
-// // Class Clipper untuk Header Lengkung
+// // Class Clipper
 // class HeaderCurveClipper extends CustomClipper<Path> {
 //   @override
 //   Path getClip(Size size) {
@@ -267,11 +265,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 // Import Navbar
 import 'package:mobile_smile_multifab/features/home/widgets/custom_bottom_navbar.dart';
 
-// Import Home Screen (Untuk navigasi balik)
-import 'package:mobile_smile_multifab/screens/home_screen.dart';
+// Import Home Screen
+import 'package:mobile_smile_multifab/screens/home_screen.dart'; // Perbaiki path import jika perlu
 
-// Import Profile Card
+// Import Widgets Profile
 import 'package:mobile_smile_multifab/features/profile/widgets/profile_card.dart';
+import 'package:mobile_smile_multifab/features/profile/widgets/profile_menu_section.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -292,12 +291,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final Color statusTextColor =
         _isOnline ? const Color(0xFF65D340) : const Color(0xFFD34040);
 
-    // Konfigurasi Ukuran & Posisi
-    // Anda bisa mengubah angka ini untuk mengatur jarak
-    const double headerTopPosition = 200.0; // Jarak Card dari atas layar
-    const double cardHeight = 115.0; // Tinggi Card
-    // Padding untuk konten scroll di bawah (Jarak Card + Tinggi Card + Spasi)
-    const double contentTopPadding = headerTopPosition + cardHeight + 20.0;
+    // Konfigurasi Posisi
+    const double headerCardTop = 180.0;
+
+    // REVISI: Diubah dari 200.0 menjadi 220.0
+    // Semakin besar angka ini, section putih semakin turun (terlihat lebih pendek)
+    const double menuSectionTop = 430.0;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
@@ -305,9 +304,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Stack(
           children: [
             // ===========================
-            // 1. BACKGROUND HEADER (GRADIENT & CURVE)
+            // 1. BACKGROUND HEADER (GRADIENT)
             // ===========================
-            // Posisi: Paling Belakang (Layer 0)
             ClipPath(
               clipper: HeaderCurveClipper(),
               child: Container(
@@ -329,61 +327,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             // ===========================
-            // 2. SCROLLABLE CONTENT (BAGIAN BAWAH)
+            // 2. PROFILE MENU SECTION (BAGIAN 2 - PUTIH)
             // ===========================
-            // Posisi: Layer 1 (Di bawah card header)
-            // SingleChildScrollView(
-            //   // Padding atas dibuat besar agar konten mulai DI BAWAH card statis
-            //   padding: const EdgeInsets.only(
-            //       top: contentTopPadding, bottom: 130, left: 24, right: 24),
-            //   child: Column(
-            //     children: [
-            //       // --- PLACEHOLDER KONTEN BAWAH (NANTINYA BAGIAN 2) ---
-            //       Container(
-            //         width: double.infinity,
-            //         height: 500, // Tinggi diperbesar untuk simulasi scroll
-            //         decoration: BoxDecoration(
-            //           color: Colors.white,
-            //           borderRadius: BorderRadius.circular(20),
-            //           boxShadow: [
-            //             BoxShadow(
-            //               color: Colors.black.withOpacity(0.05),
-            //               blurRadius: 10,
-            //               offset: const Offset(0, 4),
-            //             ),
-            //           ],
-            //         ),
-            //         child: Center(
-            //           child: Text(
-            //             "Area Scrollable (Bagian 2)\nCard di atas tetap diam.",
-            //             textAlign: TextAlign.center,
-            //             style: TextStyle(
-            //               color: Colors.grey[400],
-            //               fontWeight: FontWeight.bold,
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-
-            // ===========================
-            // 3. PROFILE HEADER CARD (STATIS)
-            // ===========================
-            // Posisi: Layer 2 (Fixed Position)
             Positioned(
-              top:
-                  headerTopPosition, // Jarak dari atas (diatur di variabel atas)
-              left: 24,
-              right: 24,
-              child: const ProfileHeaderCard(),
+              top: menuSectionTop, // 220.0
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: const ProfileMenuSection(),
             ),
 
             // ===========================
-            // 4. TOP HEADER (LOGO & NOTIFICATION)
+            // 3. PROFILE HEADER CARD (BAGIAN 1 - MERAH)
             // ===========================
-            // Posisi: Layer 3 (Paling Atas)
+            const Positioned(
+              top: headerCardTop,
+              left: 24,
+              right: 24,
+              child: ProfileHeaderCard(),
+            ),
+
+            // ===========================
+            // 4. TOP HEADER (LOGO & NOTIF)
+            // ===========================
             Positioned(
               top: 0,
               left: 0,
@@ -398,14 +364,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // LOGO
                         Image.asset(
                           'assets/images/common/logo_smile_v2.png',
                           height: 58,
                           fit: BoxFit.contain,
                         ),
-
-                        // NOTIFICATION & STATUS
                         Row(
                           children: [
                             Stack(
@@ -486,9 +449,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: CustomBottomNavBar(
                 selectedIndex: 1,
                 onItemTapped: (index) {
-                  // Logika Navigasi Sementara Nonaktif
                   if (index == 0) {
-                    // Navigator.pushReplacement(...)
+                    // Navigasi ke Home (Nonaktif sementara)
                   }
                 },
                 onScanTap: () {},
@@ -501,7 +463,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-// Class Clipper
+// Clipper Header
 class HeaderCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
