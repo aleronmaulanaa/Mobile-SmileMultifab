@@ -20,11 +20,15 @@ class AttendanceHistory extends HiveObject {
   @HiveField(4)
   final bool isOnline;
 
+  @HiveField(5)
+  final String photoStatus;
+
   AttendanceHistory({
     required this.imagePath,
     required this.checkInTime,
     required this.latitude,
     required this.longitude,
     required this.isOnline,
+    required this.photoStatus,
   });
 }

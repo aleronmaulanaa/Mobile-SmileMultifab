@@ -22,13 +22,14 @@ class AttendanceHistoryAdapter extends TypeAdapter<AttendanceHistory> {
       latitude: fields[2] as double,
       longitude: fields[3] as double,
       isOnline: fields[4] as bool,
+      photoStatus: fields[5] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, AttendanceHistory obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.imagePath)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class AttendanceHistoryAdapter extends TypeAdapter<AttendanceHistory> {
       ..writeByte(3)
       ..write(obj.longitude)
       ..writeByte(4)
-      ..write(obj.isOnline);
+      ..write(obj.isOnline)
+      ..writeByte(5)
+      ..write(obj.photoStatus);
   }
 
   @override

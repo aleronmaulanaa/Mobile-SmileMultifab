@@ -9,20 +9,27 @@ class AttendanceOnlineService {
   // ======================================================
   /// DIGUNAKAN HANYA SAAT USER TEKAN "KIRIM ABSENSI"
   /// type: 'checkin' | 'checkout'
-  static Future<void> submitAttendance({
+  ///
+  /// 🔥 RETURN attendanceId
+  static Future<String> submitAttendance({
     required String userId,
     required double latitude,
     required double longitude,
     required String type,
   }) async {
-    await _firestore.collection('attendance').add({
+    final docRef = await _firestore.collection('attendance').add({
       'userId': userId,
       'type': type,
       'status': 'online',
       'latitude': latitude,
       'longitude': longitude,
       'timestamp': FieldValue.serverTimestamp(),
+      'photoStatus': 'pending',
+      'photoUrl': null,
     });
+
+    // 🔥 INI PENTING
+    return docRef.id;
   }
 
   // ======================================================

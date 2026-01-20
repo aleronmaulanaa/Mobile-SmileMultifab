@@ -10,6 +10,8 @@ import '../models/attendance_history.dart';
 import '../services/attendance_history_service.dart';
 import '../services/attendance_daily_summary_service.dart';
 import '../services/attendance_online_service.dart';
+import '../services/attendance_photo_service.dart';
+
 
 
 class RecordTimePage extends StatefulWidget {
@@ -397,17 +399,38 @@ if (isFakeGps) {
 // ================= ABSENSI ONLINE / OFFLINE (REALTIME SAFE)
 
 // 🔥 CEK KONEKSI SAAT TOMBOL DIKLIK
+// 🔥 CEK KONEKSI SAAT TOMBOL DIKLIK
 final isOnlineNow = await _checkConnectionNow();
 
 if (isOnlineNow) {
   try {
-    // 🔥 ONLINE → KIRIM KE SERVER
-await AttendanceOnlineService.submitAttendance(
-  userId: 'test_user',
-  latitude: _position!.latitude,
-  longitude: _position!.longitude,
-  type: 'checkin',
-);
+    // 1️⃣ SIMPAN attendanceId (INI KUNCINYA)
+    final String attendanceId =
+        await AttendanceOnlineService.submitAttendance(
+      userId: 'test_user',
+      latitude: _position!.latitude,
+      longitude: _position!.longitude,
+      type: 'checkin',
+    );
+
+    // 2️⃣ SIMPAN KE HIVE (LOCAL HISTORY)
+    await AttendanceHistoryService.addHistory(
+      AttendanceHistory(
+        imagePath: _capturedImage!.path,
+        checkInTime: _photoTakenTime!,
+        latitude: _position!.latitude,
+        longitude: _position!.longitude,
+        isOnline: true,
+        photoStatus: 'pending',
+      ),
+    );
+
+    // 3️⃣ 🔥 UPLOAD FOTO (BACKGROUND, JANGAN AWAIT)
+    AttendancePhotoService.uploadAttendancePhoto(
+      attendanceId: attendanceId,
+      imagePath: _capturedImage!.path,
+      userId: 'test_user',
+    );
 
   } catch (e) {
     // ❌ ONLINE TAPI GAGAL → JATUH KE HIVE
@@ -418,11 +441,12 @@ await AttendanceOnlineService.submitAttendance(
         latitude: _position!.latitude,
         longitude: _position!.longitude,
         isOnline: false,
+        photoStatus: 'pending',
       ),
     );
   }
 } else {
-  // 🔥 OFFLINE REALTIME → LANGSUNG KE HIVE
+  // 🔴 OFFLINE REALTIME → LANGSUNG KE HIVE
   await AttendanceHistoryService.addHistory(
     AttendanceHistory(
       imagePath: _capturedImage!.path,
@@ -430,9 +454,11 @@ await AttendanceOnlineService.submitAttendance(
       latitude: _position!.latitude,
       longitude: _position!.longitude,
       isOnline: false,
+      photoStatus: 'pending',
     ),
   );
 }
+
 
 
 
