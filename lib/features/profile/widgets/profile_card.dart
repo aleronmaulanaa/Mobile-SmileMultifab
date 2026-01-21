@@ -1,182 +1,210 @@
 // import 'package:flutter/material.dart';
 
 // class ProfileHeaderCard extends StatelessWidget {
-//   const ProfileHeaderCard({super.key});
+//   final bool isOnline;
+//   final String imageUrl;
+
+//   const ProfileHeaderCard({
+//     super.key,
+//     required this.isOnline,
+//     required this.imageUrl,
+//   });
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return Container(
-//       width: double.infinity,
-//       height: 115, // H=115
-//       decoration: BoxDecoration(
-//         color: Colors.white,
-//         // Shadow untuk seluruh card (Red + White)
-//         borderRadius: BorderRadius.circular(11),
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.black.withOpacity(0.25),
-//             offset: const Offset(0, 7),
-//             blurRadius: 7,
-//           ),
-//         ],
-//       ),
-//       child: ClipRRect(
-//         borderRadius: BorderRadius.circular(11),
-//         child: Row(
-//           children: [
-//             // ==============================
-//             // BAGIAN KIRI: CARD MERAH (PROFILE)
-//             // ==============================
-//             Expanded(
-//               child: Container(
-//                 padding:
-//                     const EdgeInsets.symmetric(horizontal: 19, vertical: 21),
-//                 decoration: const BoxDecoration(
-//                   color: Color(0xFFF87072), // Warna Merah
-//                   // ▼▼▼ PENAMBAHAN CORNER RADIUS KANAN ▼▼▼
-//                   borderRadius: BorderRadius.only(
-//                     topRight: Radius.circular(11),
-//                     bottomRight: Radius.circular(11),
+//     return MediaQuery(
+//       data: MediaQuery.of(context)
+//           .copyWith(textScaler: const TextScaler.linear(1.0)),
+//       child: Container(
+//         width: double.infinity,
+//         height: 115,
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           borderRadius: BorderRadius.circular(11),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.25),
+//               offset: const Offset(0, 7),
+//               blurRadius: 7,
+//             ),
+//           ],
+//         ),
+//         child: ClipRRect(
+//           borderRadius: BorderRadius.circular(11),
+//           child: Row(
+//             children: [
+//               // --- CARD MERAH ---
+//               Expanded(
+//                 child: Container(
+//                   padding:
+//                       const EdgeInsets.symmetric(horizontal: 19, vertical: 21),
+//                   decoration: const BoxDecoration(
+//                     color: Color(0xFFF87072),
+//                     borderRadius: BorderRadius.only(
+//                       topRight: Radius.circular(11),
+//                       bottomRight: Radius.circular(11),
+//                     ),
 //                   ),
-//                   // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-//                 ),
-//                 child: Row(
-//                   children: [
-//                     // FOTO PROFILE (W=73 H=73)
-//                     Container(
-//                       width: 73,
-//                       height: 73,
-//                       decoration: const BoxDecoration(
-//                         shape: BoxShape.circle,
-//                         color: Colors.white,
-//                       ),
-//                       child: ClipOval(
-//                         child: Image.asset(
-//                           'assets/images/common/user_avatar.png',
-//                           fit: BoxFit.cover,
-//                           errorBuilder: (context, error, stackTrace) =>
-//                               const Icon(Icons.person,
-//                                   color: Colors.grey, size: 40),
+//                   child: Row(
+//                     children: [
+//                       // FOTO PROFILE
+//                       Container(
+//                         width: 73,
+//                         height: 73,
+//                         decoration: const BoxDecoration(
+//                           shape: BoxShape.circle,
+//                           color: Colors.white,
+//                         ),
+//                         child: ClipOval(
+//                           child: _buildProfileImage(),
 //                         ),
 //                       ),
+
+//                       const SizedBox(width: 10),
+
+//                       // TEXT SECTION
+//                       Expanded(
+//                         child: Column(
+//                           crossAxisAlignment: CrossAxisAlignment.start,
+//                           mainAxisAlignment: MainAxisAlignment.center,
+//                           children: [
+//                             const Text(
+//                               'M. Richie Sugestiana.',
+//                               maxLines: 1,
+//                               overflow: TextOverflow.ellipsis,
+//                               style: TextStyle(
+//                                 fontFamily: 'Poppins',
+//                                 fontWeight: FontWeight.w600,
+//                                 fontSize: 15,
+//                                 color: Colors.white,
+//                               ),
+//                             ),
+//                             const SizedBox(height: 4),
+//                             const Text(
+//                               '83493',
+//                               style: TextStyle(
+//                                 fontFamily: 'Poppins',
+//                                 fontWeight: FontWeight.w500,
+//                                 fontSize: 13,
+//                                 color: Colors.white,
+//                               ),
+//                             ),
+//                             const SizedBox(height: 11),
+//                             const Text(
+//                               'IT Network & Infrastruktur',
+//                               maxLines: 1,
+//                               overflow: TextOverflow.ellipsis,
+//                               style: TextStyle(
+//                                 fontFamily: 'Poppins',
+//                                 fontWeight: FontWeight.w500,
+//                                 fontSize: 11,
+//                                 color: Color(0xFF393939),
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+
+//               // --- CARD PUTIH (QR) ---
+//               Container(
+//                 width: 110,
+//                 color: Colors.white,
+//                 padding: const EdgeInsets.symmetric(vertical: 10),
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     Image.asset(
+//                       'assets/images/profile/qr_code.png',
+//                       width: 57,
+//                       height: 57,
+//                       fit: BoxFit.contain,
+//                       errorBuilder: (context, error, stackTrace) =>
+//                           const Icon(Icons.qr_code_2, size: 40),
 //                     ),
-
-//                     const SizedBox(width: 10),
-
-//                     // TEXT SECTION
-//                     Expanded(
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         mainAxisAlignment: MainAxisAlignment.center,
-//                         children: [
-//                           // Nama
-//                           const Text(
-//                             'M. Richie Sugestiana.',
-//                             maxLines: 1,
-//                             overflow: TextOverflow.ellipsis,
-//                             style: TextStyle(
-//                               fontFamily: 'Poppins',
-//                               fontWeight: FontWeight.w600,
-//                               fontSize: 15,
-//                               color: Colors.white,
-//                             ),
-//                           ),
-//                           const SizedBox(height: 4),
-
-//                           // ID / NIK
-//                           const Text(
-//                             '83493',
-//                             style: TextStyle(
-//                               fontFamily: 'Poppins',
-//                               fontWeight: FontWeight.w500,
-//                               fontSize: 13,
-//                               color: Colors.white,
-//                             ),
-//                           ),
-//                           const SizedBox(height: 11),
-
-//                           // Jabatan
-//                           const Text(
-//                             'IT Network & Infrastruktur',
-//                             maxLines: 1,
-//                             overflow: TextOverflow.ellipsis,
-//                             style: TextStyle(
-//                               fontFamily: 'Poppins',
-//                               fontWeight: FontWeight.w500,
-//                               fontSize: 11,
-//                               color: Color(0xFF393939),
-//                             ),
-//                           ),
-//                         ],
+//                     const SizedBox(height: 3),
+//                     const Text(
+//                       'tap to view',
+//                       style: TextStyle(
+//                         fontFamily: 'Poppins',
+//                         fontWeight: FontWeight.w500,
+//                         fontSize: 11,
+//                         color: Colors.black,
 //                       ),
 //                     ),
 //                   ],
 //                 ),
 //               ),
-//             ),
-
-//             // ==============================
-//             // BAGIAN KANAN: CARD PUTIH (QR CODE)
-//             // ==============================
-//             Container(
-//               width: 110,
-//               color: Colors.white, // Warna Putih
-//               padding: const EdgeInsets.symmetric(vertical: 10),
-//               child: Column(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   // QR CODE IMAGE
-//                   Image.asset(
-//                     'assets/images/profile/qr_code.png',
-//                     width: 57,
-//                     height: 57,
-//                     fit: BoxFit.contain,
-//                     errorBuilder: (context, error, stackTrace) => Column(
-//                       children: const [
-//                         Icon(Icons.qr_code_2, size: 40),
-//                       ],
-//                     ),
-//                   ),
-//                   const SizedBox(height: 3),
-//                   // TEXT TAP TO VIEW
-//                   const Text(
-//                     'tap to view',
-//                     style: TextStyle(
-//                       fontFamily: 'Poppins',
-//                       fontWeight: FontWeight.w500,
-//                       fontSize: 11,
-//                       color: Colors.black,
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
+//             ],
+//           ),
 //         ),
 //       ),
 //     );
 //   }
-// }
 
+//   // --- LOGIKA IMAGE (Sesuai Employee Card tapi Anti-Freeze) ---
+//   Widget _buildProfileImage() {
+//     // 1. OFFLINE: Tampilkan Asset Default
+//     if (!isOnline) {
+//       return Image.asset(
+//         'assets/images/common/default-user.jpg',
+//         fit: BoxFit.cover,
+//       );
+//     }
+
+//     // 2. ONLINE: Coba Load URL
+//     final String cleanUrl = imageUrl.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
+
+//     return Image.network(
+//       cleanUrl,
+//       fit: BoxFit.cover,
+//       // Menggunakan frameBuilder (Lebih ringan dari loadingBuilder untuk memori)
+//       // Memberikan efek visual yang sama tapi tanpa macet.
+//       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+//         if (wasSynchronouslyLoaded) return child;
+//         return AnimatedOpacity(
+//           opacity: frame == null ? 0 : 1,
+//           duration: const Duration(milliseconds: 300),
+//           curve: Curves.easeOut,
+//           child: child,
+//         );
+//       },
+//       // ERROR: Jika gagal load, kembali ke Asset Default
+//       errorBuilder: (context, error, stackTrace) {
+//         return Image.asset(
+//           'assets/images/common/default-user.jpg',
+//           fit: BoxFit.cover,
+//         );
+//       },
+//     );
+//   }
+// }
 
 import 'package:flutter/material.dart';
 
 class ProfileHeaderCard extends StatelessWidget {
-  const ProfileHeaderCard({super.key});
+  final bool isOnline;
+  final String imageUrl;
+
+  const ProfileHeaderCard({
+    super.key,
+    required this.isOnline,
+    required this.imageUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // KITA BUNGKUS DENGAN MEDIAQUERY UNTUK MENGUNCI UKURAN TEXT
-    // Ini menjamin tampilan tetap rapi meskipun user mengubah font HP menjadi "Sangat Besar"
-    // karena tinggi kartu kita Fixed (115), teks tidak boleh membesar sembarangan.
     return MediaQuery(
-      data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+      data: MediaQuery.of(context)
+          .copyWith(textScaler: const TextScaler.linear(1.0)),
       child: Container(
         width: double.infinity,
-        height: 115, // H=115 Fixed
+        height: 115,
         decoration: BoxDecoration(
           color: Colors.white,
-          // Shadow untuk seluruh card
           borderRadius: BorderRadius.circular(11),
           boxShadow: [
             BoxShadow(
@@ -193,12 +221,12 @@ class ProfileHeaderCard extends StatelessWidget {
               // ==============================
               // BAGIAN KIRI: CARD MERAH (PROFILE)
               // ==============================
-              // Expanded membuatnya responsif memenuhi sisa lebar layar
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 19, vertical: 21),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 19, vertical: 21),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFF87072), // Warna Merah
+                    color: Color(0xFFF87072),
                     borderRadius: BorderRadius.only(
                       topRight: Radius.circular(11),
                       bottomRight: Radius.circular(11),
@@ -206,39 +234,33 @@ class ProfileHeaderCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      // FOTO PROFILE (Fixed W=73 H=73)
+                      // FOTO PROFILE
                       Container(
                         width: 73,
                         height: 73,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white,
+                          // UBAH DISINI: Dari Colors.white menjadi Colors.grey
+                          // Ini akan menjadi warna background saat gambar sedang loading (transparan)
+                          color: Colors.grey,
                         ),
                         child: ClipOval(
-                          child: Image.asset(
-                            'assets/images/common/user_avatar.png',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.person,
-                                    color: Colors.grey, size: 40),
-                          ),
+                          child: _buildProfileImage(),
                         ),
                       ),
-      
+
                       const SizedBox(width: 10),
-      
+
                       // TEXT SECTION
-                      // Expanded di sini mencegah teks panjang menabrak batas kanan
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Nama
                             const Text(
                               'M. Richie Sugestiana.',
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis, // Memotong teks jika layar terlalu kecil
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w600,
@@ -247,8 +269,6 @@ class ProfileHeaderCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 4),
-      
-                            // ID / NIK
                             const Text(
                               '83493',
                               style: TextStyle(
@@ -259,12 +279,10 @@ class ProfileHeaderCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 11),
-      
-                            // Jabatan
                             const Text(
                               'IT Network & Infrastruktur',
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis, // Memotong teks jabatan jika panjang
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w500,
@@ -279,29 +297,26 @@ class ProfileHeaderCard extends StatelessWidget {
                   ),
                 ),
               ),
-      
+
               // ==============================
               // BAGIAN KANAN: CARD PUTIH (QR CODE)
               // ==============================
               Container(
-                width: 110, // Fixed Width
-                color: Colors.white, 
+                width: 110,
+                color: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // QR CODE IMAGE
                     Image.asset(
                       'assets/images/profile/qr_code.png',
                       width: 57,
                       height: 57,
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.qr_code_2, size: 40),
+                          const Icon(Icons.qr_code_2, size: 40),
                     ),
                     const SizedBox(height: 3),
-                    
-                    // TEXT TAP TO VIEW
                     const Text(
                       'tap to view',
                       style: TextStyle(
@@ -318,6 +333,43 @@ class ProfileHeaderCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  // --- LOGIKA BUILD IMAGE ---
+  Widget _buildProfileImage() {
+    // 1. Jika Offline -> Pakai Asset Langsung
+    if (!isOnline) {
+      return Image.asset(
+        'assets/images/common/default-user.jpg',
+        fit: BoxFit.cover,
+      );
+    }
+
+    // 2. Jika Online -> Pakai Network Image dengan frameBuilder (RINGAN)
+    final String cleanUrl = imageUrl.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
+
+    return Image.network(
+      cleanUrl,
+      fit: BoxFit.cover,
+      // Menggunakan frameBuilder agar transisi opacity halus
+      // Saat opacity 0, warna Colors.grey di container belakang akan terlihat
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded) return child;
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      // Error Builder: Jika URL gagal/timeout, fallback ke Asset
+      errorBuilder: (context, error, stackTrace) {
+        return Image.asset(
+          'assets/images/common/default-user.jpg',
+          fit: BoxFit.cover,
+        );
+      },
     );
   }
 }
