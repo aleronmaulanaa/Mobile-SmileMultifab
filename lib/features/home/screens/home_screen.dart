@@ -1,55 +1,87 @@
+// import 'dart:async';
+// import 'package:connectivity_plus/connectivity_plus.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
+// // import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
+// // import 'package:mobile_smile_multifab/features/home/widgets/banner_carousel.dart';
+// // import 'package:mobile_smile_multifab/features/home/widgets/home_menu.dart';
+// // import 'package:mobile_smile_multifab/features/home/widgets/news_section.dart';
 
-// // HAPUS IMPORT NAVBAR (Sudah di-handle MainWrapper)
+// // HAPUS IMPORT NAVBAR KARENA SUDAH DI-HANDLE MAIN_WRAPPER
 // // import 'package:mobile_smile_multifab/features/home/widgets/custom_bottom_navbar.dart';
 
-// // Import Widgets Profile
-// import 'package:mobile_smile_multifab/features/profile/widgets/profile_card.dart';
-// import 'package:mobile_smile_multifab/features/profile/widgets/profile_menu_section.dart';
-
-// class ProfileScreen extends StatefulWidget {
-//   const ProfileScreen({super.key});
+// class HomeScreen extends StatefulWidget {
+//   const HomeScreen({super.key});
 
 //   @override
-//   State<ProfileScreen> createState() => _ProfileScreenState();
+//   State<HomeScreen> createState() => _HomeScreenState();
 // }
 
-// class _ProfileScreenState extends State<ProfileScreen> {
-//   final bool _isOnline = true;
+// class _HomeScreenState extends State<HomeScreen> {
+//   bool _isOnline = true;
+//   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+//   final int testSpLevel = 3;
+//   final bool testSyncIcon = true;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _initConnectivity();
+//     _connectivitySubscription = Connectivity()
+//         .onConnectivityChanged
+//         .listen((List<ConnectivityResult> results) {
+//       _updateConnectionStatus(results);
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _connectivitySubscription.cancel();
+//     super.dispose();
+//   }
+
+//   Future<void> _initConnectivity() async {
+//     late List<ConnectivityResult> results;
+//     try {
+//       results = await Connectivity().checkConnectivity();
+//     } catch (e) {
+//       return;
+//     }
+//     if (!mounted) return;
+//     _updateConnectionStatus(results);
+//   }
+
+//   void _updateConnectionStatus(List<ConnectivityResult> results) {
+//     if (results.contains(ConnectivityResult.none)) {
+//       setState(() {
+//         _isOnline = false;
+//       });
+//     } else {
+//       setState(() {
+//         _isOnline = true;
+//       });
+//     }
+//   }
 
 //   @override
 //   Widget build(BuildContext context) {
-//     // 1. Ambil Tinggi Layar HP Pengguna
-//     final double screenHeight = MediaQuery.of(context).size.height;
-
-//     // 2. Hitung Faktor Skala (Scale Factor)
-//     final double scale = screenHeight / 844.0;
-
-//     // 3. Terapkan Nilai Manual Anda dengan Skala Responsif
-//     final double headerCardTop = 170.0 * scale;
-//     final double menuSectionTop = 380.0 * scale;
-
-//     // Setup warna status
 //     final String statusText = _isOnline ? "Online" : "Offline";
 //     final Color statusCircleColor =
 //         _isOnline ? const Color(0xFF74FF46) : const Color(0xFFFF4646);
 //     final Color statusTextColor =
 //         _isOnline ? const Color(0xFF65D340) : const Color(0xFFD34040);
 
-//     // GANTI SCAFFOLD DENGAN SIZEDBOX.EXPAND
-//     // Agar konten mengisi seluruh ruang body dari MainWrapper
+//     // GANTI SCAFFOLD DENGAN SIZEDBOX.EXPAND AGAR MENGISI RUANG YANG TERSEDIA
 //     return SizedBox.expand(
 //       child: Stack(
 //         children: [
-//           // ===========================
-//           // 1. BACKGROUND HEADER (GRADIENT)
-//           // ===========================
+//           // 1. HEADER CURVE BACKGROUND
 //           ClipPath(
 //             clipper: HeaderCurveClipper(),
 //             child: Container(
 //               width: double.infinity,
-//               height: screenHeight * 0.45,
+//               height: MediaQuery.of(context).size.height * 0.45,
 //               decoration: const BoxDecoration(
 //                 gradient: LinearGradient(
 //                   begin: Alignment.topCenter,
@@ -65,35 +97,41 @@
 //             ),
 //           ),
 
-//           // ===========================
-//           // 2. PROFILE MENU SECTION (BAGIAN 2 - PUTIH)
-//           // ===========================
-//           Positioned(
-//             top: menuSectionTop,
-//             left: 0,
-//             right: 0,
-//             bottom: 0,
-//             child: const ProfileMenuSection(),
+//           // 2. KONTEN UTAMA (SCROLLABLE)
+//           SingleChildScrollView(
+//             // Padding bottom dikurangi jadi 30 karena Navbar sudah di luar body
+//             padding: const EdgeInsets.only(top: 115, bottom: 30),
+//             child: Padding(
+//               padding: const EdgeInsets.symmetric(horizontal: 24.0),
+//               // child: Column( // <-- nonaktifkan COLUMN SEMENTARA SUPAYA TIDAK ADA MASALAH
+//               //   children: [
+//               //     const SizedBox(height: 20),
+//               //     EmployeeCard(
+//               //       spLevel: testSpLevel,
+//               //       showSyncIcon: testSyncIcon,
+//               //     ),
+//               //     const SizedBox(height: 20),
+//               //     const BannerCarousel(),
+//               //     const SizedBox(height: 24),
+//               //     const HomeMenu(),
+//               //     const SizedBox(height: 24),
+//               //     const NewsSection(),
+//               //   ],
+//               // ),
+//             ),
 //           ),
 
-//           // ===========================
-//           // 3. PROFILE HEADER CARD (BAGIAN 1 - MERAH)
-//           // ===========================
-//           Positioned(
-//             top: headerCardTop,
-//             left: 24,
-//             right: 24,
-//             child: const ProfileHeaderCard(),
-//           ),
-
-//           // ===========================
-//           // 4. TOP HEADER (LOGO & NOTIF)
-//           // ===========================
+//           // 3. HEADER ATAS (LOGO, NOTIF, STATUS)
 //           Positioned(
 //             top: 0,
 //             left: 0,
 //             right: 0,
 //             child: Container(
+//               // Background transparan/putih tipis jika diperlukan,
+//               // atau biarkan stack menumpuk di atas gradient.
+//               // Di sini saya biarkan sesuai kode asli tapi tanpa background color solid
+//               // agar menyatu dengan gradient header curve jika di-scroll,
+//               // TAPI kode asli pakai color: Color(0xFFFAFAFA), kita pertahankan.
 //               color: const Color(0xFFFAFAFA),
 //               child: SafeArea(
 //                 bottom: false,
@@ -107,6 +145,13 @@
 //                         'assets/images/common/logo_smile_v2.png',
 //                         height: 58,
 //                         fit: BoxFit.contain,
+//                         errorBuilder: (context, error, stackTrace) {
+//                           return const Text("Smile V2",
+//                               style: TextStyle(
+//                                   fontSize: 24,
+//                                   fontWeight: FontWeight.bold,
+//                                   color: Colors.red));
+//                         },
 //                       ),
 //                       Row(
 //                         children: [
@@ -178,14 +223,13 @@
 //             ),
 //           ),
 
-//           // HAPUS POSISI NAVBAR DARI SINI
+//           // HAPUS POSISI NAVBAR DI SINI
 //         ],
 //       ),
 //     );
 //   }
 // }
 
-// // Clipper Header
 // class HeaderCurveClipper extends CustomClipper<Path> {
 //   @override
 //   Path getClip(Size size) {
@@ -206,40 +250,41 @@
 //   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 // }
 
-
-
-
-import 'dart:async'; // 1. Import Async untuk Stream
-import 'package:connectivity_plus/connectivity_plus.dart'; // 2. Import Connectivity
+import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
-// Import Shared Widget (Base Scaffold)
+// 1. Import Shared Widget (Base Scaffold)
 import 'package:mobile_smile_multifab/shared/widgets/base_background_scaffold.dart';
 
-// Import Widgets Profile
-import 'package:mobile_smile_multifab/features/profile/widgets/profile_card.dart';
-import 'package:mobile_smile_multifab/features/profile/widgets/profile_menu_section.dart';
+// Import Widgets Home
+// import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
+// import 'package:mobile_smile_multifab/features/home/widgets/banner_carousel.dart';
+// import 'package:mobile_smile_multifab/features/home/widgets/home_menu.dart';
+// import 'package:mobile_smile_multifab/features/home/widgets/news_section.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   // ==========================================
-  // LOGIKA CONNECTIVITY (Sama seperti Home)
+  // LOGIKA CONNECTIVITY
   // ==========================================
   bool _isOnline = true;
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  // Data Dummy untuk testing
+  final int testSpLevel = 3;
+  final bool testSyncIcon = true;
 
   @override
   void initState() {
     super.initState();
     _initConnectivity();
-    
-    // Listen perubahan koneksi secara realtime
     _connectivitySubscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> results) {
@@ -253,20 +298,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.dispose();
   }
 
-  // Cek koneksi awal saat aplikasi dibuka
   Future<void> _initConnectivity() async {
     late List<ConnectivityResult> results;
     try {
       results = await Connectivity().checkConnectivity();
     } catch (e) {
-      // Handle error silentlly atau log error
       return;
     }
     if (!mounted) return;
     _updateConnectionStatus(results);
   }
 
-  // Update status bool berdasarkan hasil cek
   void _updateConnectionStatus(List<ConnectivityResult> results) {
     if (results.contains(ConnectivityResult.none)) {
       setState(() {
@@ -284,43 +326,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // ==========================================
   @override
   Widget build(BuildContext context) {
-    // 1. Ambil Tinggi Layar & Hitung Scale
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double scale = screenHeight / 844.0;
-
-    // 2. Hitung Posisi Widget
-    final double headerCardTop = 170.0 * scale;
-    final double menuSectionTop = 380.0 * scale;
-
-    // 3. Gunakan BaseBackgroundScaffold
+    // Gunakan BaseBackgroundScaffold
     return BaseBackgroundScaffold(
-      // Kirim status online ke BaseScaffold untuk update indikator warna
-      isOnline: _isOnline, 
-      
-      // Child di sini akan diletakkan di antara Background dan Header Logo
-      child: Stack(
-        children: [
-          // ===========================
-          // LAYER 1: PROFILE MENU SECTION (PUTIH DI BAWAH)
-          // ===========================
-          Positioned(
-            top: menuSectionTop,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: const ProfileMenuSection(),
-          ),
+      // Kirim status online untuk update indikator di header
+      isOnline: _isOnline,
 
-          // ===========================
-          // LAYER 2: PROFILE HEADER CARD (MERAH DI ATAS)
-          // ===========================
-          Positioned(
-            top: headerCardTop,
-            left: 24,
-            right: 24,
-            child: const ProfileHeaderCard(),
-          ),
-        ],
+      // Konten Utama (Scrollable)
+      // Konten ini akan otomatis berada di atas background tapi di bawah Header Logo
+      child: SingleChildScrollView(
+        // Padding Top 115: Memberi jarak agar konten mulai di bawah area header curve
+        // Padding Bottom 30: Memberi jarak dari bawah agar tidak terlalu mepet
+        padding: const EdgeInsets.only(top: 115, bottom: 30),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          // child: Column(
+          //   children: [
+          //     const SizedBox(height: 20),
+          //     EmployeeCard(
+          //       spLevel: testSpLevel,
+          //       showSyncIcon: testSyncIcon,
+          //     ),
+          //     const SizedBox(height: 20),
+          //     const BannerCarousel(),
+          //     const SizedBox(height: 24),
+          //     const HomeMenu(),
+          //     const SizedBox(height: 24),
+          //     const NewsSection(),
+          //   ],
+          // ),
+        ),
       ),
     );
   }

@@ -354,7 +354,7 @@ class ProfileMenuSection extends StatelessWidget {
 
             // ICON KANAN
             SvgPicture.asset(
-              'assets/icons/ic_arrow-back.svg',
+              'assets/icons/ic_arrow-back-right.svg',
               width: 27,
               height: 27,
             ),
