@@ -9,19 +9,19 @@ class ConnectivityService {
   static final StreamController<bool> _controller =
       StreamController<bool>.broadcast();
 
-  // 🔥 SIMPAN STATUS TERAKHIR
+  
   static bool _lastStatus = false;
 
-  /// STREAM ONLINE / OFFLINE (STATEFUL)
+ 
   static Stream<bool> get onlineStatusStream async* {
-    // emit status terakhir dulu ke subscriber baru
+
     yield _lastStatus;
 
-    // lalu emit perubahan berikutnya
+
     yield* _controller.stream;
   }
 
-  /// INIT SEKALI DI main.dart
+
   static void initialize() {
     _checkInternet();
 
@@ -30,7 +30,7 @@ class ConnectivityService {
     });
   }
 
-  /// CEK INTERNET BENERAN
+
   static Future<void> _checkInternet() async {
     bool hasInternet = false;
 
@@ -43,14 +43,14 @@ class ConnectivityService {
       hasInternet = false;
     }
 
-    // emit hanya kalau berubah
+    
     if (hasInternet != _lastStatus) {
       _lastStatus = hasInternet;
       _controller.add(hasInternet);
     }
   }
 
-  /// AMBIL STATUS SAAT INI (SINKRON)
+  
   static bool get currentStatus => _lastStatus;
 
   static void dispose() {

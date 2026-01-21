@@ -22,28 +22,15 @@ class RecordTimePage extends StatefulWidget {
 }
 
 class _RecordTimePageState extends State<RecordTimePage> {
-  // ================= STATE
   Position? _position;
   File? _capturedImage;
   bool _isSubmitting = false;
-
-  //  TAMBAHAN (JAM FOTO)
   DateTime? _photoTakenTime;
-
-
-
-
-  //  TAMBAHAN (STATUS KONEKSI)
   bool _isOnline = true;
-
-
-  // ================= CLOCK
   Timer? _clockTimer;
   DateTime _now = DateTime.now();
-
   String get _currentTime =>
       DateFormat('HH:mm:ss').format(_now);
-
   String get _currentDate =>
       DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
           .format(_now);
@@ -53,11 +40,8 @@ class _RecordTimePageState extends State<RecordTimePage> {
     super.initState();
     _startClock();
     _getLocation();
-
-    // TAMBAHAN
     _checkConnection();
   }
-
   void _startClock() {
     _clockTimer = Timer.periodic(
       const Duration(seconds: 1),
@@ -70,14 +54,11 @@ class _RecordTimePageState extends State<RecordTimePage> {
     );
   }
 
-// ================= DETEKSI FAKE GPS (ANDROID NATIVE)
 Future<bool> _isUsingFakeGps() async {
   try {
     final position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
-
-    // TRUE = Fake GPS / Mock Location aktif
     return position.isMocked;
   } catch (_) {
     return false;
@@ -95,7 +76,7 @@ Future<bool> _isUsingFakeGps() async {
     });
   }
 
-  //  FIX TOTAL: CEK INTERNET NYATA (BUKAN CUMA WIFI)
+
   Future<void> _checkConnection() async {
     final connectivityResult =
         await Connectivity().checkConnectivity();
@@ -122,8 +103,6 @@ Future<bool> _isUsingFakeGps() async {
   void _onImageCaptured(File image) {
     setState(() {
       _capturedImage = image;
-
-      //  JAM DIAMBIL SAAT FOTO
       _photoTakenTime = DateTime.now();
     });
   }
@@ -133,7 +112,6 @@ Future<bool> _isUsingFakeGps() async {
       _position != null &&
       !_isSubmitting;
 
-  // ================= POPUP SUKSES
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -221,7 +199,6 @@ Future<bool> _isUsingFakeGps() async {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // ================= JAM & TANGGAL
             Column(
               children: [
                 Text(
@@ -240,7 +217,7 @@ Future<bool> _isUsingFakeGps() async {
 
             const SizedBox(height: 16),
 
-            // ================= KAMERA / PREVIEW
+
             Expanded(
               flex: 6,
               child: _capturedImage == null
@@ -257,7 +234,6 @@ Future<bool> _isUsingFakeGps() async {
 
             const SizedBox(height: 12),
 
-            // ================= LAT LONG
             Expanded(
               flex: 2,
               child: Container(
@@ -346,7 +322,6 @@ Future<bool> _isUsingFakeGps() async {
 
             const SizedBox(height: 16),
 
-            // ================= BUTTON SUBMIT (PUTIH)
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -377,87 +352,78 @@ Future<bool> _isUsingFakeGps() async {
                         await Future.delayed(
                           const Duration(seconds: 2),
                         );
-final bool isFakeGps = await _isUsingFakeGps();
-if (isFakeGps) {
-  setState(() {
-    _isSubmitting = false;
-  });
+                            final bool isFakeGps = await _isUsingFakeGps();
+                            if (isFakeGps) {
+                              setState(() {
+                                _isSubmitting = false;
+                              });
 
-  showDialog(
-    context: context,
-    builder: (_) => const AlertDialog(
-      title: Text('Fake GPS Terdeteksi'),
-      content: Text(
-        'Silakan matikan Fake GPS atau Mock Location.',
-      ),
-    ),
-  );
-  return; // STOP di sini
-}
-// ================= ABSENSI ONLINE / OFFLINE (AMAN TOTAL)
+                              showDialog(
+                                context: context,
+                                builder: (_) => const AlertDialog(
+                                  title: Text('Fake GPS Terdeteksi'),
+                                  content: Text(
+                                    'Silakan matikan Fake GPS atau Mock Location.',
+                                  ),
+                                ),
+                              );
+                              return; // STOP di sini
+                            }
 
-// ================= ABSENSI ONLINE / OFFLINE (REALTIME SAFE)
+                            final isOnlineNow = await _checkConnectionNow();
 
-// 🔥 CEK KONEKSI SAAT TOMBOL DIKLIK
-// 🔥 CEK KONEKSI SAAT TOMBOL DIKLIK
-final isOnlineNow = await _checkConnectionNow();
+                            if (isOnlineNow) {
+                              try {
+                                final String attendanceId =
+                                    await AttendanceOnlineService.submitAttendance(
+                                  userId: 'test_user',
+                                  latitude: _position!.latitude,
+                                  longitude: _position!.longitude,
+                                  type: 'checkin',
+                                );
 
-if (isOnlineNow) {
-  try {
-    // 1️⃣ SIMPAN attendanceId (INI KUNCINYA)
-    final String attendanceId =
-        await AttendanceOnlineService.submitAttendance(
-      userId: 'test_user',
-      latitude: _position!.latitude,
-      longitude: _position!.longitude,
-      type: 'checkin',
-    );
+                                await AttendanceHistoryService.addHistory(
+                                  AttendanceHistory(
+                                    imagePath: _capturedImage!.path,
+                                    checkInTime: _photoTakenTime!,
+                                    latitude: _position!.latitude,
+                                    longitude: _position!.longitude,
+                                    isOnline: true,
+                                    photoStatus: 'pending',
+                                  ),
+                                );
 
-    // 2️⃣ SIMPAN KE HIVE (LOCAL HISTORY)
-    await AttendanceHistoryService.addHistory(
-      AttendanceHistory(
-        imagePath: _capturedImage!.path,
-        checkInTime: _photoTakenTime!,
-        latitude: _position!.latitude,
-        longitude: _position!.longitude,
-        isOnline: true,
-        photoStatus: 'pending',
-      ),
-    );
+                                AttendancePhotoService.uploadAttendancePhoto(
+                                  attendanceId: attendanceId,
+                                  imagePath: _capturedImage!.path,
+                                  userId: 'test_user',
+                                );
 
-    // 3️⃣ 🔥 UPLOAD FOTO (BACKGROUND, JANGAN AWAIT)
-    AttendancePhotoService.uploadAttendancePhoto(
-      attendanceId: attendanceId,
-      imagePath: _capturedImage!.path,
-      userId: 'test_user',
-    );
+                              } catch (e) {
+                                await AttendanceHistoryService.addHistory(
+                                  AttendanceHistory(
+                                    imagePath: _capturedImage!.path,
+                                    checkInTime: _photoTakenTime!,
+                                    latitude: _position!.latitude,
+                                    longitude: _position!.longitude,
+                                    isOnline: false,
+                                    photoStatus: 'pending',
+                                  ),
+                                );
+                              }
+                            } else {
 
-  } catch (e) {
-    // ❌ ONLINE TAPI GAGAL → JATUH KE HIVE
-    await AttendanceHistoryService.addHistory(
-      AttendanceHistory(
-        imagePath: _capturedImage!.path,
-        checkInTime: _photoTakenTime!,
-        latitude: _position!.latitude,
-        longitude: _position!.longitude,
-        isOnline: false,
-        photoStatus: 'pending',
-      ),
-    );
-  }
-} else {
-  // 🔴 OFFLINE REALTIME → LANGSUNG KE HIVE
-  await AttendanceHistoryService.addHistory(
-    AttendanceHistory(
-      imagePath: _capturedImage!.path,
-      checkInTime: _photoTakenTime!,
-      latitude: _position!.latitude,
-      longitude: _position!.longitude,
-      isOnline: false,
-      photoStatus: 'pending',
-    ),
-  );
-}
+                              await AttendanceHistoryService.addHistory(
+                                AttendanceHistory(
+                                  imagePath: _capturedImage!.path,
+                                  checkInTime: _photoTakenTime!,
+                                  latitude: _position!.latitude,
+                                  longitude: _position!.longitude,
+                                  isOnline: false,
+                                  photoStatus: 'pending',
+                                ),
+                              );
+                            }
 
 
 
@@ -487,23 +453,23 @@ if (isOnlineNow) {
       ),
     );
   }
-  Future<bool> _checkConnectionNow() async {
-  final connectivityResult =
-      await Connectivity().checkConnectivity();
+                Future<bool> _checkConnectionNow() async {
+                final connectivityResult =
+                    await Connectivity().checkConnectivity();
 
-  bool online = connectivityResult != ConnectivityResult.none;
+                bool online = connectivityResult != ConnectivityResult.none;
 
-  if (online) {
-    try {
-      final result =
-          await InternetAddress.lookup('google.com');
-      online = result.isNotEmpty &&
-          result.first.rawAddress.isNotEmpty;
-    } catch (_) {
-      online = false;
-    }
-  }
+                if (online) {
+                  try {
+                    final result =
+                        await InternetAddress.lookup('google.com');
+                    online = result.isNotEmpty &&
+                        result.first.rawAddress.isNotEmpty;
+                  } catch (_) {
+                    online = false;
+                  }
+                }
 
-  return online;
-  }
-}
+                return online;
+                }
+              }

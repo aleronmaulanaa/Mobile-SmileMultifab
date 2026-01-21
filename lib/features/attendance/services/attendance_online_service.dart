@@ -4,13 +4,7 @@ class AttendanceOnlineService {
   static final FirebaseFirestore _firestore =
       FirebaseFirestore.instance;
 
-  // ======================================================
-  // ===================== ATTENDANCE =====================
-  // ======================================================
-  /// DIGUNAKAN HANYA SAAT USER TEKAN "KIRIM ABSENSI"
-  /// type: 'checkin' | 'checkout'
-  ///
-  /// 🔥 RETURN attendanceId
+              // attendance
   static Future<String> submitAttendance({
     required String userId,
     required double latitude,
@@ -27,16 +21,11 @@ class AttendanceOnlineService {
       'photoStatus': 'pending',
       'photoUrl': null,
     });
-
-    // 🔥 INI PENTING
     return docRef.id;
   }
 
-  // ======================================================
-  // ====================== TRACKING ======================
-  // ======================================================
-  /// DIGUNAKAN OLEH BACKGROUND SERVICE
-  /// TIDAK BOLEH CHECKIN / CHECKOUT
+      // tracking
+
   static Future<void> submitTracking({
     required String userId,
     required double latitude,

@@ -21,29 +21,29 @@ class AttendancePage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // ================= MAP PLACEHOLDER (DESIGN TETAP)
+          
           const AttendanceMap(),
 
-          // ================= BACK BUTTON (SEJAJAR JAM)
+         
           const Positioned(
             left: 16,
             bottom: timeLineBottom - 10,
             child: BackButtonMap(),
           ),
 
-          // ================= JAM + PANEL
+          
           Align(
             alignment: Alignment.bottomCenter,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // ===== JAM REALTIME (WIDGET)
+                
                 const Padding(
                   padding: EdgeInsets.only(bottom: 12),
                   child: TimeStatus(),
                 ),
 
-                // ===== PANEL PUTIH
+               
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -56,12 +56,12 @@ class AttendancePage extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
-                      // CARD INFORMATION (REALTIME DATE + ONLINE)
+                      
                       InformationCard(),
 
                       SizedBox(height: 14),
 
-                      // BUTTONS
+                      
                       ActionButtons(),
                     ],
                   ),

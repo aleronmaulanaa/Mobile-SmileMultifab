@@ -54,7 +54,7 @@ class AttendanceHistoryPage extends StatelessWidget {
     );
 
     try {
-      // 🔥 KIRIM SATU PER SATU KE SERVER
+
       for (AttendanceHistory data in histories) {
     await AttendanceOnlineService.submitAttendance(
     userId: 'test_user',
@@ -65,7 +65,7 @@ class AttendanceHistoryPage extends StatelessWidget {
 
       }
 
-      // 🔥 JIKA SEMUA SUKSES → HAPUS HIVE
+    
       await AttendanceHistoryService.clearHistory();
 
       Navigator.pop(context); // tutup loading
@@ -89,7 +89,7 @@ class AttendanceHistoryPage extends StatelessWidget {
         ),
       );
     } catch (e) {
-      // ❌ JIKA ADA YANG GAGAL → JANGAN HAPUS HIVE
+      
       Navigator.pop(context);
 
       showDialog(
@@ -180,7 +180,7 @@ class AttendanceHistoryPage extends StatelessWidget {
                             ),
                             const SizedBox(height: 6),
 
-                            // 🔥 STATUS OFFLINE (KHUSUS PAGE INI)
+                            
                             Row(
                               children: [
                                 const Icon(

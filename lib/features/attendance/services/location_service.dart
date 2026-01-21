@@ -1,11 +1,8 @@
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
-  /// =============================
-  /// CEK & MINTA IZIN LOKASI
-  /// =============================
+
   static Future<bool> handlePermission() async {
-    // GPS aktif?
     final serviceEnabled =
         await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -29,26 +26,19 @@ class LocationService {
     return true;
   }
 
-  /// =============================
-  /// AMBIL LOKASI TERAKHIR (STABIL)
-  /// =============================
+
   static Future<Position?> getLastKnownLocation() async {
     return await Geolocator.getLastKnownPosition();
   }
 
-  /// =============================
-  /// AMBIL LOKASI SEKARANG (FRESH)
-  /// =============================
+
   static Future<Position> getCurrentLocation() async {
     return await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.bestForNavigation,
     );
   }
 
-  /// =============================
-  /// STREAM LOKASI REALTIME
-  /// (DI-FILTER AKURASI)
-  /// =============================
+
   static Stream<Position> getPositionStream() {
     return Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
@@ -57,7 +47,7 @@ class LocationService {
       ),
     ).where(
       (position) =>
-          position.accuracy <= 25, // 🔥 FILTER PENTING
+          position.accuracy <= 25, 
     );
   }
 }
