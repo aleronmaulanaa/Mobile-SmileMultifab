@@ -178,6 +178,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mobile_smile_multifab/features/profile/screens/account_screen.dart';
 
 class ProfileMenuSection extends StatelessWidget {
   const ProfileMenuSection({super.key});
@@ -239,7 +240,29 @@ class ProfileMenuSection extends StatelessWidget {
                   iconPath: 'assets/images/profile/account.png',
                   label: 'Account',
                   iconSize: 32,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const AccountScreen(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          // Animasi Slide dari Kanan ke Kiri
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.easeOut;
+
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
 
