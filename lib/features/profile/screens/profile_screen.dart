@@ -126,6 +126,8 @@ import 'package:mobile_smile_multifab/shared/widgets/base_background_scaffold.da
 import 'package:mobile_smile_multifab/features/profile/widgets/profile_card.dart';
 import 'package:mobile_smile_multifab/features/profile/widgets/profile_menu_section.dart';
 
+import 'package:mobile_smile_multifab/features/profile/widgets/qr_code_bottom_sheet.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -184,6 +186,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+// ==========================================
+  // FUNGSI MEMUNCULKAN QR CODE
+  // ==========================================
+  void _showQrCodeModal() {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true, // Bisa ditutup dengan klik diluar
+      barrierLabel: 'Close',
+      barrierColor: Colors.black.withOpacity(0.35), // Background dim 35%
+      transitionDuration: const Duration(milliseconds: 600), // Durasi 600ms
+      
+      // Animasi Slide dari Bawah
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        // Menggunakan curve 'slow' (biasanya Cubic atau easeOutQuart)
+        final curvedAnimation = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutQuart, 
+          reverseCurve: Curves.easeInQuart,
+        );
+
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 1), // Mulai dari bawah layar
+            end: Offset.zero,          // Berakhir di posisi aslinya
+          ).animate(curvedAnimation),
+          child: child,
+        );
+      },
+      
+      // Widget yang ditampilkan
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return const QrCodeBottomSheet();
+      },
+    );
+  }
+
+
   // ==========================================
   // UI BUILD
   // ==========================================
@@ -226,6 +265,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: ProfileHeaderCard(
               isOnline: _isOnline,
               imageUrl: _profileImageUrl,
+              onQrTap: _showQrCodeModal,
             ),
           ),
         ],

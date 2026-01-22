@@ -11,12 +11,7 @@
 //           .copyWith(textScaler: const TextScaler.linear(1.0)),
 //       child: Container(
 //         width: double.infinity,
-
-//         // PERBAIKAN PENTING:
-//         // Memaksa container untuk mengisi seluruh sisa ruang vertikal yang tersedia.
-//         // Karena parent-nya adalah Positioned(bottom: 0), ini akan menutup gap di bawah.
 //         height: double.infinity,
-
 //         decoration: BoxDecoration(
 //           color: Colors.white,
 //           borderRadius: const BorderRadius.only(
@@ -31,18 +26,22 @@
 //             ),
 //           ],
 //         ),
+//         // ClipRRect diletakkan di sini untuk memastikan konten scroll
+//         // mengikuti lengkungan border radius container
 //         child: ClipRRect(
 //           borderRadius: const BorderRadius.only(
 //             topLeft: Radius.circular(40),
 //             topRight: Radius.circular(40),
 //           ),
 //           child: SingleChildScrollView(
+//             // Physics diperlukan agar scroll terasa natural
+//             physics: const BouncingScrollPhysics(),
 //             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
 //             child: Column(
 //               crossAxisAlignment: CrossAxisAlignment.start,
 //               children: [
-//                 // Jarak agar konten tidak tertutup card merah
-//                 const SizedBox(height: 40),
+//                 // Jarak agar konten tidak tertutup card merah (ProfileHeader)
+//                 const SizedBox(height: 60), // Sedikit ditambah agar lebih lega
 
 //                 // =========================
 //                 // SECTION: ACCOUNT
@@ -98,8 +97,12 @@
 //                   leftPadding: 23,
 //                 ),
 
-//                 // Padding bawah extra agar scroll tidak mentok navbar
-//                 const SizedBox(height: 100),
+//                 // PERBAIKAN PENTING:
+//                 // Karena di ProfileScreen kita set bottom: -100,
+//                 // Kita harus menambah padding bawah di sini agar konten
+//                 // bisa discroll naik melebihi tinggi navbar.
+//                 // 100 (padding lama) + 80 (extra navbar gap) = 180
+//                 const SizedBox(height: 180),
 //               ],
 //             ),
 //           ),
@@ -186,6 +189,7 @@ class ProfileMenuSection extends StatelessWidget {
           .copyWith(textScaler: const TextScaler.linear(1.0)),
       child: Container(
         width: double.infinity,
+        // Tetap menggunakan double.infinity agar background putih memanjang ke bawah
         height: double.infinity,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -201,22 +205,21 @@ class ProfileMenuSection extends StatelessWidget {
             ),
           ],
         ),
-        // ClipRRect diletakkan di sini untuk memastikan konten scroll
-        // mengikuti lengkungan border radius container
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(40),
             topRight: Radius.circular(40),
           ),
-          child: SingleChildScrollView(
-            // Physics diperlukan agar scroll terasa natural
-            physics: const BouncingScrollPhysics(),
+          // PERUBAHAN DISINI:
+          // 1. SingleChildScrollView dihapus.
+          // 2. Diganti dengan Padding untuk memberi jarak tepi.
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Jarak agar konten tidak tertutup card merah (ProfileHeader)
-                const SizedBox(height: 60), // Sedikit ditambah agar lebih lega
+                // Jarak agar konten tidak tertutup card merah
+                const SizedBox(height: 35),
 
                 // =========================
                 // SECTION: ACCOUNT
@@ -272,12 +275,9 @@ class ProfileMenuSection extends StatelessWidget {
                   leftPadding: 23,
                 ),
 
-                // PERBAIKAN PENTING:
-                // Karena di ProfileScreen kita set bottom: -100,
-                // Kita harus menambah padding bawah di sini agar konten
-                // bisa discroll naik melebihi tinggi navbar.
-                // 100 (padding lama) + 80 (extra navbar gap) = 180
-                const SizedBox(height: 180),
+                // PERUBAHAN:
+                // SizedBox besar di bawah (height: 100/180) dihapus
+                // karena halaman statis tidak perlu ruang scroll.
               ],
             ),
           ),

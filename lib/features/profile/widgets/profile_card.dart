@@ -33,7 +33,9 @@
 //           borderRadius: BorderRadius.circular(11),
 //           child: Row(
 //             children: [
-//               // --- CARD MERAH ---
+//               // ==============================
+//               // BAGIAN KIRI: CARD MERAH (PROFILE)
+//               // ==============================
 //               Expanded(
 //                 child: Container(
 //                   padding:
@@ -53,7 +55,9 @@
 //                         height: 73,
 //                         decoration: const BoxDecoration(
 //                           shape: BoxShape.circle,
-//                           color: Colors.white,
+//                           // UBAH DISINI: Dari Colors.white menjadi Colors.grey
+//                           // Ini akan menjadi warna background saat gambar sedang loading (transparan)
+//                           color: Colors.grey,
 //                         ),
 //                         child: ClipOval(
 //                           child: _buildProfileImage(),
@@ -109,7 +113,9 @@
 //                 ),
 //               ),
 
-//               // --- CARD PUTIH (QR) ---
+//               // ==============================
+//               // BAGIAN KANAN: CARD PUTIH (QR CODE)
+//               // ==============================
 //               Container(
 //                 width: 110,
 //                 color: Colors.white,
@@ -145,9 +151,9 @@
 //     );
 //   }
 
-//   // --- LOGIKA IMAGE (Sesuai Employee Card tapi Anti-Freeze) ---
+//   // --- LOGIKA BUILD IMAGE ---
 //   Widget _buildProfileImage() {
-//     // 1. OFFLINE: Tampilkan Asset Default
+//     // 1. Jika Offline -> Pakai Asset Langsung
 //     if (!isOnline) {
 //       return Image.asset(
 //         'assets/images/common/default-user.jpg',
@@ -155,24 +161,24 @@
 //       );
 //     }
 
-//     // 2. ONLINE: Coba Load URL
+//     // 2. Jika Online -> Pakai Network Image dengan frameBuilder (RINGAN)
 //     final String cleanUrl = imageUrl.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
 
 //     return Image.network(
 //       cleanUrl,
 //       fit: BoxFit.cover,
-//       // Menggunakan frameBuilder (Lebih ringan dari loadingBuilder untuk memori)
-//       // Memberikan efek visual yang sama tapi tanpa macet.
+//       // Menggunakan frameBuilder agar transisi opacity halus
+//       // Saat opacity 0, warna Colors.grey di container belakang akan terlihat
 //       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
 //         if (wasSynchronouslyLoaded) return child;
 //         return AnimatedOpacity(
 //           opacity: frame == null ? 0 : 1,
-//           duration: const Duration(milliseconds: 300),
+//           duration: const Duration(milliseconds: 500),
 //           curve: Curves.easeOut,
 //           child: child,
 //         );
 //       },
-//       // ERROR: Jika gagal load, kembali ke Asset Default
+//       // Error Builder: Jika URL gagal/timeout, fallback ke Asset
 //       errorBuilder: (context, error, stackTrace) {
 //         return Image.asset(
 //           'assets/images/common/default-user.jpg',
@@ -188,11 +194,13 @@ import 'package:flutter/material.dart';
 class ProfileHeaderCard extends StatelessWidget {
   final bool isOnline;
   final String imageUrl;
+  final VoidCallback? onQrTap;
 
   const ProfileHeaderCard({
     super.key,
     required this.isOnline,
     required this.imageUrl,
+    this.onQrTap,
   });
 
   @override
@@ -240,8 +248,6 @@ class ProfileHeaderCard extends StatelessWidget {
                         height: 73,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          // UBAH DISINI: Dari Colors.white menjadi Colors.grey
-                          // Ini akan menjadi warna background saat gambar sedang loading (transparan)
                           color: Colors.grey,
                         ),
                         child: ClipOval(
@@ -301,32 +307,40 @@ class ProfileHeaderCard extends StatelessWidget {
               // ==============================
               // BAGIAN KANAN: CARD PUTIH (QR CODE)
               // ==============================
-              Container(
-                width: 110,
-                color: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/images/profile/qr_code.png',
-                      width: 57,
-                      height: 57,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.qr_code_2, size: 40),
-                    ),
-                    const SizedBox(height: 3),
-                    const Text(
-                      'tap to view',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 11,
-                        color: Colors.black,
+              // PERBAIKAN DISINI:
+              // Kita bungkus Container ini dengan GestureDetector agar bisa diklik
+              GestureDetector(
+                onTap: onQrTap, // <--- Memanggil fungsi callback saat ditekan
+                behavior: HitTestBehavior
+                    .opaque, // Agar area kosong tetap bisa diklik
+                child: Container(
+                  width: 110,
+                  height: double.infinity, // Pastikan tinggi penuh
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        'assets/images/profile/qr_code.png',
+                        width: 57,
+                        height: 57,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.qr_code_2, size: 40),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 3),
+                      const Text(
+                        'tap to view',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 11,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -338,7 +352,6 @@ class ProfileHeaderCard extends StatelessWidget {
 
   // --- LOGIKA BUILD IMAGE ---
   Widget _buildProfileImage() {
-    // 1. Jika Offline -> Pakai Asset Langsung
     if (!isOnline) {
       return Image.asset(
         'assets/images/common/default-user.jpg',
@@ -346,14 +359,11 @@ class ProfileHeaderCard extends StatelessWidget {
       );
     }
 
-    // 2. Jika Online -> Pakai Network Image dengan frameBuilder (RINGAN)
     final String cleanUrl = imageUrl.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
 
     return Image.network(
       cleanUrl,
       fit: BoxFit.cover,
-      // Menggunakan frameBuilder agar transisi opacity halus
-      // Saat opacity 0, warna Colors.grey di container belakang akan terlihat
       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded) return child;
         return AnimatedOpacity(
@@ -363,7 +373,6 @@ class ProfileHeaderCard extends StatelessWidget {
           child: child,
         );
       },
-      // Error Builder: Jika URL gagal/timeout, fallback ke Asset
       errorBuilder: (context, error, stackTrace) {
         return Image.asset(
           'assets/images/common/default-user.jpg',
