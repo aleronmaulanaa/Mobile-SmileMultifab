@@ -362,7 +362,7 @@ class _AccountScreenState extends State<AccountScreen> {
         statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF9FAFB),
+        backgroundColor: const Color(0xFFF3F4F6),
         body: Column(
           children: [
             // HEADER MERAH

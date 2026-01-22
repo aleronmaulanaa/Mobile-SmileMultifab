@@ -179,6 +179,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_smile_multifab/features/profile/screens/account_screen.dart';
+import 'package:mobile_smile_multifab/features/profile/screens/information_profile_screen.dart';
 
 class ProfileMenuSection extends StatelessWidget {
   const ProfileMenuSection({super.key});
@@ -268,9 +269,31 @@ class ProfileMenuSection extends StatelessWidget {
 
                 _buildMenuButton(
                   iconPath: 'assets/images/profile/informasi_profile.png',
-                  label: 'Informasi Profile',
+                  label: 'Information Profile',
                   iconSize: 24,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const InformationProfileScreen(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          // Animasi Slide dari Kanan ke Kiri (Sama seperti Account)
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.easeOut;
+
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
                   leftPadding: 23,
                 ),
 
