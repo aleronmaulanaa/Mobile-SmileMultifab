@@ -22,8 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.mobile_smile_multifab"
-
-        minSdk = 21  
+        minSdk = 21
         targetSdk = 36
 
         versionCode = flutter.versionCode
