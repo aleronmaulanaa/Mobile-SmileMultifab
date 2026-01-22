@@ -256,6 +256,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mobile_smile_multifab/features/profile/widgets/custom_text_field.dart';
 
 class InformationProfileScreen extends StatefulWidget {
   const InformationProfileScreen({super.key});
@@ -319,20 +320,19 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
   @override
   Widget build(BuildContext context) {
     // ==========================================
-    // PENGATURAN UKURAN (BAGIAN INI YANG DIUBAH)
+    // PENGATURAN UKURAN
     // ==========================================
 
-    // REVISI 1: Header dipanjangin sedikit (126 -> 140)
-    // Ubah angka ini jika masih kurang panjang atau kepanjangan
+    // REVISI 1: Header tinggi 150.0
     const double headerHeight = 150.0;
 
     const double stripHeight = 47.0;
 
-    // REVISI 2: Ukuran Profile benar-benar 73
+    // REVISI 2: Ukuran Profile 73.0
     const double profileSize = 73.0;
     const double profileRadius = profileSize / 2;
 
-    // Total tinggi area fixed (Header + Strip)
+    // Total tinggi area fixed
     const double totalFixedArea = headerHeight + stripHeight;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -341,150 +341,307 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF3F4F6),
-        body: Stack(
-          children: [
-            // ===============================================
-            // LAYER 1: SCROLLABLE CONTENT (BODY)
-            // ===============================================
-            ListView(
-              padding: const EdgeInsets.only(top: totalFixedArea + 20),
-              physics: const BouncingScrollPhysics(),
-              children: [
-                // DUMMY CONTENT
-                const SizedBox(height: 500),
-              ],
-            ),
-
-            // ===============================================
-            // LAYER 2: FIXED HEADER COMPLEX
-            // ===============================================
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              // Height ditambah radius profile agar tidak terpotong (overflow visual)
-              height: totalFixedArea + profileRadius,
-              child: Stack(
-                clipBehavior: Clip.none,
+      // FITUR TAMBAHAN: Klik layar untuk tutup keyboard
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Scaffold(
+          backgroundColor: const Color(0xFFF3F4F6), // Background abu muda
+          body: Stack(
+            children: [
+              // ===============================================
+              // LAYER 1: SCROLLABLE CONTENT (BODY FORM)
+              // ===============================================
+              ListView(
+                padding: const EdgeInsets.only(
+                  top: totalFixedArea + 30, // Konten dimulai dibawah header
+                  left: 24,
+                  right: 24,
+                  bottom: 50,
+                ),
+                physics: const BouncingScrollPhysics(),
                 children: [
-                  // A. BAGIAN MERAH (HEADER ATAS)
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: headerHeight,
-                    child: Container(
-                      color: const Color(0xFF991B1C),
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: SafeArea(
-                        bottom: false,
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 20), // Spasi dari status bar
-
-                            // REVISI 3: LOGIKA HEADER CENTER
-                            // Menggunakan Stack agar Title benar-benar ditengah
-                            // meskipun ada icon back di kiri.
-                            SizedBox(
-                              height: 40, // Tinggi area navbar
-                              child: Stack(
-                                alignment:
-                                    Alignment.center, // Pusatkan isi stack
-                                children: [
-                                  // 1. Icon Back (Kiri)
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: GestureDetector(
-                                      onTap: () => Navigator.pop(context),
-                                      child: SvgPicture.asset(
-                                        'assets/icons/ic_arrow_left_white.svg',
-                                        width: 27,
-                                        height: 27,
-                                        colorFilter: const ColorFilter.mode(
-                                            Colors.white, BlendMode.srcIn),
-                                      ),
-                                    ),
-                                  ),
-
-                                  // 2. Judul (Tengah Absolute)
-                                  const Text(
-                                    'Information Profile',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  // --- SECTION 1: UPDATE IDENTITAS ---
+                  const Text(
+                    'Update Identitas',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w800, // Extrabold
+                      fontSize: 16,
+                      color: Color(0xFFFA0209),
                     ),
                   ),
+                  const SizedBox(height: 21),
 
-                  // B. BAGIAN ABU-ABU (STRIP BAWAH)
-                  Positioned(
-                    top: headerHeight,
-                    left: 0,
-                    right: 0,
-                    height: stripHeight,
-                    child: Container(
-                      color: const Color(0xFFF3F4F6),
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          // TODO: Implement Change Photo Logic
-                        },
+                  // FORM: KK
+                  const CustomTextField(
+                    label: 'Kartu Keluarga (KK)',
+                    hint: 'Nomor KK',
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 18),
+
+                  // FORM: KTP
+                  const CustomTextField(
+                    label: 'Kartu Tanda Penduduk (KTP)',
+                    hint: 'Nomor KTP',
+                    keyboardType: TextInputType.number,
+                  ),
+
+                  const SizedBox(height: 40), // Jarak antar Judul Besar
+
+                  // --- SECTION 2: INFORMASI TEMPAT TINGGAL ---
+                  const Text(
+                    'Informasi Tempat tinggal',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      color: Color(0xFFFA0209),
+                    ),
+                  ),
+                  const SizedBox(height: 21),
+
+                  // SUB SECTION: ALAMAT DOMISILI
+                  const Text(
+                    'Alamat Domisili',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: Color(0xFF991B1C),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // List Form Domisili
+                  _buildSimpleForm(hint: 'Alamat Lengkap'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Negara'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Provinsi'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Kota'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Kecamatan'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Kelurahan'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Kode POS', isNumber: true),
+
+                  const SizedBox(height: 18),
+
+                  // SUB SECTION: ALAMAT KTP
+                  const Text(
+                    'Alamat (KTP)',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: Color(0xFF991B1C),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // List Form KTP
+                  _buildSimpleForm(hint: 'Alamat Lengkap'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Negara'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Provinsi'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Kota'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Kecamatan'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Kelurahan'),
+                  const SizedBox(height: 8),
+                  _buildSimpleForm(hint: 'Kode POS', isNumber: true),
+
+                  const SizedBox(height: 40),
+
+                  // --- TOMBOL SAVE CHANGES ---
+                  Center(
+                    child: SizedBox(
+                      width: 262,
+                      height: 36,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFA0007),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          elevation: 0,
+                        ),
                         child: const Text(
-                          'Change photo',
+                          'Save changes',
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                            color: Color(0xFF991B1C),
-                            decoration: TextDecoration.underline,
-                            decorationColor: Color(0xFF991B1C),
+                            fontSize: 15,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
                   ),
-
-                  // C. FOTO PROFILE (OVERLAPPING)
-                  // REVISI 4: Posisikan tepat dibawah tombol Back
-                  Positioned(
-                    top: headerHeight - profileRadius,
-                    left: 24, // Margin kiri sama dengan icon back
-                    child: Container(
-                      width: profileSize, // W=73
-                      height: profileSize, // H=73
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey,
-                        // REVISI 5: Border dihapus agar ukuran foto full 73x73
-                        // Jika ingin ada border putih pemisah, uncomment dibawah:
-                        /*
-                        border: Border.all(
-                          color: Color(0xFFF3F4F6), 
-                          width: 3.0, 
-                        ),
-                        */
-                      ),
-                      child: ClipOval(
-                        child: _buildProfileImage(_photoUrl),
-                      ),
-                    ),
-                  ),
+                  const SizedBox(height: 30),
                 ],
               ),
-            ),
-          ],
+
+              // ===============================================
+              // LAYER 2: FIXED HEADER COMPLEX
+              // ===============================================
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: totalFixedArea + profileRadius,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    // A. BAGIAN MERAH (HEADER ATAS)
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: headerHeight,
+                      child: Container(
+                        color: const Color(0xFF991B1C),
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: SafeArea(
+                          bottom: false,
+                          child: Column(
+                            children: [
+                              // REVISI POSISI TEXT:
+                              // Ubah 20 menjadi 35 agar text turun sedikit
+                              const SizedBox(height: 35),
+
+                              SizedBox(
+                                height: 30,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // 1. Icon Back
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: GestureDetector(
+                                        onTap: () => Navigator.pop(context),
+                                        child: SvgPicture.asset(
+                                          'assets/icons/ic_arrow_left_white.svg',
+                                          width: 27,
+                                          height: 27,
+                                          colorFilter: const ColorFilter.mode(
+                                              Colors.white, BlendMode.srcIn),
+                                        ),
+                                      ),
+                                    ),
+
+                                    // 2. Judul
+                                    const Text(
+                                      'Information Profile',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // B. BAGIAN ABU-ABU (STRIP BAWAH)
+                    Positioned(
+                      top: headerHeight,
+                      left: 0,
+                      right: 0,
+                      height: stripHeight,
+                      child: Container(
+                        color: const Color(0xFFF3F4F6),
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {},
+                          child: const Text(
+                            'Change photo',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: Color(0xFF991B1C),
+                              decoration: TextDecoration.underline,
+                              decorationColor: Color(0xFF991B1C),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // C. FOTO PROFILE
+                    Positioned(
+                      top: headerHeight - profileRadius,
+                      left: 24,
+                      child: Container(
+                        width: profileSize,
+                        height: profileSize,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey,
+                        ),
+                        child: ClipOval(
+                          child: _buildProfileImage(_photoUrl),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSimpleForm({required String hint, bool isNumber = false}) {
+    return Container(
+      width:
+          double.infinity, // Mengisi lebar yang tersedia (minus padding parent)
+      height: 42,
+      padding: const EdgeInsets.symmetric(horizontal: 7),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(
+          color: const Color(0xFFD3D3D3),
+          width: 1.0,
+        ),
+      ),
+      child: TextField(
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        style: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 12,
+          color: Colors.black,
+        ),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w600,
+            fontSize: 10,
+            color: Color(0xFFA0A0A0),
+          ),
+          border: InputBorder.none,
+          isDense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 13), // Adjusted padding
         ),
       ),
     );
