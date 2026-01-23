@@ -43,7 +43,7 @@ class LocationService {
     return Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
-        distanceFilter: 5, // update tiap 5 meter
+        distanceFilter: 5, 
       ),
     ).where(
       (position) =>

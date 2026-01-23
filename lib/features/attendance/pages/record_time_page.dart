@@ -21,91 +21,91 @@ class RecordTimePage extends StatefulWidget {
   State<RecordTimePage> createState() => _RecordTimePageState();
 }
 
-class _RecordTimePageState extends State<RecordTimePage> {
-  Position? _position;
-  File? _capturedImage;
-  bool _isSubmitting = false;
-  DateTime? _photoTakenTime;
-  bool _isOnline = true;
-  Timer? _clockTimer;
-  DateTime _now = DateTime.now();
-  String get _currentTime =>
-      DateFormat('HH:mm:ss').format(_now);
-  String get _currentDate =>
-      DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
+    class _RecordTimePageState extends State<RecordTimePage> {
+      Position? _position;
+      File? _capturedImage;
+      bool _isSubmitting = false;
+      DateTime? _photoTakenTime;
+      bool _isOnline = true;
+      Timer? _clockTimer;
+      DateTime _now = DateTime.now();
+      String get _currentTime =>
+          DateFormat('HH:mm:ss').format(_now);
+      String get _currentDate =>
+          DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
           .format(_now);
 
-  @override
-  void initState() {
-    super.initState();
-    _startClock();
-    _getLocation();
-    _checkConnection();
-  }
-  void _startClock() {
-    _clockTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (_) {
-        if (!mounted) return;
-        setState(() {
-          _now = DateTime.now();
-        });
-      },
-    );
-  }
+              @override
+              void initState() {
+                super.initState();
+                _startClock();
+                _getLocation();
+                _checkConnection();
+              }
+              void _startClock() {
+                _clockTimer = Timer.periodic(
+                  const Duration(seconds: 1),
+                  (_) {
+                    if (!mounted) return;
+                    setState(() {
+                      _now = DateTime.now();
+                    });
+                  },
+                );
+              }
 
-Future<bool> _isUsingFakeGps() async {
-  try {
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    return position.isMocked;
-  } catch (_) {
-    return false;
-  }
-}
-
-
-  Future<void> _getLocation() async {
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    if (!mounted) return;
-    setState(() {
-      _position = position;
-    });
-  }
+            Future<bool> _isUsingFakeGps() async {
+              try {
+                final position = await Geolocator.getCurrentPosition(
+                  desiredAccuracy: LocationAccuracy.high,
+                );
+                return position.isMocked;
+              } catch (_) {
+                return false;
+              }
+            }
 
 
-  Future<void> _checkConnection() async {
-    final connectivityResult =
-        await Connectivity().checkConnectivity();
+              Future<void> _getLocation() async {
+                final position = await Geolocator.getCurrentPosition(
+                  desiredAccuracy: LocationAccuracy.high,
+                );
+                if (!mounted) return;
+                setState(() {
+                  _position = position;
+                });
+              }
 
-    bool online = connectivityResult != ConnectivityResult.none;
 
-    if (online) {
-      try {
-        final result =
-            await InternetAddress.lookup('google.com');
-        online = result.isNotEmpty &&
-            result.first.rawAddress.isNotEmpty;
-      } catch (_) {
-        online = false;
-      }
-    }
+              Future<void> _checkConnection() async {
+                final connectivityResult =
+                    await Connectivity().checkConnectivity();
 
-    if (!mounted) return;
-    setState(() {
-      _isOnline = online;
-    });
-  }
+                bool online = connectivityResult != ConnectivityResult.none;
 
-  void _onImageCaptured(File image) {
-    setState(() {
-      _capturedImage = image;
-      _photoTakenTime = DateTime.now();
-    });
-  }
+                if (online) {
+                  try {
+                    final result =
+                        await InternetAddress.lookup('google.com');
+                    online = result.isNotEmpty &&
+                        result.first.rawAddress.isNotEmpty;
+                  } catch (_) {
+                    online = false;
+                  }
+                }
+
+                if (!mounted) return;
+                setState(() {
+                  _isOnline = online;
+                });
+              }
+
+              void _onImageCaptured(File image) {
+                setState(() {
+                  _capturedImage = image;
+                  _photoTakenTime = DateTime.now();
+                });
+              }
 
   bool get _canSubmit =>
       _capturedImage != null &&
@@ -419,52 +419,48 @@ Future<bool> _isUsingFakeGps() async {
                                   );
                                 }
 
+                                if (!mounted) return;
 
+                                setState(() {
+                                  _isSubmitting = false;
+                                });
 
-
-
-                        if (!mounted) return;
-
-                        setState(() {
-                          _isSubmitting = false;
-                        });
-
-                        _showSuccessDialog();
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      _canSubmit ? Colors.green : Colors.grey,
-                  foregroundColor: Colors.white,
-                  disabledForegroundColor: Colors.white70,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
+                                _showSuccessDialog();
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              _canSubmit ? Colors.green : Colors.grey,
+                          foregroundColor: Colors.white,
+                          disabledForegroundColor: Colors.white70,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-                Future<bool> _checkConnectionNow() async {
-                final connectivityResult =
-                    await Connectivity().checkConnectivity();
+            );
+          }
+                    Future<bool> _checkConnectionNow() async {
+                    final connectivityResult =
+                        await Connectivity().checkConnectivity();
 
-                bool online = connectivityResult != ConnectivityResult.none;
+                    bool online = connectivityResult != ConnectivityResult.none;
 
-                if (online) {
-                  try {
-                    final result =
-                        await InternetAddress.lookup('google.com');
-                    online = result.isNotEmpty &&
-                        result.first.rawAddress.isNotEmpty;
-                  } catch (_) {
-                    online = false;
+                    if (online) {
+                      try {
+                        final result =
+                            await InternetAddress.lookup('google.com');
+                        online = result.isNotEmpty &&
+                            result.first.rawAddress.isNotEmpty;
+                      } catch (_) {
+                        online = false;
+                      }
+                    }
+
+                    return online;
+                    }
                   }
-                }
-
-                return online;
-                }
-              }
