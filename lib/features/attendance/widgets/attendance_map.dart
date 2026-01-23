@@ -145,19 +145,19 @@ class _AttendanceMapState extends State<AttendanceMap> {
             ),
 
           
-            if (_userLocation != null)
-              Marker(
-                point: _userLocation!,
+          if (_userLocation != null)
+            Marker(
+              point: _userLocation!,
+              width: 40,
+              height: 40,
+              child: Image.asset(
+                'assets/images/attendance/img_people.png',
                 width: 36,
                 height: 36,
-                child: Icon(
-                  Icons.directions_walk,
-                  color: _isInsideRadius
-                      ? Colors.green
-                      : Colors.blue,
-                  size: 36,
-                ),
+                fit: BoxFit.contain,
               ),
+            ),
+
           ],
         ),
       ],

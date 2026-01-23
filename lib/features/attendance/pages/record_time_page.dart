@@ -370,60 +370,55 @@ Future<bool> _isUsingFakeGps() async {
                               return; 
                             }
 
-                            final isOnlineNow = await _checkConnectionNow();
+                                final isOnlineNow = await _checkConnectionNow();
 
-                            if (isOnlineNow) {
-                              try {
-                                final String attendanceId =
-                                    await AttendanceOnlineService.submitAttendance(
-                                  userId: 'test_user',
-                                  latitude: _position!.latitude,
-                                  longitude: _position!.longitude,
-                                  type: 'checkin',
-                                );
+                                if (isOnlineNow) {
+                                  try {
+  
+                                    final String attendanceId =
+                                        await AttendanceOnlineService.submitAttendance(
+                                      userId: 'test_user',
+                                      latitude: _position!.latitude,
+                                      longitude: _position!.longitude,
+                                      type: 'checkin',
+                                    );
 
-                                await AttendanceHistoryService.addHistory(
-                                  AttendanceHistory(
-                                    imagePath: _capturedImage!.path,
-                                    checkInTime: _photoTakenTime!,
-                                    latitude: _position!.latitude,
-                                    longitude: _position!.longitude,
-                                    isOnline: true,
-                                    photoStatus: 'pending',
-                                  ),
-                                );
+       
+                                    AttendancePhotoService.uploadAttendancePhoto(
+                                      attendanceId: attendanceId,
+                                      imagePath: _capturedImage!.path,
+                                      userId: 'test_user',
+                                    );
 
-                                AttendancePhotoService.uploadAttendancePhoto(
-                                  attendanceId: attendanceId,
-                                  imagePath: _capturedImage!.path,
-                                  userId: 'test_user',
-                                );
+                                  
 
-                              } catch (e) {
-                                await AttendanceHistoryService.addHistory(
-                                  AttendanceHistory(
-                                    imagePath: _capturedImage!.path,
-                                    checkInTime: _photoTakenTime!,
-                                    latitude: _position!.latitude,
-                                    longitude: _position!.longitude,
-                                    isOnline: false,
-                                    photoStatus: 'pending',
-                                  ),
-                                );
-                              }
-                            } else {
+                                  } catch (e) {
+                                    
+                                    await AttendanceHistoryService.addHistory(
+                                      AttendanceHistory(
+                                        imagePath: _capturedImage!.path,
+                                        checkInTime: _photoTakenTime!,
+                                        latitude: _position!.latitude,
+                                        longitude: _position!.longitude,
+                                        isOnline: false,
+                                        photoStatus: 'pending',
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                 
+                                  await AttendanceHistoryService.addHistory(
+                                    AttendanceHistory(
+                                      imagePath: _capturedImage!.path,
+                                      checkInTime: _photoTakenTime!,
+                                      latitude: _position!.latitude,
+                                      longitude: _position!.longitude,
+                                      isOnline: false,
+                                      photoStatus: 'pending',
+                                    ),
+                                  );
+                                }
 
-                              await AttendanceHistoryService.addHistory(
-                                AttendanceHistory(
-                                  imagePath: _capturedImage!.path,
-                                  checkInTime: _photoTakenTime!,
-                                  latitude: _position!.latitude,
-                                  longitude: _position!.longitude,
-                                  isOnline: false,
-                                  photoStatus: 'pending',
-                                ),
-                              );
-                            }
 
 
 
