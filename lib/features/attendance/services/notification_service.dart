@@ -4,7 +4,7 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin
       _notifications = FlutterLocalNotificationsPlugin();
 
-  /// INIT SEKALI DI main.dart
+  
   static Future<void> initialize() async {
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -15,7 +15,7 @@ class NotificationService {
     await _notifications.initialize(settings);
   }
 
-  /// NOTIF GPS AKTIF (SELAMA JAM KERJA)
+  
   static Future<void> showGpsTrackingNotification() async {
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
@@ -40,7 +40,7 @@ class NotificationService {
     );
   }
 
-  /// HENTIKAN NOTIF
+  
   static Future<void> cancelGpsNotification() async {
     await _notifications.cancel(1001);
   }

@@ -4,7 +4,7 @@ class AttendanceOnlineService {
   static final FirebaseFirestore _firestore =
       FirebaseFirestore.instance;
 
-              // attendance
+              
   static Future<String> submitAttendance({
     required String userId,
     required double latitude,
@@ -24,7 +24,7 @@ class AttendanceOnlineService {
     return docRef.id;
   }
 
-      // tracking
+   
 
   static Future<void> submitTracking({
     required String userId,

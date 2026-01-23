@@ -209,7 +209,7 @@ class _InformationCardState extends State<InformationCard> {
 
           const SizedBox(height: 10),
 
-          // ================= INFORMATION + JAM
+          
           Row(
             children: [
               Expanded(

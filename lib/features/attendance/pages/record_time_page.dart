@@ -367,7 +367,7 @@ Future<bool> _isUsingFakeGps() async {
                                   ),
                                 ),
                               );
-                              return; // STOP di sini
+                              return; 
                             }
 
                             final isOnlineNow = await _checkConnectionNow();

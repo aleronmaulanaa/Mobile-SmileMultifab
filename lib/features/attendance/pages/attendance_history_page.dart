@@ -10,7 +10,6 @@ import '../services/attendance_online_service.dart';
 class AttendanceHistoryPage extends StatelessWidget {
   const AttendanceHistoryPage({super.key});
 
-  // 🔥 CEK INTERNET NYATA
   Future<bool> _hasInternet() async {
     try {
       final result = await InternetAddress.lookup('google.com');
@@ -21,11 +20,11 @@ class AttendanceHistoryPage extends StatelessWidget {
     }
   }
 
-  // 🔥 KIRIM DATA OFFLINE KE SERVER
+
   Future<void> _sendToServer(BuildContext context) async {
     final online = await _hasInternet();
 
-    // ❌ BLOKIR JIKA OFFLINE
+   
     if (!online) {
       showDialog(
         context: context,
@@ -44,7 +43,7 @@ class AttendanceHistoryPage extends StatelessWidget {
 
     if (histories.isEmpty) return;
 
-    // 🔄 LOADING
+    
     showDialog(
       context: context,
       barrierDismissible: false,

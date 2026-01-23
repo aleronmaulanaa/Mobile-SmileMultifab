@@ -39,7 +39,7 @@ Future<void> _initCamera() async {
       return;
     }
 
-    // 🔥 PRIORITAS KAMERA DEPAN
+  
     CameraDescription selectedCamera;
 
     try {
@@ -47,7 +47,7 @@ Future<void> _initCamera() async {
         (camera) => camera.lensDirection == CameraLensDirection.front,
       );
     } catch (_) {
-      // fallback → kamera belakang
+    
       selectedCamera = cameras.first;
     }
 
@@ -128,7 +128,7 @@ Future<void> _initCamera() async {
 
     return Stack(
       children: [
-        // ================= CAMERA PREVIEW
+        
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: AspectRatio(
@@ -137,7 +137,7 @@ Future<void> _initCamera() async {
           ),
         ),
 
-        // ================= OVERLAY BUTTON
+        
         Positioned(
           bottom: 16,
           left: 0,

@@ -11,7 +11,7 @@ class ActionButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // ===== RECORD TIME
+       
         Expanded(
           child: _ShadowButton(
             color: Colors.red,
@@ -38,7 +38,6 @@ class ActionButtons extends StatelessWidget {
 
         const SizedBox(width: 12),
 
-        // ===== HISTORY
         Expanded(
           child: _ShadowButton(
             color: Colors.green,
@@ -63,9 +62,7 @@ class ActionButtons extends StatelessWidget {
   }
 }
 
-/// =======================================
-/// CUSTOM BUTTON DENGAN SHADOW HITAM
-/// =======================================
+
 class _ShadowButton extends StatelessWidget {
   final Color color;
   final Widget icon;

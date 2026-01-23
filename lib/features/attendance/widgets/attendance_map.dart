@@ -15,7 +15,7 @@ class AttendanceMap extends StatefulWidget {
 }
 
 class _AttendanceMapState extends State<AttendanceMap> {
-  /// 📍 KANTOR: MEDCO AMPERA (GOOGLE MAPS - FINAL)
+  
   static const LatLng _officeLocation = LatLng(
     -6.286633302601647,
     106.81804195921436,
@@ -42,19 +42,19 @@ class _AttendanceMapState extends State<AttendanceMap> {
         await LocationService.handlePermission();
     if (!hasPermission) return;
 
-    // 1️⃣ LAST KNOWN LOCATION (CEPAT & STABIL)
+    
     final lastPosition =
         await LocationService.getLastKnownLocation();
     if (lastPosition != null) {
       _updateUser(lastPosition);
     }
 
-    // 2️⃣ CURRENT LOCATION (FRESH)
+    
     final currentPosition =
         await LocationService.getCurrentLocation();
     _updateUser(currentPosition);
 
-    // 3️⃣ STREAM REALTIME (AKURAT)
+    
     _positionSubscription =
         LocationService.getPositionStream()
             .listen(_updateUser);
@@ -76,7 +76,7 @@ class _AttendanceMapState extends State<AttendanceMap> {
       _isInsideRadius = distanceToOffice <= _radiusMeter;
     });
 
-    // 🧭 MAP IKUT USER (BIAR TERASA BENAR)
+    
     _mapController.move(
       userLatLng,
       _mapController.camera.zoom,
@@ -103,7 +103,7 @@ class _AttendanceMapState extends State<AttendanceMap> {
         ),
       ),
       children: [
-        // ================= TILE MAP
+  
         TileLayer(
           urlTemplate:
               'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -111,7 +111,7 @@ class _AttendanceMapState extends State<AttendanceMap> {
               'com.example.mobile_smile_multifab',
         ),
 
-        // ================= RADIUS ABSENSI
+     
         CircleLayer(
           circles: [
             CircleMarker(
@@ -129,10 +129,10 @@ class _AttendanceMapState extends State<AttendanceMap> {
           ],
         ),
 
-        // ================= MARKER
+       
         MarkerLayer(
           markers: [
-            // 🔴 MARKER KANTOR
+        
             Marker(
               point: _officeLocation,
               width: 40,
@@ -144,7 +144,7 @@ class _AttendanceMapState extends State<AttendanceMap> {
               ),
             ),
 
-            // 🚶 MARKER USER
+          
             if (_userLocation != null)
               Marker(
                 point: _userLocation!,
