@@ -29,9 +29,11 @@ class SuccessNotificationCard extends StatelessWidget {
           topRight: Radius.circular(40),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             // Gambar Gembok
+            const SizedBox(height: 79),
             Image.asset(
               'assets/images/profile/popup_lock.png', // Pastikan path benar
               width: 73,
