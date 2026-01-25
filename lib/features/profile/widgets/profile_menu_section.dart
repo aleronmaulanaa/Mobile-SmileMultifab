@@ -757,119 +757,327 @@
 //   }
 // }
 
-import 'dart:async'; // Untuk Timer
+
+
+
+
+
+// import 'dart:async'; // Untuk Timer
+// import 'package:flutter/material.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:mobile_smile_multifab/features/profile/screens/account_screen.dart';
+// import 'package:mobile_smile_multifab/features/profile/screens/information_profile_screen.dart';
+// // Import Widget Kita
+// import 'package:mobile_smile_multifab/features/profile/widgets/change_password_section.dart';
+// import 'package:mobile_smile_multifab/features/profile/widgets/success_notification_card.dart';
+
+// // Enum untuk melacak status tampilan
+// enum ProfileView { menu, password, success }
+
+// class ProfileMenuSection extends StatefulWidget {
+//   const ProfileMenuSection({super.key});
+
+//   @override
+//   State<ProfileMenuSection> createState() => _ProfileMenuSectionState();
+// }
+
+// class _ProfileMenuSectionState extends State<ProfileMenuSection> {
+//   // Default tampilan adalah Menu Utama
+//   ProfileView _currentView = ProfileView.menu;
+
+//   // Fungsi Transisi ke Menu (Reset)
+//   void _goToMenu() {
+//     setState(() {
+//       _currentView = ProfileView.menu;
+//     });
+//   }
+
+//   // Fungsi Transisi ke Form Password
+//   void _goToPassword() {
+//     setState(() {
+//       _currentView = ProfileView.password;
+//     });
+//   }
+
+//   // Fungsi Transisi ke Sukses + Timer
+//   void _goToSuccess() {
+//     setState(() {
+//       _currentView = ProfileView.success;
+//     });
+
+//     // Timer 4 Detik lalu kembali ke Menu
+//     Timer(const Duration(seconds: 4), () {
+//       if (mounted) {
+//         _goToMenu();
+//       }
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MediaQuery(
+//       data: MediaQuery.of(context)
+//           .copyWith(textScaler: const TextScaler.linear(1.0)),
+//       child: Container(
+//         width: double.infinity,
+//         height: double.infinity,
+//         color: Colors.transparent,
+
+//         // STACK 3 LAYER (MENU -> PASSWORD -> SUCCESS)
+//         child: Stack(
+//           children: [
+//             // LAYER 1: MENU UTAMA (Selalu di bawah, Statis)
+//             _buildMainMenuCard(),
+
+//             // LAYER 2: CHANGE PASSWORD CARD
+//             // Muncul jika view == password ATAU success (karena saat sukses, pass ada dibawahnya)
+//             IgnorePointer(
+//               // Hanya bisa diklik jika sedang aktif di mode password
+//               ignoring: _currentView != ProfileView.password,
+//               child: AnimatedSlide(
+//                 // Jika Menu: Geser ke Kanan (1.0)
+//                 // Jika Pass/Success: Geser ke Tengah (0.0)
+//                 offset: _currentView == ProfileView.menu
+//                     ? const Offset(1.0, 0.0)
+//                     : Offset.zero,
+//                 duration: const Duration(milliseconds: 600),
+//                 curve: Curves.easeInOutQuart,
+//                 child: ChangePasswordSection(
+//                   onBack: _goToMenu, // Klik Back -> Ke Menu
+//                   onSuccess: _goToSuccess, // Klik Save -> Ke Sukses
+//                 ),
+//               ),
+//             ),
+
+//             // LAYER 3: SUCCESS NOTIFICATION CARD
+//             // Hanya muncul jika view == success
+//             IgnorePointer(
+//               ignoring: _currentView != ProfileView.success,
+//               child: AnimatedSlide(
+//                 // Jika Success: Tengah (0.0)
+//                 // Jika Menu/Pass: Kanan (1.0)
+//                 offset: _currentView == ProfileView.success
+//                     ? Offset.zero
+//                     : const Offset(1.0, 0.0),
+//                 duration: const Duration(milliseconds: 600),
+//                 curve: Curves.easeInOutQuart,
+//                 child: const SuccessNotificationCard(),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   // --- WIDGET MENU UTAMA ---
+//   Widget _buildMainMenuCard() {
+//     return Container(
+//       width: double.infinity,
+//       height: double.infinity,
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: const BorderRadius.only(
+//           topLeft: Radius.circular(40),
+//           topRight: Radius.circular(40),
+//         ),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withOpacity(0.25),
+//             offset: const Offset(0, -3),
+//             blurRadius: 4,
+//           ),
+//         ],
+//       ),
+//       child: ClipRRect(
+//         borderRadius: const BorderRadius.only(
+//           topLeft: Radius.circular(40),
+//           topRight: Radius.circular(40),
+//         ),
+//         child: SingleChildScrollView(
+//           padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               const SizedBox(height: 20),
+//               const Text(
+//                 'Account',
+//                 style: TextStyle(
+//                   fontFamily: 'Poppins',
+//                   fontWeight: FontWeight.w600,
+//                   fontSize: 14,
+//                   color: Colors.black,
+//                 ),
+//               ),
+//               const SizedBox(height: 12),
+//               _buildMenuButton(
+//                 iconPath: 'assets/images/profile/account.png',
+//                 label: 'Account',
+//                 iconSize: 32,
+//                 onTap: () {
+//                   Navigator.of(context).push(
+//                     PageRouteBuilder(
+//                       transitionDuration: const Duration(milliseconds: 600),
+//                       reverseTransitionDuration:
+//                           const Duration(milliseconds: 600),
+//                       pageBuilder: (context, animation, secondaryAnimation) =>
+//                           const AccountScreen(),
+//                       transitionsBuilder:
+//                           (context, animation, secondaryAnimation, child) {
+//                         const begin = Offset(1.0, 0.0);
+//                         const end = Offset.zero;
+//                         const curve = Curves.easeInOutQuart;
+//                         var tween = Tween(begin: begin, end: end)
+//                             .chain(CurveTween(curve: curve));
+//                         return SlideTransition(
+//                             position: animation.drive(tween), child: child);
+//                       },
+//                     ),
+//                   );
+//                 },
+//               ),
+//               const SizedBox(height: 12),
+//               _buildMenuButton(
+//                 iconPath: 'assets/images/profile/informasi_profile.png',
+//                 label: 'Information Profile',
+//                 iconSize: 24,
+//                 leftPadding: 23,
+//                 onTap: () {
+//                   Navigator.of(context).push(
+//                     PageRouteBuilder(
+//                       transitionDuration: const Duration(milliseconds: 600),
+//                       reverseTransitionDuration:
+//                           const Duration(milliseconds: 600),
+//                       pageBuilder: (context, animation, secondaryAnimation) =>
+//                           const InformationProfileScreen(),
+//                       transitionsBuilder:
+//                           (context, animation, secondaryAnimation, child) {
+//                         const begin = Offset(1.0, 0.0);
+//                         const end = Offset.zero;
+//                         const curve = Curves.easeInOutQuart;
+//                         var tween = Tween(begin: begin, end: end)
+//                             .chain(CurveTween(curve: curve));
+//                         return SlideTransition(
+//                             position: animation.drive(tween), child: child);
+//                       },
+//                     ),
+//                   );
+//                 },
+//               ),
+//               const SizedBox(height: 37),
+//               const Text(
+//                 'Security',
+//                 style: TextStyle(
+//                   fontFamily: 'Poppins',
+//                   fontWeight: FontWeight.w600,
+//                   fontSize: 14,
+//                   color: Colors.black,
+//                 ),
+//               ),
+//               const SizedBox(height: 12),
+//               _buildMenuButton(
+//                 iconPath: 'assets/images/profile/change_password.png',
+//                 label: 'Change Password',
+//                 iconSize: 24,
+//                 leftPadding: 23,
+//                 onTap: () {
+//                   // Panggil fungsi untuk membuka password form
+//                   _goToPassword();
+//                 },
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildMenuButton({
+//     required String iconPath,
+//     required String label,
+//     required double iconSize,
+//     required VoidCallback onTap,
+//     double leftPadding = 17.0,
+//   }) {
+//     return GestureDetector(
+//       onTap: onTap,
+//       child: Container(
+//         width: double.infinity,
+//         height: 39,
+//         padding: EdgeInsets.only(
+//           left: leftPadding,
+//           right: 17.0,
+//           top: 3.0,
+//           bottom: 3.0,
+//         ),
+//         decoration: BoxDecoration(
+//           color: const Color(0xFFF3F4F6),
+//           borderRadius: BorderRadius.circular(15),
+//         ),
+//         child: Row(
+//           children: [
+//             SizedBox(
+//               width: 32,
+//               child: Center(
+//                 child: iconPath.toLowerCase().endsWith('.svg')
+//                     ? SvgPicture.asset(
+//                         iconPath,
+//                         width: iconSize,
+//                         height: iconSize,
+//                       )
+//                     : Image.asset(
+//                         iconPath,
+//                         width: iconSize,
+//                         height: iconSize,
+//                         fit: BoxFit.contain,
+//                       ),
+//               ),
+//             ),
+//             const SizedBox(width: 15),
+//             Expanded(
+//               child: Text(
+//                 label,
+//                 style: const TextStyle(
+//                   fontFamily: 'Poppins',
+//                   fontWeight: FontWeight.w600,
+//                   fontSize: 12,
+//                   color: Colors.black,
+//                 ),
+//               ),
+//             ),
+//             SvgPicture.asset(
+//               'assets/icons/ic_arrow-back-right.svg',
+//               width: 27,
+//               height: 27,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_smile_multifab/features/profile/screens/account_screen.dart';
 import 'package:mobile_smile_multifab/features/profile/screens/information_profile_screen.dart';
-// Import Widget Kita
-import 'package:mobile_smile_multifab/features/profile/widgets/change_password_section.dart';
-import 'package:mobile_smile_multifab/features/profile/widgets/success_notification_card.dart';
 
-// Enum untuk melacak status tampilan
-enum ProfileView { menu, password, success }
+class ProfileMenuSection extends StatelessWidget {
+  final VoidCallback onChangePassword;
 
-class ProfileMenuSection extends StatefulWidget {
-  const ProfileMenuSection({super.key});
-
-  @override
-  State<ProfileMenuSection> createState() => _ProfileMenuSectionState();
-}
-
-class _ProfileMenuSectionState extends State<ProfileMenuSection> {
-  // Default tampilan adalah Menu Utama
-  ProfileView _currentView = ProfileView.menu;
-
-  // Fungsi Transisi ke Menu (Reset)
-  void _goToMenu() {
-    setState(() {
-      _currentView = ProfileView.menu;
-    });
-  }
-
-  // Fungsi Transisi ke Form Password
-  void _goToPassword() {
-    setState(() {
-      _currentView = ProfileView.password;
-    });
-  }
-
-  // Fungsi Transisi ke Sukses + Timer
-  void _goToSuccess() {
-    setState(() {
-      _currentView = ProfileView.success;
-    });
-
-    // Timer 4 Detik lalu kembali ke Menu
-    Timer(const Duration(seconds: 4), () {
-      if (mounted) {
-        _goToMenu();
-      }
-    });
-  }
+  const ProfileMenuSection({
+    super.key,
+    required this.onChangePassword,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return MediaQuery(
-      data: MediaQuery.of(context)
-          .copyWith(textScaler: const TextScaler.linear(1.0)),
-      child: Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: Colors.transparent,
-
-        // STACK 3 LAYER (MENU -> PASSWORD -> SUCCESS)
-        child: Stack(
-          children: [
-            // LAYER 1: MENU UTAMA (Selalu di bawah, Statis)
-            _buildMainMenuCard(),
-
-            // LAYER 2: CHANGE PASSWORD CARD
-            // Muncul jika view == password ATAU success (karena saat sukses, pass ada dibawahnya)
-            IgnorePointer(
-              // Hanya bisa diklik jika sedang aktif di mode password
-              ignoring: _currentView != ProfileView.password,
-              child: AnimatedSlide(
-                // Jika Menu: Geser ke Kanan (1.0)
-                // Jika Pass/Success: Geser ke Tengah (0.0)
-                offset: _currentView == ProfileView.menu
-                    ? const Offset(1.0, 0.0)
-                    : Offset.zero,
-                duration: const Duration(milliseconds: 600),
-                curve: Curves.easeInOutQuart,
-                child: ChangePasswordSection(
-                  onBack: _goToMenu, // Klik Back -> Ke Menu
-                  onSuccess: _goToSuccess, // Klik Save -> Ke Sukses
-                ),
-              ),
-            ),
-
-            // LAYER 3: SUCCESS NOTIFICATION CARD
-            // Hanya muncul jika view == success
-            IgnorePointer(
-              ignoring: _currentView != ProfileView.success,
-              child: AnimatedSlide(
-                // Jika Success: Tengah (0.0)
-                // Jika Menu/Pass: Kanan (1.0)
-                offset: _currentView == ProfileView.success
-                    ? Offset.zero
-                    : const Offset(1.0, 0.0),
-                duration: const Duration(milliseconds: 600),
-                curve: Curves.easeInOutQuart,
-                child: const SuccessNotificationCard(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // --- WIDGET MENU UTAMA ---
-  Widget _buildMainMenuCard() {
     return Container(
       width: double.infinity,
-      height: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.only(
@@ -901,7 +1109,6 @@ class _ProfileMenuSectionState extends State<ProfileMenuSection> {
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
-                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 12),
@@ -911,22 +1118,8 @@ class _ProfileMenuSectionState extends State<ProfileMenuSection> {
                 iconSize: 32,
                 onTap: () {
                   Navigator.of(context).push(
-                    PageRouteBuilder(
-                      transitionDuration: const Duration(milliseconds: 600),
-                      reverseTransitionDuration:
-                          const Duration(milliseconds: 600),
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          const AccountScreen(),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(1.0, 0.0);
-                        const end = Offset.zero;
-                        const curve = Curves.easeInOutQuart;
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
-                        return SlideTransition(
-                            position: animation.drive(tween), child: child);
-                      },
+                    MaterialPageRoute(
+                      builder: (_) => const AccountScreen(),
                     ),
                   );
                 },
@@ -939,22 +1132,8 @@ class _ProfileMenuSectionState extends State<ProfileMenuSection> {
                 leftPadding: 23,
                 onTap: () {
                   Navigator.of(context).push(
-                    PageRouteBuilder(
-                      transitionDuration: const Duration(milliseconds: 600),
-                      reverseTransitionDuration:
-                          const Duration(milliseconds: 600),
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          const InformationProfileScreen(),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        const begin = Offset(1.0, 0.0);
-                        const end = Offset.zero;
-                        const curve = Curves.easeInOutQuart;
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
-                        return SlideTransition(
-                            position: animation.drive(tween), child: child);
-                      },
+                    MaterialPageRoute(
+                      builder: (_) => const InformationProfileScreen(),
                     ),
                   );
                 },
@@ -966,7 +1145,6 @@ class _ProfileMenuSectionState extends State<ProfileMenuSection> {
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
-                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 12),
@@ -975,10 +1153,7 @@ class _ProfileMenuSectionState extends State<ProfileMenuSection> {
                 label: 'Change Password',
                 iconSize: 24,
                 leftPadding: 23,
-                onTap: () {
-                  // Panggil fungsi untuk membuka password form
-                  _goToPassword();
-                },
+                onTap: onChangePassword, // 🔥 trigger overlay
               ),
             ],
           ),
@@ -992,18 +1167,15 @@ class _ProfileMenuSectionState extends State<ProfileMenuSection> {
     required String label,
     required double iconSize,
     required VoidCallback onTap,
-    double leftPadding = 17.0,
+    double leftPadding = 17,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: double.infinity,
         height: 39,
         padding: EdgeInsets.only(
           left: leftPadding,
-          right: 17.0,
-          top: 3.0,
-          bottom: 3.0,
+          right: 17,
         ),
         decoration: BoxDecoration(
           color: const Color(0xFFF3F4F6),
@@ -1013,20 +1185,9 @@ class _ProfileMenuSectionState extends State<ProfileMenuSection> {
           children: [
             SizedBox(
               width: 32,
-              child: Center(
-                child: iconPath.toLowerCase().endsWith('.svg')
-                    ? SvgPicture.asset(
-                        iconPath,
-                        width: iconSize,
-                        height: iconSize,
-                      )
-                    : Image.asset(
-                        iconPath,
-                        width: iconSize,
-                        height: iconSize,
-                        fit: BoxFit.contain,
-                      ),
-              ),
+              child: iconPath.endsWith('.svg')
+                  ? SvgPicture.asset(iconPath)
+                  : Image.asset(iconPath),
             ),
             const SizedBox(width: 15),
             Expanded(
@@ -1036,7 +1197,6 @@ class _ProfileMenuSectionState extends State<ProfileMenuSection> {
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
-                  color: Colors.black,
                 ),
               ),
             ),
