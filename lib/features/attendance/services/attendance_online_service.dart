@@ -5,24 +5,25 @@ class AttendanceOnlineService {
       FirebaseFirestore.instance;
 
               
-  static Future<String> submitAttendance({
-    required String userId,
-    required double latitude,
-    required double longitude,
-    required String type,
-  }) async {
-    final docRef = await _firestore.collection('attendance').add({
-      'userId': userId,
-      'type': type,
-      'status': 'online',
-      'latitude': latitude,
-      'longitude': longitude,
-      'timestamp': FieldValue.serverTimestamp(),
-      'photoStatus': 'pending',
-      'photoUrl': null,
-    });
-    return docRef.id; 
-  }
+      static Future<String> submitAttendance({
+        required String userId,
+        required double latitude,
+        required double longitude,
+        required String type,
+      }) async {
+        final docRef = await _firestore.collection('attendance').add({
+          'userId': userId,
+          'type': type,
+          'status': 'online',
+          'latitude': latitude,
+          'longitude': longitude,
+          'timestamp': Timestamp.fromDate(DateTime.now()), // 🔥 FIX
+          'photoStatus': 'pending',
+          'photoUrl': null,
+        });
+        return docRef.id;
+      }
+
 
    
 

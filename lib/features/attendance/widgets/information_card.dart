@@ -20,15 +20,19 @@ class InformationCard extends StatefulWidget {
 
 class _InformationCardState extends State<InformationCard> {
   static const String _userName = 'M. Richie Sugestiana';
-  static const String _userId = '83493';
+  static const String _userId = 'test_user'; 
+
 
   late String _date;
   bool _isOnline = false;
-  String _checkInTime = '--.--';
-  String _checkOutTime = '--.--';
+  String? _checkInTime;
+  String? _checkOutTime;
+
 
   Timer? _timer;
   StreamSubscription<bool>? _connectionSub;
+
+  StreamSubscription<QuerySnapshot>? _attendanceSub;
 
   @override
   void initState() {
@@ -89,64 +93,69 @@ class _InformationCardState extends State<InformationCard> {
     }
   }
 
-                              Future<void> _loadAttendanceTimes() async {
-                                final today = DateTime.now();
-                                final startOfDay = DateTime(
-                                  today.year,
-                                  today.month,
-                                  today.day,
-                                );
+Future<void> _loadAttendanceTimes() async {
+  final today = DateTime.now();
+  final startOfDay = DateTime(
+    today.year,
+    today.month,
+    today.day,
+  );
 
-                                final snapshot = await FirebaseFirestore.instance
-                                    .collection('attendance')
-                                    .where('userId', isEqualTo: _userId) // pakai userId kamu
-                                    .where(
-                                      'timestamp',
-                                      isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
-                                    )
-                                    .orderBy('timestamp')
-                                    .get();
 
-                                if (!mounted) return;
+await _attendanceSub?.cancel();
 
-                                // DEFAULT — BELUM ABSEN
-                                if (snapshot.docs.isEmpty) {
-                                  setState(() {
-                                    _checkInTime = '--.--';
-                                    _checkOutTime = '--.--';
-                                    _isOnline = false;
-                                  });
-                                  return;
-                                }
 
-                                DateTime? checkInTime;
-                                DateTime? checkOutTime;
 
-                                for (final doc in snapshot.docs) {
-                                  final data = doc.data();
-                                  final time =
-                                      (data['timestamp'] as Timestamp).toDate();
+                                                                                        _attendanceSub = FirebaseFirestore.instance
+                                                                                            .collection('attendance')
+                                                                                            .where('userId', isEqualTo: _userId)
+                                                                                            .where(
+                                                                                              'timestamp',
+                                                                                              isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+                                                                                            )
+                                                                                            .orderBy('timestamp')
+                                                                                            .snapshots()
+                                                                                            .listen((snapshot) {
+                                                                                          if (!mounted) return;
 
-                                  if (data['type'] == 'checkin' && checkInTime == null) {
-                                    checkInTime = time;
-                                  }
+                                                                                          if (snapshot.docs.isEmpty) {
+                                                                                            setState(() {
+                                                                                              _checkInTime = null;
+                                                                                              _checkOutTime = null;
+                                                                                              _isOnline = false;
+                                                                                            });
+                                                                                            return;
+                                                                                          }
 
-                                  if (data['type'] == 'checkout') {
-                                    checkOutTime = time;
-                                  }
-                                }
+                                                                                          DateTime? checkInTime;
+                                                                                          DateTime? checkOutTime;
 
-  setState(() {
-    _checkInTime = checkInTime != null
-        ? DateFormat('HH.mm').format(checkInTime!)
-        : '--.--';
+                                                                                          for (final doc in snapshot.docs) {
+                                                                                            final data = doc.data() as Map<String, dynamic>;
+                                                                                            final time = (data['timestamp'] as Timestamp).toDate();
 
-    _checkOutTime = checkOutTime != null
-        ? DateFormat('HH.mm').format(checkOutTime!)
-        : '--.--';
+                                                                                            if (data['type'] == 'checkin' && checkInTime == null) {
+                                                                                              checkInTime = time;
+                                                                                            }
 
-    _isOnline = checkInTime != null && checkOutTime == null;
-  });
+                                                                                            if (data['type'] == 'checkout') {
+                                                                                              checkOutTime = time;
+                                                                                            }
+                                                                                          }
+
+                                                                                          setState(() {
+                                                                                            _checkInTime = checkInTime != null
+                                                                                                ? DateFormat('HH.mm').format(checkInTime)
+                                                                                                : null;
+
+                                                                                            _checkOutTime = checkOutTime != null
+                                                                                                ? DateFormat('HH.mm').format(checkOutTime)
+                                                                                                : null;
+
+                                                                                            _isOnline = checkInTime != null && checkOutTime == null;
+                                                                                          });
+                                                                                        });
+
 }
 
 
@@ -160,12 +169,14 @@ class _InformationCardState extends State<InformationCard> {
            '${pos.longitude.toStringAsFixed(5)}';
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _connectionSub?.cancel();
-    super.dispose();
-  }
+@override
+void dispose() {
+  _attendanceSub?.cancel();   // 🔥 Firestore listener
+  _timer?.cancel();           // ⏱️ timer tanggal
+  _connectionSub?.cancel();   // 🌐 koneksi
+  super.dispose();
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -280,8 +291,9 @@ class _InformationCardState extends State<InformationCard> {
                       BorderRadius.circular(10),
                 ),
                 child: Text(
-                  '$_checkInTime  |  $_checkOutTime',
-                  style: const TextStyle(fontSize: 12),
+                '${_checkInTime ?? '--.--'}  |  ${_checkOutTime ?? '--.--'}',
+                style: const TextStyle(fontSize: 12),
+
                 ),
               ),
             ],

@@ -370,18 +370,38 @@ class RecordTimePage extends StatefulWidget {
                               return; 
                             }
 
-                                final isOnlineNow = await _checkConnectionNow();
+                                  final isOnlineNow = await _checkConnectionNow();
 
-                                if (isOnlineNow) {
-                                  try {
-  
-                                    final String attendanceId =
-                                        await AttendanceOnlineService.submitAttendance(
-                                      userId: 'test_user',
-                                      latitude: _position!.latitude,
-                                      longitude: _position!.longitude,
-                                      type: 'checkin',
-                                    );
+                                  if (isOnlineNow) {
+                                    try {
+                                      final int hour = DateTime.now().hour;
+
+                                      String? attendanceType;
+
+                                      if (hour >= 00 && hour < 12) {
+                                        attendanceType = 'checkin';
+                                      } else if (hour >= 13 && hour < 24) {
+                                        attendanceType = 'checkout';
+                                      } else {
+                                        attendanceType = null;
+                                      }
+
+                                      if (attendanceType == null) {
+                                        setState(() {
+                                          _isSubmitting = false;
+                                        });
+                                        return;
+                                      }
+
+                                      final String attendanceId =
+                                          await AttendanceOnlineService.submitAttendance(
+                                        userId: 'test_user',
+                                        latitude: _position!.latitude,
+                                        longitude: _position!.longitude,
+                                        type: attendanceType,
+                                      );
+
+
 
        
                                     AttendancePhotoService.uploadAttendancePhoto(
