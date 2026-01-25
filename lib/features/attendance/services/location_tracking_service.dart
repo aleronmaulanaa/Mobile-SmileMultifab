@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:geolocator/geolocator.dart';
 
 import 'notification_service.dart';
@@ -12,24 +11,47 @@ import '../models/location_tracking.dart';
 class LocationTrackingService {
   static Timer? _timer;
   static bool _isRunning = false;
+
+
   static bool _isWorkingHour() {
     final now = DateTime.now();
-    return now.hour >= 8 && now.hour < 17;
+
+    final bool isMainWorkingHour =
+        now.hour >= 8 && now.hour < 17;
+
+    final bool isBreakTime =
+        now.hour >= 12 && now.hour < 13;
+
+    return isMainWorkingHour && !isBreakTime;
   }
 
+ 
+
+  static String? _attendanceTypeByTime() {
+    final hour = DateTime.now().hour;
+
+    if (hour >= 8 && hour < 12) {
+      return 'checkin';
+    }
+
+    if (hour >= 13 && hour < 17) {
+      return 'checkout';
+    }
+
+    return null; 
+  }
 
   static Future<void> startTracking() async {
-    if (_isRunning) {
-      return;
-    }
+    if (_isRunning) return;
 
     _isRunning = true;
 
     await NotificationService.showGpsTrackingNotification();
 
+   
     await _trackOnce();
 
-  
+    
     _timer = Timer.periodic(
       const Duration(minutes: 5),
       (_) async {
@@ -37,7 +59,6 @@ class LocationTrackingService {
       },
     );
   }
-
 
   static Future<void> stopTracking() async {
     _timer?.cancel();
@@ -47,11 +68,9 @@ class LocationTrackingService {
     await NotificationService.cancelGpsNotification();
   }
 
-
   static Future<void> _trackOnce() async {
-    if (!_isWorkingHour()) {
-      return; 
-    }
+    
+    if (!_isWorkingHour()) return;
 
     try {
       final Position position =
@@ -60,13 +79,19 @@ class LocationTrackingService {
       final bool isOnline =
           ConnectivityService.currentStatus;
 
+      final String? type = _attendanceTypeByTime();
+      if (type == null) return;
+
       if (isOnline) {
-        await AttendanceOnlineService.submitTracking(
+   
+        await AttendanceOnlineService.submitAttendance(
           userId: 'test_user',
           latitude: position.latitude,
           longitude: position.longitude,
+          type: type, // checkin / checkout
         );
       } else {
+ 
         await TrackingBufferService.add(
           LocationTracking(
             latitude: position.latitude,
@@ -75,7 +100,8 @@ class LocationTrackingService {
           ),
         );
       }
-    } catch (e) {
+    } catch (_) {
+      // optional: log error
     }
   }
 }

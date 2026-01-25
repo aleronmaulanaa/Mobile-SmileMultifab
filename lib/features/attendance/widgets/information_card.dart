@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 import '../state/location_state.dart';
 import '../services/connectivity_service.dart';
@@ -87,34 +89,67 @@ class _InformationCardState extends State<InformationCard> {
     }
   }
 
-  void _loadAttendanceTimes() {
-    final List<AttendanceHistory> histories =
-        AttendanceHistoryService.getAllHistory();
+                              Future<void> _loadAttendanceTimes() async {
+                                final today = DateTime.now();
+                                final startOfDay = DateTime(
+                                  today.year,
+                                  today.month,
+                                  today.day,
+                                );
 
-    final today = DateTime.now();
+                                final snapshot = await FirebaseFirestore.instance
+                                    .collection('attendance')
+                                    .where('userId', isEqualTo: _userId) // pakai userId kamu
+                                    .where(
+                                      'timestamp',
+                                      isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+                                    )
+                                    .orderBy('timestamp')
+                                    .get();
 
-    final todayRecords = histories.where((e) {
-      return e.checkInTime.year == today.year &&
-          e.checkInTime.month == today.month &&
-          e.checkInTime.day == today.day;
-    }).toList()
-      ..sort(
-        (a, b) =>
-            a.checkInTime.compareTo(b.checkInTime),
-      );
+                                if (!mounted) return;
 
-    if (todayRecords.isNotEmpty) {
-      _checkInTime = DateFormat('HH.mm')
-          .format(todayRecords.first.checkInTime);
-    }
+                                // DEFAULT — BELUM ABSEN
+                                if (snapshot.docs.isEmpty) {
+                                  setState(() {
+                                    _checkInTime = '--.--';
+                                    _checkOutTime = '--.--';
+                                    _isOnline = false;
+                                  });
+                                  return;
+                                }
 
-    if (todayRecords.length >= 2) {
-      _checkOutTime = DateFormat('HH.mm')
-          .format(todayRecords.last.checkInTime);
-    }
+                                DateTime? checkInTime;
+                                DateTime? checkOutTime;
 
-    if (mounted) setState(() {});
-  }
+                                for (final doc in snapshot.docs) {
+                                  final data = doc.data();
+                                  final time =
+                                      (data['timestamp'] as Timestamp).toDate();
+
+                                  if (data['type'] == 'checkin' && checkInTime == null) {
+                                    checkInTime = time;
+                                  }
+
+                                  if (data['type'] == 'checkout') {
+                                    checkOutTime = time;
+                                  }
+                                }
+
+  setState(() {
+    _checkInTime = checkInTime != null
+        ? DateFormat('HH.mm').format(checkInTime!)
+        : '--.--';
+
+    _checkOutTime = checkOutTime != null
+        ? DateFormat('HH.mm').format(checkOutTime!)
+        : '--.--';
+
+    _isOnline = checkInTime != null && checkOutTime == null;
+  });
+}
+
+
 
   String _latLongText() {
     final pos = LocationState.currentPosition;
