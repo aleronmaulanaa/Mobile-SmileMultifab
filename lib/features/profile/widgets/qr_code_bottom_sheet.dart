@@ -3,33 +3,24 @@
 // class QrCodeBottomSheet extends StatelessWidget {
 //   const QrCodeBottomSheet({super.key});
 
+//   // URL Gambar QR Code (Ganti dengan URL asli dari API/Backend Anda)
+//   final String qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=83493";
+
 //   @override
 //   Widget build(BuildContext context) {
 //     return Align(
 //       alignment: Alignment.bottomCenter,
-
-//       // FITUR BARU: DISMISSIBLE
-//       // Membungkus seluruh card agar bisa ditarik ke bawah
 //       child: Dismissible(
 //         key: const Key('qr_code_modal'),
-//         direction: DismissDirection.down, // Hanya izinkan tarik ke bawah
+//         direction: DismissDirection.down,
 //         onDismissed: (_) {
-//           Navigator.pop(context); // Tutup dialog saat selesai ditarik
+//           Navigator.pop(context);
 //         },
-
-//         // Material dibungkus disini agar ikut tergeser saat ditarik
 //         child: Material(
 //           color: Colors.transparent,
 //           child: Container(
-//             // ==========================================
-//             // DISINI TEMPAT MENGATUR UKURAN CARD
-//             // ==========================================
 //             width: double.infinity,
-//             height: 523, // <--- Ubah angka ini untuk mengatur TINGGI card
-
-//             // Jika ingin card tidak terlalu nempel bawah, bisa tambah margin bottom disini
-//             // margin: const EdgeInsets.only(bottom: 0),
-
+//             height: 523,
 //             decoration: BoxDecoration(
 //               color: const Color(0xFFFEE1E4),
 //               borderRadius: const BorderRadius.only(
@@ -108,13 +99,40 @@
 //                     child: Column(
 //                       mainAxisAlignment: MainAxisAlignment.center,
 //                       children: [
-//                         Image.asset(
-//                           'assets/images/profile/qr_code.png',
+//                         // ==========================================
+//                         // PERUBAHAN: IMAGE.NETWORK DENGAN LOADING
+//                         // ==========================================
+//                         SizedBox(
 //                           width: 201,
 //                           height: 201,
-//                           fit: BoxFit.contain,
+//                           child: Image.network(
+//                             qrCodeUrl,
+//                             fit: BoxFit.contain,
+
+//                             // 1. Loading Builder: Tampil saat gambar sedang didownload (Online tapi loading)
+//                             loadingBuilder: (context, child, loadingProgress) {
+//                               if (loadingProgress == null) return child;
+//                               return const Center(
+//                                 child: CircularProgressIndicator(
+//                                   color: Color(0xFFFA0007), // Warna Merah sesuai tema
+//                                 ),
+//                               );
+//                             },
+
+//                             // 2. Error Builder: Tampil saat Offline atau Gagal Load
+//                             // Sesuai request: Jika offline, tetap tampilkan animasi loading
+//                             errorBuilder: (context, error, stackTrace) {
+//                               return const Center(
+//                                 child: CircularProgressIndicator(
+//                                   color: Color(0xFFFA0007),
+//                                 ),
+//                               );
+//                             },
+//                           ),
 //                         ),
+
 //                         const SizedBox(height: 35),
+
 //                         const Text(
 //                           '83493',
 //                           style: TextStyle(
@@ -137,14 +155,14 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
+import 'package:connectivity_plus/connectivity_plus.dart'; // Pastikan import ini ada
 
 class QrCodeBottomSheet extends StatelessWidget {
   const QrCodeBottomSheet({super.key});
 
-  // URL Gambar QR Code (Ganti dengan URL asli dari API/Backend Anda)
-  final String qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=83493";
+  final String qrCodeUrl =
+      "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=83493";
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +213,6 @@ class QrCodeBottomSheet extends StatelessWidget {
 
                   const SizedBox(height: 21),
 
-                  // TEXT: MY QR CODE
                   const Text(
                     'My QR Code',
                     style: TextStyle(
@@ -208,7 +225,6 @@ class QrCodeBottomSheet extends StatelessWidget {
 
                   const SizedBox(height: 10),
 
-                  // TEXT: INSTRUCTION
                   const Text(
                     'show this QR code to the scanner',
                     style: TextStyle(
@@ -240,39 +256,55 @@ class QrCodeBottomSheet extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         // ==========================================
-                        // PERUBAHAN: IMAGE.NETWORK DENGAN LOADING
+                        // PERBAIKAN: STREAM BUILDER UNTUK AUTO RELOAD
                         // ==========================================
-                        SizedBox(
-                          width: 201,
-                          height: 201,
-                          child: Image.network(
-                            qrCodeUrl,
-                            fit: BoxFit.contain,
-                            
-                            // 1. Loading Builder: Tampil saat gambar sedang didownload (Online tapi loading)
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(
-                                child: CircularProgressIndicator(
-                                  color: Color(0xFFFA0007), // Warna Merah sesuai tema
-                                ),
-                              );
-                            },
+                        StreamBuilder<List<ConnectivityResult>>(
+                            stream: Connectivity().onConnectivityChanged,
+                            builder: (context, snapshot) {
+                              // Cek apakah ada koneksi internet
+                              final bool isConnected = snapshot.hasData &&
+                                  !snapshot.data!
+                                      .contains(ConnectivityResult.none);
 
-                            // 2. Error Builder: Tampil saat Offline atau Gagal Load
-                            // Sesuai request: Jika offline, tetap tampilkan animasi loading
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Center(
-                                child: CircularProgressIndicator(
-                                  color: Color(0xFFFA0007),
+                              return SizedBox(
+                                width: 201,
+                                height: 201,
+                                child: Image.network(
+                                  qrCodeUrl,
+
+                                  // KUNCI UTAMA:
+                                  // Key ini memaksa Image rebuild saat status koneksi berubah.
+                                  // Jika internet nyala, key berubah, gambar reload.
+                                  key: ValueKey(isConnected),
+
+                                  fit: BoxFit.contain,
+
+                                  // 1. Loading saat online (Download process)
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Color(0xFFFA0007),
+                                      ),
+                                    );
+                                  },
+
+                                  // 2. Error saat Offline/Gagal
+                                  // Tetap menampilkan loading sesuai request Anda
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Color(0xFFFA0007),
+                                      ),
+                                    );
+                                  },
                                 ),
                               );
-                            },
-                          ),
-                        ),
+                            }),
 
                         const SizedBox(height: 35),
-                        
+
                         const Text(
                           '83493',
                           style: TextStyle(
