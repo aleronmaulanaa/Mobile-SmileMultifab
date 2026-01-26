@@ -5,6 +5,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// SCAN FEATURE
+import 'screens/scan/scan_page.dart';
+
 // APP SCREENS
 import 'screens/login/login_page.dart';
 import 'screens/home_screen.dart';
@@ -81,7 +84,15 @@ class MyApp extends StatelessWidget {
           seedColor: const Color(0xFFFA0209),
         ),
       ),
+
+      // 🔑 DEFAULT ENTRY POINT
       home: const LoginPage(),
+
+      // OPTIONAL ROUTES (SCAN TETAP ADA)
+      routes: {
+        '/scan': (_) => const ScanPage(),
+        '/attendance': (_) => const AttendancePage(),
+      },
     );
   }
 }
