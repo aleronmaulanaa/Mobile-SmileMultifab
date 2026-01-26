@@ -9,10 +9,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_core
   firebase_storage
   geolocator_windows
-<<<<<<< HEAD
-=======
   permission_handler_windows
->>>>>>> origin/dev
   url_launcher_windows
 )
 

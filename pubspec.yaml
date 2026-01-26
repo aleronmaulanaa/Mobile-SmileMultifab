@@ -43,15 +43,15 @@ dependencies:
 
   # Background & Notifications
   workmanager: ^0.5.2
-
   flutter_local_notifications: ^17.0.0
+
   # Firebase
   firebase_core: ^2.27.0
   cloud_firestore: ^4.15.0
   firebase_storage: ^11.6.0
+
   # WebView
   webview_flutter: ^4.7.0
-
 
 dev_dependencies:
   flutter_test:
@@ -65,11 +65,13 @@ flutter:
 
   assets:
     - assets/icons/
+    - assets/images/attendance/
     - assets/images/
     - assets/images/home/
     - assets/images/common/
     - assets/images/pop-up/
     - assets/images/login/
+
 
 
   fonts:
