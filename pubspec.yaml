@@ -29,6 +29,7 @@ dependencies:
   google_maps_flutter: ^2.5.0
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
+  flutter_compass: ^0.8.0
 
   # Camera & Media
   camera: ^0.10.5+9
@@ -43,12 +44,10 @@ dependencies:
   # Background & Notifications
   workmanager: ^0.5.2
   flutter_local_notifications: ^17.0.0
-
   # Firebase
   firebase_core: ^2.27.0
   cloud_firestore: ^4.15.0
   firebase_storage: ^11.6.0
-
   # WebView
   webview_flutter: ^4.7.0
 
@@ -64,7 +63,7 @@ flutter:
 
   assets:
     - assets/icons/
-    - assets/images/
+    - assets/images/login/
 
 
   fonts:
