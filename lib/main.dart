@@ -5,20 +5,25 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// SCAN FEATURE
+// --- IMPORTS DARI KEDUA BRANCH ---
+
+// PROFILE FEATURE (Dari feature/profile)
+import 'package:mobile_smile_multifab/screens/main_wrapper.dart';
+
+// SCAN FEATURE (Dari dev)
 import 'screens/scan/scan_page.dart';
 
-// APP SCREENS
+// APP SCREENS (Dari dev)
 import 'screens/login/login_page.dart';
-import 'screens/home_screen.dart';
+import 'screens/home_screen.dart'; // Jika dibutuhkan
 
-// ATTENDANCE FEATURE
+// ATTENDANCE FEATURE (Dari dev)
 import 'features/attendance/pages/attendance_page.dart';
 import 'features/attendance/services/connectivity_service.dart';
 import 'features/attendance/services/notification_service.dart';
 import 'features/attendance/services/location_tracking_service.dart';
 
-// MODELS
+// MODELS (Dari dev)
 import 'features/attendance/models/attendance_history.dart';
 import 'features/attendance/models/attendance_daily_summary.dart';
 import 'features/attendance/models/location_tracking.dart';
@@ -32,6 +37,7 @@ void main() async {
   ]);
 
   // ================= FIREBASE
+  // Pastikan file google-services.json sudah ada
   await Firebase.initializeApp();
 
   // ================= NOTIFICATION
@@ -59,7 +65,7 @@ void main() async {
   runApp(const MyApp());
 }
 
-// 🔥 FUNCTION TEST FIRESTORE (AMAN)
+// 🔥 FUNCTION TEST FIRESTORE (AMAN - DIPERTAHANKAN)
 Future<void> testSendFirestore() async {
   await FirebaseFirestore.instance.collection('attendance').add({
     'userId': 'test_user',
@@ -75,21 +81,30 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Smile App',
       debugShowCheckedModeBanner: false,
+      // Menggabungkan nama aplikasi (Smile Multifab terdengar lebih lengkap)
+      title: 'Smile Multifab', 
+      
+      // Menggunakan Tema dari Dev (lebih lengkap dengan Font Poppins & Material 3)
       theme: ThemeData(
         useMaterial3: true,
         fontFamily: 'Poppins',
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFFA0209),
+          // Menggunakan kode warna terbaru dari dev
+          seedColor: const Color(0xFFFA0209), 
         ),
       ),
 
-      // 🔑 DEFAULT ENTRY POINT
+      // 🔑 LOGIC PENENTUAN HALAMAN AWAL
+      // Default ke Login Page (Flow normal aplikasi)
+      // Jika Anda ingin langsung melihat MainWrapper saat development, 
+      // ganti ini menjadi: home: const MainWrapper(),
       home: const LoginPage(),
 
-      // OPTIONAL ROUTES (SCAN TETAP ADA)
+      // REGISTER ROUTES
+      // MainWrapper ditambahkan ke routes agar bisa diakses dari Login
       routes: {
+        '/main': (_) => const MainWrapper(), // Route ke fitur baru (Profile/Wrapper)
         '/scan': (_) => const ScanPage(),
         '/attendance': (_) => const AttendancePage(),
       },

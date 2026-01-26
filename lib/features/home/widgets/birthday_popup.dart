@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -11,6 +13,10 @@ class BirthdayPopup extends StatefulWidget {
 class _BirthdayPopupState extends State<BirthdayPopup> {
   int _visibleCount = 6;
   bool _isExpanded = false;
+
+  // -- STATE DARI FEATURE/PROFILE (Konektivitas) --
+  bool _isOnline = true;
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   final List<Map<String, String>> _birthdayList = [
     {
@@ -65,6 +71,46 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _initConnectivity();
+    _connectivitySubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((List<ConnectivityResult> results) {
+      _updateConnectionStatus(results);
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _initConnectivity() async {
+    late List<ConnectivityResult> results;
+    try {
+      results = await Connectivity().checkConnectivity();
+    } catch (e) {
+      return;
+    }
+    if (!mounted) return;
+    _updateConnectionStatus(results);
+  }
+
+  void _updateConnectionStatus(List<ConnectivityResult> results) {
+    if (results.contains(ConnectivityResult.none)) {
+      setState(() {
+        _isOnline = false;
+      });
+    } else {
+      setState(() {
+        _isOnline = true;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -76,75 +122,84 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(9),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: SvgPicture.asset(
-                  'assets/icons/ic_close.svg',
-                  width: 24,
-                  height: 24,
+        // Menggunakan SingleChildScrollView dari feature/profile agar aman di layar kecil
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- Close Button ---
+              Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: SvgPicture.asset(
+                      'assets/icons/ic_close.svg',
+                      width: 24,
+                      height: 24,
+                    ),
+                  ),
                 ),
               ),
-            ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SvgPicture.asset(
-                  'assets/icons/ic_birthday.svg',
-                  width: 24,
-                  height: 24,
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  "Birthday This Month!",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 13),
-
-            RichText(
-              textAlign: TextAlign.left,
-              text: TextSpan(
-                style: const TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF575757),
-                  height: 1.2,
-                ),
+              // --- Title ---
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const TextSpan(
-                    text:
-                        "Celebrate with your friends or colleagues who\nhave birthdays this month! ",
+                  SvgPicture.asset(
+                    'assets/icons/ic_birthday.svg',
+                    width: 24,
+                    height: 24,
                   ),
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.middle,
-                    child: SvgPicture.asset(
-                      'assets/icons/ic_birthday-cake.svg',
-                      width: 19,
-                      height: 19,
+                  const SizedBox(width: 8),
+                  const Text(
+                    "Birthday This Month!",
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 23),
+              const SizedBox(height: 13),
 
-            Flexible(
-              child: GridView.builder(
+              // --- Description ---
+              RichText(
+                textAlign: TextAlign.left,
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF575757),
+                    height: 1.2,
+                  ),
+                  children: [
+                    const TextSpan(
+                      text:
+                          "Celebrate with your friends or colleagues who\nhave birthdays this month! ",
+                    ),
+                    WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: SvgPicture.asset(
+                        'assets/icons/ic_birthday-cake.svg',
+                        width: 19,
+                        height: 19,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 23),
+
+              // --- Grid View ---
+              GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _visibleCount > _birthdayList.length
@@ -165,31 +220,36 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
                   );
                 },
               ),
-            ),
 
-            if (!_isExpanded) ...[
-              const SizedBox(height: 0),
-
-              Center(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _visibleCount = 9;
-                      _isExpanded = true;
-                    });
-                  },
-                  child: const Text(
-                    "Lihat Lainnya",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1F63C7),
+              // --- Load More Button ---
+              // Logika: Jika belum expand dan data lebih dari 6, tampilkan tombol
+              if (!_isExpanded && _birthdayList.length > 6) ...[
+                const SizedBox(height: 10),
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        // Tampilkan semua data jika di-klik
+                        _visibleCount = _birthdayList.length;
+                        _isExpanded = true;
+                      });
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        "Lihat Lainnya",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1F63C7),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -211,25 +271,8 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
             color: Colors.grey,
           ),
           child: ClipOval(
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              width: 65,
-              height: 65,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Image.asset(
-                  'assets/images/home/default-user.jpg',
-                  fit: BoxFit.cover,
-                );
-              },
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  'assets/images/home/default-user.jpg',
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
+            // Menggunakan helper method _buildImage yang lebih robust (dari profile)
+            child: _buildImage(imageUrl),
           ),
         ),
         const SizedBox(height: 13),
@@ -256,6 +299,40 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
           ),
         ),
       ],
+    );
+  }
+
+  // Method bantuan untuk manajemen gambar & koneksi (dari feature/profile)
+  Widget _buildImage(String url) {
+    if (!_isOnline) {
+      // Pastikan path asset ini sesuai dengan struktur project Anda
+      return Image.asset(
+        'assets/images/common/default-user.jpg', 
+        fit: BoxFit.cover,
+      );
+    }
+
+    // Membersihkan URL dari double slash yang tidak perlu
+    final String cleanUrl = url.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
+
+    return Image.network(
+      cleanUrl,
+      fit: BoxFit.cover,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded) return child;
+        return AnimatedOpacity(
+          opacity: frame == null ? 0 : 1,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+          child: child,
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return Image.asset(
+          'assets/images/common/default-user.jpg',
+          fit: BoxFit.cover,
+        );
+      },
     );
   }
 }

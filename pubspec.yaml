@@ -13,15 +13,15 @@ dependencies:
 
   # UI
   cupertino_icons: ^1.0.8
-  flutter_svg: ^2.0.9
+  # Menggunakan versi terbaru (2.2.0) dari feature/profile
+  flutter_svg: ^2.2.0
 
   # Networking
   dio: ^5.4.0
   connectivity_plus: ^6.0.3
   url_launcher: ^6.3.2
 
-
- # Permissions & Scan
+  # Permissions & Scan
   permission_handler: ^11.3.1
   mobile_scanner: ^5.1.1
 
@@ -54,7 +54,6 @@ dependencies:
   # WebView
   webview_flutter: ^4.7.0
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -70,13 +69,14 @@ flutter:
     - assets/images/scan/
     - assets/images/attendance/
     - assets/images/
-    - assets/images/home/
+    # Folder assets digabungkan dari kedua branch
     - assets/images/common/
+    - assets/images/profile/
+    - assets/images/home/
     - assets/images/pop-up/
     - assets/images/login/
 
-
-
+  # Fonts diaktifkan (uncommented) karena digunakan di main.dart
   fonts:
     - family: Poppins
       fonts:
