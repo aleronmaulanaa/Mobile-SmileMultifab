@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class BaseBackgroundScaffold extends StatelessWidget {
-  // Widget konten spesifik (misal: List Menu di Home, atau Card di Profile)
+
   final Widget child;
   
-  // Status koneksi yang diterima dari Screen induk
   final bool isOnline;
 
   const BaseBackgroundScaffold({
@@ -16,7 +15,7 @@ class BaseBackgroundScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Setup Warna & Teks Status berdasarkan isOnline
+
     final String statusText = isOnline ? "Online" : "Offline";
     
     final Color statusCircleColor =
@@ -25,17 +24,14 @@ class BaseBackgroundScaffold extends StatelessWidget {
     final Color statusTextColor =
         isOnline ? const Color(0xFF65D340) : const Color(0xFFD34040);
 
-    // 2. Ambil ukuran layar untuk keperluan background
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return SizedBox.expand(
       child: Stack(
         children: [
-          // ===========================
-          // LAYER 1: BACKGROUND GRADIENT & CLIPPER
-          // ===========================
+
           ClipPath(
-            clipper: _HeaderCurveClipper(), // Clipper ada di bawah file ini
+            clipper: _HeaderCurveClipper(),
             child: Container(
               width: double.infinity,
               height: screenHeight * 0.45,
@@ -54,22 +50,14 @@ class BaseBackgroundScaffold extends StatelessWidget {
             ),
           ),
 
-          // ===========================
-          // LAYER 2: KONTEN HALAMAN (Home/Profile)
-          // ===========================
-          // Kita letakkan child di sini agar berada di atas background
-          // tapi di bawah Header (Logo).
           child,
 
-          // ===========================
-          // LAYER 3: TOP HEADER (LOGO, NOTIF, STATUS)
-          // ===========================
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
-              // Warna background header disesuaikan dengan kode asli
+
               color: const Color(0xFFFAFAFA), 
               child: SafeArea(
                 bottom: false,
@@ -79,7 +67,7 @@ class BaseBackgroundScaffold extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // --- LOGO ---
+
                       Image.asset(
                         'assets/images/common/logo_smile_v2.png',
                         height: 58,
@@ -96,10 +84,9 @@ class BaseBackgroundScaffold extends StatelessWidget {
                         },
                       ),
 
-                      // --- KANAN (NOTIF & STATUS) ---
                       Row(
                         children: [
-                          // Icon Notifikasi
+
                           Stack(
                             clipBehavior: Clip.none,
                             children: [
@@ -125,7 +112,6 @@ class BaseBackgroundScaffold extends StatelessWidget {
                           
                           const SizedBox(width: 16),
 
-                          // Indikator Status (Online/Offline)
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Column(
@@ -176,9 +162,6 @@ class BaseBackgroundScaffold extends StatelessWidget {
   }
 }
 
-// ===========================
-// CLIPPER CLASS (Privat)
-// ===========================
 class _HeaderCurveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

@@ -29,13 +29,11 @@ class SuccessNotificationCard extends StatelessWidget {
           topRight: Radius.circular(40),
         ),
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            // Gambar Gembok
             const SizedBox(height: 79),
             Image.asset(
-              'assets/images/profile/popup_lock.png', // Pastikan path benar
+              'assets/images/profile/popup_lock.png',
               width: 73,
               height: 73,
               fit: BoxFit.contain,
@@ -43,7 +41,6 @@ class SuccessNotificationCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Text Password updated
             const Text(
               'Password updated',
               textAlign: TextAlign.center,
@@ -56,7 +53,6 @@ class SuccessNotificationCard extends StatelessWidget {
               ),
             ),
 
-            // Row: successfully + Checklist Icon
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -72,7 +68,7 @@ class SuccessNotificationCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 7),
                 SvgPicture.asset(
-                  'assets/icons/checklist_popup.svg', // Pastikan path benar
+                  'assets/icons/checklist_popup.svg',
                   width: 36,
                   height: 36,
                 ),

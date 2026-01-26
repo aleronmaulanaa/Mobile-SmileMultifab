@@ -12,7 +12,6 @@ class ProfileHeaderCard extends StatelessWidget {
     this.onQrTap,
   });
 
-  // URL QR Code
   final String qrCodeUrl =
       "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=83493";
 
@@ -39,9 +38,6 @@ class ProfileHeaderCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(11),
           child: Row(
             children: [
-              // ==============================
-              // BAGIAN KIRI: CARD MERAH (PROFILE)
-              // ==============================
               Expanded(
                 child: Container(
                   padding:
@@ -55,7 +51,6 @@ class ProfileHeaderCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      // FOTO PROFILE
                       Container(
                         width: 73,
                         height: 73,
@@ -70,7 +65,6 @@ class ProfileHeaderCard extends StatelessWidget {
 
                       const SizedBox(width: 10),
 
-                      // TEXT SECTION
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,9 +111,6 @@ class ProfileHeaderCard extends StatelessWidget {
                 ),
               ),
 
-              // ==============================
-              // BAGIAN KANAN: CARD PUTIH (QR CODE)
-              // ==============================
               GestureDetector(
                 onTap: onQrTap,
                 behavior: HitTestBehavior.opaque,
@@ -131,23 +122,17 @@ class ProfileHeaderCard extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // ---------------------------------------------
-                      // MODIFIKASI: QR CODE DENGAN KEY UNTUK RELOAD
-                      // ---------------------------------------------
+
                       SizedBox(
                         width: 57,
                         height: 57,
                         child: Image.network(
                           qrCodeUrl,
 
-                          // PERBAIKAN PENTING DISINI:
-                          // Key ini memaksa Flutter membuat ulang widget Image saat status internet berubah.
-                          // Sehingga errorBuilder akan hilang dan gambar mencoba dimuat ulang.
                           key: ValueKey(isOnline),
 
                           fit: BoxFit.contain,
 
-                          // 1. Loading State
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
                             return const Padding(
@@ -159,12 +144,10 @@ class ProfileHeaderCard extends StatelessWidget {
                             );
                           },
 
-                          // 2. Offline/Error State
                           errorBuilder: (context, error, stackTrace) {
                             return Stack(
                               alignment: Alignment.center,
                               children: [
-                                // Layer 1: Gambar Aset Lama (Sangat Transparan/Blur)
                                 Opacity(
                                   opacity: 0.1,
                                   child: Image.asset(
@@ -172,7 +155,6 @@ class ProfileHeaderCard extends StatelessWidget {
                                     fit: BoxFit.contain,
                                   ),
                                 ),
-                                // Layer 2: Icon Indikasi Offline
                                 const Icon(
                                   Icons.cloud_off_rounded,
                                   size: 24,
@@ -183,7 +165,6 @@ class ProfileHeaderCard extends StatelessWidget {
                           },
                         ),
                       ),
-                      // ---------------------------------------------
 
                       const SizedBox(height: 3),
                       const Text(
@@ -206,10 +187,8 @@ class ProfileHeaderCard extends StatelessWidget {
     );
   }
 
-  // --- LOGIKA BUILD IMAGE PROFILE ---
   Widget _buildProfileImage() {
-    // Bagian ini sudah aman karena menggunakan IF statement
-    // yang secara otomatis berganti widget saat isOnline berubah.
+
     if (!isOnline) {
       return Image.asset(
         'assets/images/common/default-user.jpg',
