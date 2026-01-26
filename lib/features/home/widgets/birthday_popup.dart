@@ -14,6 +14,7 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
   int _visibleCount = 6;
   bool _isExpanded = false;
 
+  // -- STATE DARI FEATURE/PROFILE (Konektivitas) --
   bool _isOnline = true;
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
@@ -121,11 +122,13 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(9),
         ),
+        // Menggunakan SingleChildScrollView dari feature/profile agar aman di layar kecil
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // --- Close Button ---
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
@@ -142,6 +145,7 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
                 ),
               ),
 
+              // --- Title ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -164,6 +168,7 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
 
               const SizedBox(height: 13),
 
+              // --- Description ---
               RichText(
                 textAlign: TextAlign.left,
                 text: TextSpan(
@@ -193,6 +198,7 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
 
               const SizedBox(height: 23),
 
+              // --- Grid View ---
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -215,12 +221,15 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
                 },
               ),
 
+              // --- Load More Button ---
+              // Logika: Jika belum expand dan data lebih dari 6, tampilkan tombol
               if (!_isExpanded && _birthdayList.length > 6) ...[
                 const SizedBox(height: 10),
                 Center(
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
+                        // Tampilkan semua data jika di-klik
                         _visibleCount = _birthdayList.length;
                         _isExpanded = true;
                       });
@@ -262,6 +271,7 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
             color: Colors.grey,
           ),
           child: ClipOval(
+            // Menggunakan helper method _buildImage yang lebih robust (dari profile)
             child: _buildImage(imageUrl),
           ),
         ),
@@ -292,21 +302,22 @@ class _BirthdayPopupState extends State<BirthdayPopup> {
     );
   }
 
+  // Method bantuan untuk manajemen gambar & koneksi (dari feature/profile)
   Widget _buildImage(String url) {
-
     if (!_isOnline) {
+      // Pastikan path asset ini sesuai dengan struktur project Anda
       return Image.asset(
-        'assets/images/common/default-user.jpg',
+        'assets/images/common/default-user.jpg', 
         fit: BoxFit.cover,
       );
     }
 
+    // Membersihkan URL dari double slash yang tidak perlu
     final String cleanUrl = url.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
 
     return Image.network(
       cleanUrl,
       fit: BoxFit.cover,
-
       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded) return child;
         return AnimatedOpacity(
