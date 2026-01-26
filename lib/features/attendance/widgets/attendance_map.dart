@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_compass/flutter_compass.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -15,7 +18,6 @@ class AttendanceMap extends StatefulWidget {
 }
 
 class _AttendanceMapState extends State<AttendanceMap> {
-  
   static const LatLng _officeLocation = LatLng(
     -6.286633302601647,
     106.81804195921436,
@@ -26,35 +28,48 @@ class _AttendanceMapState extends State<AttendanceMap> {
   LatLng? _userLocation;
   bool _isInsideRadius = false;
 
+  double _heading = 0; // ⬅️ ARAH HP (WAJIB)
+
   final Distance _distance = const Distance();
   final MapController _mapController = MapController();
 
   StreamSubscription<Position>? _positionSubscription;
+  StreamSubscription<CompassEvent>? _compassSubscription;
 
   @override
   void initState() {
     super.initState();
     _initLocation();
+    _initCompass(); // ⬅️ WAJIB
   }
 
+  // ================= KOMPAS (WAJIB) =================
+  void _initCompass() {
+    _compassSubscription =
+        FlutterCompass.events?.listen((event) {
+      if (!mounted || event.heading == null) return;
+      setState(() {
+        _heading = event.heading!;
+      });
+    });
+  }
+
+  // ================= GPS (TIDAK DIUBAH) =================
   Future<void> _initLocation() async {
     final hasPermission =
         await LocationService.handlePermission();
     if (!hasPermission) return;
 
-    
     final lastPosition =
         await LocationService.getLastKnownLocation();
     if (lastPosition != null) {
       _updateUser(lastPosition);
     }
 
-    
     final currentPosition =
         await LocationService.getCurrentLocation();
     _updateUser(currentPosition);
 
-    
     _positionSubscription =
         LocationService.getPositionStream()
             .listen(_updateUser);
@@ -76,7 +91,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
       _isInsideRadius = distanceToOffice <= _radiusMeter;
     });
 
-    
     _mapController.move(
       userLatLng,
       _mapController.camera.zoom,
@@ -86,6 +100,7 @@ class _AttendanceMapState extends State<AttendanceMap> {
   @override
   void dispose() {
     _positionSubscription?.cancel();
+    _compassSubscription?.cancel();
     super.dispose();
   }
 
@@ -103,7 +118,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
         ),
       ),
       children: [
-  
         TileLayer(
           urlTemplate:
               'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -111,7 +125,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
               'com.example.mobile_smile_multifab',
         ),
 
-     
         CircleLayer(
           circles: [
             CircleMarker(
@@ -129,10 +142,9 @@ class _AttendanceMapState extends State<AttendanceMap> {
           ],
         ),
 
-       
         MarkerLayer(
           markers: [
-        
+            // ===== OFFICE =====
             Marker(
               point: _officeLocation,
               width: 40,
@@ -144,23 +156,86 @@ class _AttendanceMapState extends State<AttendanceMap> {
               ),
             ),
 
-          
-          if (_userLocation != null)
-            Marker(
-              point: _userLocation!,
-              width: 40,
-              height: 40,
-              child: Image.asset(
-                'assets/images/attendance/img_people.png',
-                width: 36,
-                height: 36,
-                fit: BoxFit.contain,
-              ),
-            ),
+            // ===== USER (GOOGLE MAPS STYLE) =====
+            if (_userLocation != null)
+              Marker(
+                point: _userLocation!,
+                width: 72,
+                height: 72,
+                child: Transform.rotate(
+                  angle: _heading * pi / 180,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // 1️⃣ LINGKARAN PUTIH (AKURASI)
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.15),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
 
+                      // 2️⃣ VISION / CONE (ARAH HP)
+                      ClipPath(
+                        clipper: _ConeClipper(),
+                        child: Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            gradient: RadialGradient(
+                              colors: [
+                                const Color(0xFF1A73E8)
+                                    .withOpacity(0.35),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // 3️⃣ TITIK BIRU
+                      Container(
+                        width: 14,
+                        height: 14,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A73E8),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Colors.black.withOpacity(0.4),
+                              blurRadius: 6,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
       ],
     );
   }
+}
+
+// ================= CONE CLIPPER =================
+class _ConeClipper extends CustomClipper<ui.Path> {
+  @override
+  ui.Path getClip(Size size) {
+    final path = ui.Path();
+    path.moveTo(size.width / 2, size.height / 2);
+    path.lineTo(0, size.height);
+    path.lineTo(size.width, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<ui.Path> oldClipper) =>
+      false;
 }

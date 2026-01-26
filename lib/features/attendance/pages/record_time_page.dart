@@ -191,10 +191,23 @@ class RecordTimePage extends StatefulWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Record Attendance"),
-        centerTitle: true,
-      ),
+appBar: AppBar(
+  backgroundColor: const Color(0xFF991B1C),
+  elevation: 6,
+  shadowColor: Colors.black.withOpacity(0.5),
+  centerTitle: true,
+  title: const Text(
+    'Record Attendance',
+    style: TextStyle(
+      fontFamily: 'Poppins',
+      fontSize: 20,
+      fontWeight: FontWeight.w600, // SemiBold
+      color: Colors.white,
+      letterSpacing: 0.5,
+    ),
+  ),
+),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -448,15 +461,28 @@ class RecordTimePage extends StatefulWidget {
                                 _showSuccessDialog();
                               }
                             : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              _canSubmit ? Colors.green : Colors.grey,
-                          foregroundColor: Colors.white,
-                          disabledForegroundColor: Colors.white70,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            _canSubmit ? Colors.green : Colors.grey,
+                        foregroundColor: Colors.white,
+                        disabledForegroundColor: Colors.white70,
+
+                       
+                        elevation: 12,
+                        shadowColor: Colors.black.withOpacity(0.8),
+
+                       
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
                         ),
+
+                        
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 24,
+                        ),
+                      ),
+
                       ),
                     ),
                   ],

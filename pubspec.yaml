@@ -29,6 +29,7 @@ dependencies:
   google_maps_flutter: ^2.5.0
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
+  flutter_compass: ^0.8.0
 
   # Camera & Media
   camera: ^0.10.5+9

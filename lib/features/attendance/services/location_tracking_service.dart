@@ -12,28 +12,23 @@ class LocationTrackingService {
   static Timer? _timer;
   static bool _isRunning = false;
 
-  // ===============================
-  // JAM KERJA (MODE TESTING)
-  // 13.00 – 19.00
-  // ===============================
   static bool _isWorkingHour() {
     final now = DateTime.now();
-    return now.hour >= 13 && now.hour < 19;
+
+ 
+    return (now.hour >= 8 && now.hour < 12) ||
+           (now.hour >= 13 && now.hour < 17);
   }
 
-  // ===============================
-  // TYPE ABSENSI (MODE TESTING)
-  // 13.00 – 15.59 → checkin
-  // 16.00 – 19.00 → checkout
-  // ===============================
+
   static String? _attendanceTypeByTime() {
     final hour = DateTime.now().hour;
 
-    if (hour >= 13 && hour < 16) {
+    if (hour >= 8 && hour < 12) {
       return 'checkin';
     }
 
-    if (hour >= 16 && hour < 19) {
+    if (hour >= 13 && hour < 17) {
       return 'checkout';
     }
 
@@ -47,10 +42,8 @@ class LocationTrackingService {
 
     await NotificationService.showGpsTrackingNotification();
 
-    // Jalan langsung sekali
     await _trackOnce();
 
-    // Tracking tiap 5 menit
     _timer = Timer.periodic(
       const Duration(minutes: 5),
       (_) async {
@@ -68,7 +61,6 @@ class LocationTrackingService {
   }
 
   static Future<void> _trackOnce() async {
-    // Stop otomatis di luar jam testing
     if (!_isWorkingHour()) return;
 
     try {
@@ -78,15 +70,11 @@ class LocationTrackingService {
       final bool isOnline =
           ConnectivityService.currentStatus;
 
-      final String? type = _attendanceTypeByTime();
-      if (type == null) return;
-
       if (isOnline) {
-        await AttendanceOnlineService.submitAttendance(
+        await AttendanceOnlineService.submitTracking(
           userId: 'test_user',
           latitude: position.latitude,
           longitude: position.longitude,
-          type: type,
         );
       } else {
         await TrackingBufferService.add(

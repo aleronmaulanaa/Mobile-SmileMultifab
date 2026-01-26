@@ -17,7 +17,7 @@ class AttendanceOnlineService {
           'status': 'online',
           'latitude': latitude,
           'longitude': longitude,
-          'timestamp': Timestamp.fromDate(DateTime.now()), // 🔥 FIX
+          'timestamp': Timestamp.fromDate(DateTime.now()),
           'photoStatus': 'pending',
           'photoUrl': null,
         });
