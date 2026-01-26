@@ -275,7 +275,7 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
 
   // URL Foto Dummy
   final String _photoUrl =
-      "https://scontent-cgk2-1.cdninstagram.com/v/t51.2885-19/583200018_18367273294084132_5580250522120237473_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=scontent-cgk2-1.cdninstagram.com&_nc_cat=104&_nc_oc=Q6cZ2QFUHV5MIMHQpwgpukY2oKbL4xJSdljTuioWaEMmkbDlefuKfo3TT1WJutYLmDiDUYA&_nc_ohc=doa6If38FpoQ7kNvwGbQ-30&_nc_gid=IffLnhmnXQE7k1TC0oEEwA&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_Afo-q0wEwJnbQeErrNBpjefyIJ0asVmsjQsMjIrcQc86ew&oe=69761B8F&_nc_sid=7a9f4b";
+      "https://scontent-cgk2-1.cdninstagram.com/v/t51.2885-19/583200018_18367273294084132_5580250522120237473_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=scontent-cgk2-1.cdninstagram.com&_nc_cat=104&_nc_oc=Q6cZ2QH_StjD6RoNLsmif92M8IDCvWDL1NbIIu5u_1LkwLeqRqAhSsvB5EPUysGa4FWJEAY&_nc_ohc=BFSq9vY9zXYQ7kNvwG9LaaB&_nc_gid=7uOW328noKvLAHfgky-zLg&edm=ALGbJPMBAAAA&ccb=7-5&oh=00_AfrLLe2DYfmI4M2SEVGnYPMO227KLgww5m2x3Fatv2gmzw&oe=697CB30F&_nc_sid=7d3ac5";
 
   @override
   void initState() {
