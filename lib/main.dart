@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
+import 'package:mobile_smile_multifab/screens/home_screen.dart';
 import 'screens/login/login_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]).then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
