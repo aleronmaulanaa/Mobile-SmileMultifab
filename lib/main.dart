@@ -1,20 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// APP SCREENS
+import 'screens/login/login_page.dart';
+import 'screens/home_screen.dart';
+
+// ATTENDANCE FEATURE
 import 'features/attendance/pages/attendance_page.dart';
 import 'features/attendance/services/connectivity_service.dart';
 import 'features/attendance/services/notification_service.dart';
 import 'features/attendance/services/location_tracking_service.dart';
 
+// MODELS
 import 'features/attendance/models/attendance_history.dart';
 import 'features/attendance/models/attendance_daily_summary.dart';
 import 'features/attendance/models/location_tracking.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ================= ORIENTATION
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   // ================= FIREBASE
   await Firebase.initializeApp();
@@ -39,8 +51,6 @@ void main() async {
   // ================= OPEN BOX
   await Hive.openBox<AttendanceHistory>('attendance_history');
   await Hive.openBox<AttendanceDailySummary>('attendance_daily_summary');
-
-  // 🔥 BUFFER TRACKING (HIDDEN – USER TIDAK BISA LIHAT)
   await Hive.openBox<LocationTracking>('tracking_buffer');
 
   runApp(const MyApp());
@@ -61,14 +71,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      title: 'Smile App',
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      theme: ThemeData(
+        useMaterial3: true,
+        fontFamily: 'Poppins',
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFFA0209),
+        ),
+      ),
+      home: const LoginPage(),
     );
   }
 }
 
+// ==================
+// PAGE TEST (TETAP ADA, TIDAK DIHAPUS)
+// ==================
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -90,9 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -114,9 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await testSendFirestore();
-        },
+        onPressed: testSendFirestore,
         child: const Icon(Icons.cloud_upload),
       ),
     );
