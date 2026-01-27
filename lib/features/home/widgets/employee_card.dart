@@ -158,13 +158,13 @@ class _EmployeeCardState extends State<EmployeeCard> {
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Image.asset(
-                          'assets/images/home/default-user.jpg',
+                          'assets/images/common/default-user.jpg',
                           fit: BoxFit.cover,
                         );
                       },
                       errorBuilder: (context, error, stackTrace) {
                         return Image.asset(
-                          'assets/images/home/default-user.jpg',
+                          'assets/images/common/default-user.jpg',
                           fit: BoxFit.cover,
                         );
                       },

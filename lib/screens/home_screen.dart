@@ -6,7 +6,7 @@ import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/banner_carousel.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/home_menu.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/news_section.dart';
-import 'package:mobile_smile_multifab/features/home/widgets/custom_bottom_navbar.dart';
+// import 'package:mobile_smile_multifab/features/home/widgets/custom_bottom_navbar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -223,12 +223,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          const Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: CustomBottomNavBar(),
-          ),
+          // const Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: CustomBottomNavBar(),
+          // ),
         ],
       ),
     );
