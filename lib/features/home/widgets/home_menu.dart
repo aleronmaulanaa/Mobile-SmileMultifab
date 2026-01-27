@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../../features/attendance/pages/attendance_page.dart';
 
 class HomeMenu extends StatelessWidget {
   const HomeMenu({super.key});
@@ -17,7 +18,6 @@ class HomeMenu extends StatelessWidget {
 
     return Column(
       children: [
-
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 0),
           child: Row(
@@ -31,7 +31,6 @@ class HomeMenu extends StatelessWidget {
                   color: Colors.black,
                 ),
               ),
-
               GestureDetector(
                 onTap: () {
                   _showMoreAppsDialog(context);
@@ -50,9 +49,11 @@ class HomeMenu extends StatelessWidget {
             ],
           ),
         ),
-
         const SizedBox(height: 16),
 
+        /// ============================
+        /// MENU UTAMA (DITAMBAH ACTION)
+        /// ============================
         GridView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           shrinkWrap: true,
@@ -60,17 +61,28 @@ class HomeMenu extends StatelessWidget {
           itemCount: mainMenuItems.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-
             mainAxisSpacing: 0,
-
             crossAxisSpacing: 10,
-
             childAspectRatio: 1.0,
           ),
           itemBuilder: (context, index) {
-            return _buildMenuItem(
-              title: mainMenuItems[index]['title']!,
-              iconPath: mainMenuItems[index]['icon']!,
+            final item = mainMenuItems[index];
+
+            return GestureDetector(
+              onTap: () {
+                if (item['title'] == 'Kehadiran') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AttendancePage(),
+                    ),
+                  );
+                }
+              },
+              child: _buildMenuItem(
+                title: item['title']!,
+                iconPath: item['icon']!,
+              ),
             );
           },
         ),
@@ -112,9 +124,10 @@ class HomeMenu extends StatelessWidget {
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return const SizedBox(
-                          width: 15,
-                          height: 15,
-                          child: CircularProgressIndicator(strokeWidth: 2));
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      );
                     },
                     errorBuilder: (context, error, stackTrace) {
                       return const Icon(Icons.broken_image, color: Colors.grey);
@@ -126,15 +139,16 @@ class HomeMenu extends StatelessWidget {
                     height: 39,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, stackTrace) {
-                      return const Icon(Icons.apps,
-                          color: Colors.grey, size: 24);
+                      return const Icon(
+                        Icons.apps,
+                        color: Colors.grey,
+                        size: 24,
+                      );
                     },
                   ),
           ),
         ),
-
         const SizedBox(height: 11),
-
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2.0),
           child: FittedBox(
@@ -158,10 +172,7 @@ class HomeMenu extends StatelessWidget {
 
   void _showMoreAppsDialog(BuildContext context) {
     final List<Map<String, String>> moreAppsItems = [
-      {
-        'title': 'Reimburse Medical',
-        'icon': 'assets/images/pop-up/request.png'
-      },
+      {'title': 'Reimburse Medical', 'icon': 'assets/images/pop-up/request.png'},
       {'title': 'E-Payslip', 'icon': 'assets/images/pop-up/payslip.png'},
       {
         'title': 'Perjalanan Dinas',
@@ -192,8 +203,12 @@ class HomeMenu extends StatelessWidget {
           child: Container(
             width: 407,
             height: 259,
-            padding:
-                const EdgeInsets.only(top: 10, bottom: 10, left: 16, right: 16),
+            padding: const EdgeInsets.only(
+              top: 10,
+              bottom: 10,
+              left: 16,
+              right: 16,
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(9),
@@ -209,22 +224,17 @@ class HomeMenu extends StatelessWidget {
                     height: 24,
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
                 Expanded(
                   child: GridView.builder(
                     padding: EdgeInsets.zero,
-
                     physics: const NeverScrollableScrollPhysics(),
-
                     itemCount: moreAppsItems.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 0,
-
                       childAspectRatio: 1.1,
                     ),
                     itemBuilder: (context, index) {
