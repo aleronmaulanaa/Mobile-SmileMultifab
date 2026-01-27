@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'forgot_password_page.dart';
-import '../../features/home/screens/home_screen.dart';
+import 'package:mobile_smile_multifab/screens/main_wrapper.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,8 +23,7 @@ class _LoginPageState extends State<LoginPage> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
-        resizeToAvoidBottomInset:
-            false,
+        resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
           child: SizedBox(
             height: screenHeight,
@@ -38,7 +37,6 @@ class _LoginPageState extends State<LoginPage> {
                         Container(color: Colors.white),
                   ),
                 ),
-
                 Positioned(
                   top: 50,
                   left: 24,
@@ -49,7 +47,6 @@ class _LoginPageState extends State<LoginPage> {
                     fit: BoxFit.contain,
                   ),
                 ),
-
                 Positioned(
                   bottom: 120,
                   left: 0,
@@ -78,16 +75,12 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ),
-
                 Positioned(
                   top: 200,
                   left: 0,
                   right: 0,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-
-
-
                     children: [
                       const Text(
                         'Login',
@@ -109,7 +102,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-
                       _buildLoginCard(),
                     ],
                   ),
@@ -160,9 +152,7 @@ class _LoginPageState extends State<LoginPage> {
             iconPath: 'assets/icons/ic_email.svg',
             isPassword: false,
           ),
-
           const SizedBox(height: 18),
-
           const Text(
             'Password',
             style: TextStyle(
@@ -178,9 +168,7 @@ class _LoginPageState extends State<LoginPage> {
             iconPath: 'assets/icons/ic_password.svg',
             isPassword: true,
           ),
-
           const SizedBox(height: 12),
-
           GestureDetector(
             onTap: () {
               setState(() {
@@ -223,9 +211,7 @@ class _LoginPageState extends State<LoginPage> {
               ],
             ),
           ),
-
           const Spacer(),
-
           Center(
             child: SizedBox(
               width: 262,
@@ -238,15 +224,16 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   elevation: 0,
                 ),
-                onPressed: ()  {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const HomeScreen(),
-                          ),
-                        );
-                      },
-                  child: const Text(
+                onPressed: () {
+                  // Navigator.pushReplacement(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (_) => const HomeScreen(),
+                  //   ),
+                  // );
+                  Navigator.pushReplacementNamed(context, '/main');
+                },
+                child: const Text(
                   'Login',
                   style: TextStyle(
                     fontFamily: 'Poppins',
@@ -258,9 +245,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-
           const SizedBox(height: 13),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -274,7 +259,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(width: 4),
-
               GestureDetector(
                 onTap: () {
                   Navigator.push(

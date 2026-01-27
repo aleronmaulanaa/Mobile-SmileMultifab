@@ -178,10 +178,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_smile_multifab/screens/main_wrapper.dart'; // Import ini PENTING
 
 // SCAN FEATURE (Dari dev)
-import 'screens/scan/scan_page.dart';
+import 'features/scan/scan_page.dart';
 
 // APP SCREENS (Dari dev)
-import 'screens/login/login_page.dart';
+import 'features/login/login_page.dart';
 // import 'screens/home_screen.dart'; // Tidak wajib di main jika sudah ada di wrapper
 
 // ATTENDANCE FEATURE (Dari dev)

@@ -16,7 +16,6 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-
 //     const double navHeight = 78.0;
 
 //     final double touchAreaHeight = showBirthday ? 160.0 : 120.0;
@@ -38,7 +37,6 @@
 //         alignment: Alignment.bottomCenter,
 //         clipBehavior: Clip.none,
 //         children: [
-
 //           Positioned(
 //             bottom: 0,
 //             left: 0,
@@ -52,7 +50,6 @@
 //               child: Row(
 //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //                 children: [
-
 //                   _buildNavIcon(
 //                     label: "HOME",
 //                     iconPath: selectedIndex == 0
@@ -62,7 +59,6 @@
 //                     isActive: selectedIndex == 0,
 //                     onTap: () => onItemTapped(0),
 //                   ),
-
 //                   _buildNavIcon(
 //                     label: "PROFILE",
 //                     iconPath: selectedIndex == 1
@@ -76,7 +72,6 @@
 //               ),
 //             ),
 //           ),
-
 //           Positioned(
 //             bottom: scanBottomPos,
 //             child: Stack(
@@ -123,7 +118,6 @@
 //               ],
 //             ),
 //           ),
-
 //           if (showBirthday)
 //             Positioned(
 //               left: 24,
