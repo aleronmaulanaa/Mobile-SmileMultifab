@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'forgot_password_page.dart';
+import '../../features/home/screens/home_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -84,6 +85,9 @@ class _LoginPageState extends State<LoginPage> {
                   right: 0,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
+
+
+
                     children: [
                       const Text(
                         'Login',
@@ -234,9 +238,15 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   elevation: 0,
                 ),
-                onPressed: () {
-                },
-                child: const Text(
+                onPressed: ()  {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const HomeScreen(),
+                          ),
+                        );
+                      },
+                  child: const Text(
                   'Login',
                   style: TextStyle(
                     fontFamily: 'Poppins',

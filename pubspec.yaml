@@ -69,22 +69,21 @@ flutter:
     - assets/images/scan/
     - assets/images/attendance/
     - assets/images/
-    # Folder assets digabungkan dari kedua branch
     - assets/images/common/
     - assets/images/profile/
     - assets/images/home/
     - assets/images/pop-up/
     - assets/images/login/
 
-  # Fonts diaktifkan (uncommented) karena digunakan di main.dart
-  fonts:
-    - family: Poppins
-      fonts:
-        - asset: assets/fonts/Poppins-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/Poppins-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Poppins-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Poppins-Bold.ttf
-          weight: 700
+ 
+  # fonts:
+  #   - family: Poppins
+  #     fonts:
+  #       - asset: assets/fonts/Poppins-Regular.ttf
+  #         weight: 400
+  #       - asset: assets/fonts/Poppins-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/Poppins-SemiBold.ttf
+  #         weight: 600
+  #       - asset: assets/fonts/Poppins-Bold.ttf
+  #         weight: 700
