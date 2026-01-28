@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'forgot_password_page.dart';
 import 'package:mobile_smile_multifab/screens/main_wrapper.dart';
+import '../../services/auth_service.dart';
+import '../../core/utils/token_storage.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,6 +16,19 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _rememberMe = false;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }   
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +167,7 @@ class _LoginPageState extends State<LoginPage> {
             hintText: 'email@multifab.com',
             iconPath: 'assets/icons/ic_email.svg',
             isPassword: false,
+            controller: _emailController,
           ),
           const SizedBox(height: 18),
           const Text(
@@ -167,6 +184,7 @@ class _LoginPageState extends State<LoginPage> {
             hintText: 'Enter your password',
             iconPath: 'assets/icons/ic_password.svg',
             isPassword: true,
+            controller: _passwordController,
           ),
           const SizedBox(height: 12),
           GestureDetector(
@@ -212,40 +230,75 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const Spacer(),
-          Center(
-            child: SizedBox(
-              width: 262,
-              height: 36,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFA0007),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+
+
+Center(
+  child: SizedBox(
+    width: 262,
+    height: 36,
+    child: ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFFA0007),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        elevation: 0,
+      ),
+      onPressed: _isLoading
+          ? null
+          : () async {
+              if (_emailController.text.isEmpty ||
+                  _passwordController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Email dan password wajib diisi'),
                   ),
-                  elevation: 0,
-                ),
-                onPressed: () {
-                  // Navigator.pushReplacement(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (_) => const HomeScreen(),
-                  //   ),
-                  // );
-                  Navigator.pushReplacementNamed(context, '/main');
-                },
-                child: const Text(
-                  'Login',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    color: Colors.white,
+                );
+                return;
+              }
+
+              setState(() => _isLoading = true);
+
+              try {
+                final token = await AuthService.login(
+                  email: _emailController.text.trim(),
+                  password: _passwordController.text.trim(),
+                );
+
+                await TokenStorage.saveToken(token);
+
+                if (!mounted) return;
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const MainWrapper(),
                   ),
-                ),
+                  (route) => false,
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(e.toString())),
+                );
+              } finally {
+                if (mounted) setState(() => _isLoading = false);
+              }
+            },
+      child: _isLoading
+          ? const CircularProgressIndicator(color: Colors.white)
+          : const Text(
+              'Login',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                color: Colors.white,
               ),
             ),
-          ),
-          const SizedBox(height: 13),
+    ),
+  ),
+),
+const SizedBox(height: 13),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -293,6 +346,7 @@ class _LoginPageState extends State<LoginPage> {
     required String hintText,
     required String iconPath,
     required bool isPassword,
+    required TextEditingController controller,
   }) {
     return Container(
       width: 314,
@@ -314,6 +368,7 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(width: 5),
           Expanded(
             child: TextField(
+              controller: controller,
               obscureText: isPassword ? _obscurePassword : false,
               textAlignVertical: TextAlignVertical.center,
               style: const TextStyle(
