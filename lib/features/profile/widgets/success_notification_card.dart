@@ -33,7 +33,7 @@ class SuccessNotificationCard extends StatelessWidget {
           children: [
             const SizedBox(height: 79),
             Image.asset(
-              'assets/images/profile/popup_lock.png',
+              'assets/images/common/popup_lock.png',
               width: 73,
               height: 73,
               fit: BoxFit.contain,
@@ -68,7 +68,7 @@ class SuccessNotificationCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 7),
                 SvgPicture.asset(
-                  'assets/icons/checklist_popup.svg',
+                  'assets/icons/ic_checklist_popup.svg',
                   width: 36,
                   height: 36,
                 ),

@@ -20,10 +20,10 @@ Widget build(BuildContext context) {
       child: Align(
         alignment: Alignment.bottomCenter,
         child: FractionallySizedBox(
-          widthFactor: 1.0, // 🔥 AMAN 100%
+          widthFactor: 1.0, 
           child: Container(
             constraints: const BoxConstraints(
-              maxWidth: 396, // 🔥 VISUAL TETAP 396
+              maxWidth: 396, 
               minHeight: 211,
               maxHeight: 211,
             ),
@@ -102,21 +102,19 @@ Widget _idle(BuildContext context) {
 
 Widget _detected() {
   return Row(
-    crossAxisAlignment: CrossAxisAlignment.center, // 🔥 CENTER VISUAL
+    crossAxisAlignment: CrossAxisAlignment.center, 
     children: [
-      // ===== ICON =====
       Image.asset(
         'assets/images/scan/check_scan.png',
-        width: 56, // sedikit dikecilkan biar seimbang
+        width: 56,
         height: 56,
       ),
       const SizedBox(width: 16),
 
-      // ===== CONTENT =====
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center, // 🔥 TENGAH VERTIKAL
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
               'Connected',
@@ -130,7 +128,7 @@ Widget _detected() {
             const Text(
               'Arsip ditemukan',
               style: TextStyle(
-                fontSize: 15, // 🔥 lebih ringan dari title
+                fontSize: 15,
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),

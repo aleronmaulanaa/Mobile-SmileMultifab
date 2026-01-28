@@ -201,7 +201,7 @@ appBar: AppBar(
     style: TextStyle(
       fontFamily: 'Poppins',
       fontSize: 20,
-      fontWeight: FontWeight.w600, // SemiBold
+      fontWeight: FontWeight.w600,
       color: Colors.white,
       letterSpacing: 0.5,
     ),

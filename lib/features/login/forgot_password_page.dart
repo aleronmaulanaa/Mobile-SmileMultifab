@@ -12,8 +12,7 @@ class ForgotPasswordPage extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
-        resizeToAvoidBottomInset:
-            false,
+        resizeToAvoidBottomInset: false,
         body: SingleChildScrollView(
           child: SizedBox(
             height: screenHeight,
@@ -28,7 +27,6 @@ class ForgotPasswordPage extends StatelessWidget {
                     },
                   ),
                 ),
-
                 Positioned(
                   top: 78,
                   left: 0,
@@ -58,10 +56,12 @@ class ForgotPasswordPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.arrow_back,
-                                size: 24,
+                            
+                            child: Center(
+                              child: SvgPicture.asset(
+                                'assets/icons/ic_arrow_black.svg',
+                                width: 17,
+                                height: 17,
                                 color: Colors.black,
                               ),
                             ),
@@ -71,7 +71,6 @@ class ForgotPasswordPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 Positioned(
                   top: 188,
                   left: 0,
@@ -89,7 +88,6 @@ class ForgotPasswordPage extends StatelessWidget {
                               size: 114, color: Colors.grey);
                         },
                       ),
-
                       const SizedBox(height: 24),
                       SizedBox(
                         width: 347,
@@ -118,9 +116,7 @@ class ForgotPasswordPage extends StatelessWidget {
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 21),
-
                       _buildForgotCard(context),
                     ],
                   ),
@@ -165,16 +161,12 @@ class ForgotPasswordPage extends StatelessWidget {
               color: Color(0xFF991B1C),
             ),
           ),
-
           const SizedBox(height: 8),
-
           _buildInputField(
             hintText: 'email@multifab.com',
             iconPath: 'assets/icons/ic_email.svg',
           ),
-
           const SizedBox(height: 24),
-
           Center(
             child: SizedBox(
               width: 262,
@@ -187,11 +179,29 @@ class ForgotPasswordPage extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
+                
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => const VerifyOtpPage(),
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const VerifyOtpPage(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.easeInOut;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                      transitionDuration: const Duration(milliseconds: 500),
                     ),
                   );
                 },

@@ -61,12 +61,8 @@ class _AttendancePageState extends State<AttendancePage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // ❗ TIDAK DIUBAH
                       InformationCard(),
-
                      const SizedBox(height: 14),
-
-                      // ❗ TIDAK DIUBAH
                      const ActionButtons(),
                     ],
                   ),

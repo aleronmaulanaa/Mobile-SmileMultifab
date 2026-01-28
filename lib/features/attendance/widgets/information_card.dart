@@ -20,9 +20,8 @@ class _InformationCardState extends State<InformationCard> {
 
   late String _date;
 
-  /// 🔑 DIPISAHKAN (INI FIX UTAMA)
-  bool _isInternetOnline = false;      // murni status koneksi
-  bool _isAttendanceActive = false;    // murni status absensi
+  bool _isInternetOnline = false;
+  bool _isAttendanceActive = false;
 
   String? _checkInTime;
   String? _checkOutTime;
@@ -85,13 +84,9 @@ class _InformationCardState extends State<InformationCard> {
         if (mounted) setState(() {});
       }
     } catch (_) {
-      // ignore
     }
   }
 
-  /// 🔒 READ-ONLY ATTENDANCE
-  /// ❌ TIDAK ADA WRITE
-  /// ❌ TIDAK MENGUBAH STATUS KONEKSI
   Future<void> _loadAttendanceTimes() async {
     final today = DateTime.now();
     final startOfDay = DateTime(

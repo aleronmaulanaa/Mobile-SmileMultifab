@@ -28,7 +28,7 @@ class _AttendanceMapState extends State<AttendanceMap> {
   LatLng? _userLocation;
   bool _isInsideRadius = false;
 
-  double _heading = 0; // ⬅️ ARAH HP (WAJIB)
+  double _heading = 0;
 
   final Distance _distance = const Distance();
   final MapController _mapController = MapController();
@@ -40,10 +40,9 @@ class _AttendanceMapState extends State<AttendanceMap> {
   void initState() {
     super.initState();
     _initLocation();
-    _initCompass(); // ⬅️ WAJIB
+    _initCompass();
   }
 
-  // ================= KOMPAS (WAJIB) =================
   void _initCompass() {
     _compassSubscription =
         FlutterCompass.events?.listen((event) {
@@ -54,7 +53,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
     });
   }
 
-  // ================= GPS (TIDAK DIUBAH) =================
   Future<void> _initLocation() async {
     final hasPermission =
         await LocationService.handlePermission();
@@ -144,7 +142,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
 
         MarkerLayer(
           markers: [
-            // ===== OFFICE =====
             Marker(
               point: _officeLocation,
               width: 40,
@@ -156,7 +153,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
               ),
             ),
 
-            // ===== USER (GOOGLE MAPS STYLE) =====
             if (_userLocation != null)
               Marker(
                 point: _userLocation!,
@@ -167,7 +163,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      // 1️⃣ LINGKARAN PUTIH (AKURASI)
                       Container(
                         width: 44,
                         height: 44,
@@ -176,8 +171,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
                           shape: BoxShape.circle,
                         ),
                       ),
-
-                      // 2️⃣ VISION / CONE (ARAH HP)
                       ClipPath(
                         clipper: _ConeClipper(),
                         child: Container(
@@ -194,8 +187,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
                           ),
                         ),
                       ),
-
-                      // 3️⃣ TITIK BIRU
                       Container(
                         width: 14,
                         height: 14,
@@ -223,7 +214,6 @@ class _AttendanceMapState extends State<AttendanceMap> {
   }
 }
 
-// ================= CONE CLIPPER =================
 class _ConeClipper extends CustomClipper<ui.Path> {
   @override
   ui.Path getClip(Size size) {

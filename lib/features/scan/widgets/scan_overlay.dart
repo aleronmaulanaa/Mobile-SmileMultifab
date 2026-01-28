@@ -44,13 +44,10 @@ class _ScanOverlayState extends State<ScanOverlay>
       height: ScanOverlay.boxSize,
       child: Stack(
         children: [
-          // ==== ROUNDED CORNERS ====
           _corner(top: 0, left: 0),
           _corner(top: 0, right: 0),
           _corner(bottom: 0, left: 0),
           _corner(bottom: 0, right: 0),
-
-          // ==== GREEN SCAN LINE ====
           AnimatedBuilder(
             animation: _lineAnimation,
             builder: (_, __) {
@@ -123,7 +120,6 @@ class _RoundedCornerPainter extends CustomPainter {
 
     final path = Path();
 
-    // TOP LEFT
     if (isTop && isLeft) {
       path.moveTo(radius, stroke / 2);
       path.lineTo(size.width, stroke / 2);
@@ -136,7 +132,6 @@ class _RoundedCornerPainter extends CustomPainter {
       );
     }
 
-    // TOP RIGHT
     if (isTop && isRight) {
       path.moveTo(size.width - radius, stroke / 2);
       path.lineTo(0, stroke / 2);
@@ -149,7 +144,6 @@ class _RoundedCornerPainter extends CustomPainter {
       );
     }
 
-    // BOTTOM LEFT
     if (isBottom && isLeft) {
       path.moveTo(radius, size.height - stroke / 2);
       path.lineTo(size.width, size.height - stroke / 2);
@@ -162,7 +156,6 @@ class _RoundedCornerPainter extends CustomPainter {
       );
     }
 
-    // BOTTOM RIGHT
     if (isBottom && isRight) {
       path.moveTo(size.width - radius, size.height - stroke / 2);
       path.lineTo(0, size.height - stroke / 2);

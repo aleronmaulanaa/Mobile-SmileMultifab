@@ -1,17 +1,11 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-
-// Import widget UI (Card, Carousel, Menu, News)
 import 'package:mobile_smile_multifab/features/home/widgets/employee_card.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/banner_carousel.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/home_menu.dart';
 import 'package:mobile_smile_multifab/features/home/widgets/news_section.dart';
-
-// Import Wrapper Background
 import 'package:mobile_smile_multifab/shared/widgets/base_background_scaffold.dart';
-
-// HAPUS import custom_bottom_navbar dan flutter_svg karena tidak dipakai lagi di sini
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isOnline = true;
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
-  // Data dummy
   final int testSpLevel = 3;
   final bool testSyncIcon = true;
 
@@ -71,13 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // HAPUS variabel statusText, statusCircleColor, dll karena header sudah otomatis.
 
     return BaseBackgroundScaffold(
       isOnline: _isOnline,
-      // PERBAIKAN: Langsung arahkan ke SingleChildScrollView sebagai 'child'
       child: SingleChildScrollView(
-        // Padding agar konten tidak tertutup Header (atas) & Navbar (bawah)
         padding: const EdgeInsets.only(top: 115, bottom: 125),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -101,5 +91,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-// HAPUS class HeaderCurveClipper di sini karena sudah ada di BaseBackgroundScaffold

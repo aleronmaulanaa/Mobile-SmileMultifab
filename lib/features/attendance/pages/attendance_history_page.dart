@@ -175,7 +175,6 @@ class AttendanceHistoryPage extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // FOTO
                       ClipRRect(
                         borderRadius: BorderRadius.circular(18),
                         child: Image.file(
@@ -188,7 +187,6 @@ class AttendanceHistoryPage extends StatelessWidget {
 
                       const SizedBox(width: 14),
 
-                      // INFO
                       Expanded(
                         child: Column(
                           crossAxisAlignment:

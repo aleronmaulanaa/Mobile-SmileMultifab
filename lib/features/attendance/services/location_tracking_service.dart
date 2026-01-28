@@ -86,7 +86,6 @@ class LocationTrackingService {
         );
       }
     } catch (_) {
-      // optional: log error
     }
   }
 }

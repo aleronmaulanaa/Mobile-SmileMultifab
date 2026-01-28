@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'reset_password_page.dart';
 
 class VerifyOtpPage extends StatefulWidget {
@@ -42,10 +43,8 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                         Container(color: Colors.white),
                   ),
                 ),
-
                 Positioned(
                   top: 78,
-
                   left: 0,
                   right: 0,
                   child: Center(
@@ -73,10 +72,12 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                                 ),
                               ],
                             ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.arrow_back,
-                                size: 24,
+                            
+                            child: Center(
+                              child: SvgPicture.asset(
+                                'assets/icons/ic_arrow_black.svg',
+                                width: 17,
+                                height: 17,
                                 color: Colors.black,
                               ),
                             ),
@@ -86,10 +87,8 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                     ),
                   ),
                 ),
-
                 Positioned(
                   top: 184,
-
                   left: 0,
                   right: 0,
                   child: Column(
@@ -105,9 +104,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                               size: 114, color: Colors.grey);
                         },
                       ),
-
                       const SizedBox(height: 27),
-
                       const Text(
                         'Verify OTP Now',
                         style: TextStyle(
@@ -117,9 +114,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                           color: Color(0xFFFA0209),
                         ),
                       ),
-
                       const SizedBox(height: 16),
-
                       const Text(
                         'Enter the 5-Digit Code Sent to You',
                         style: TextStyle(
@@ -129,9 +124,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                           color: Color(0xFF991B1C),
                         ),
                       ),
-
                       const SizedBox(height: 38),
-
                       SizedBox(
                         width: 377,
                         height: 69,
@@ -185,9 +178,7 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                           }),
                         ),
                       ),
-
                       const SizedBox(height: 53),
-
                       SizedBox(
                         width: 262,
                         height: 36,
@@ -199,13 +190,31 @@ class _VerifyOtpPageState extends State<VerifyOtpPage> {
                             ),
                             elevation: 0,
                           ),
+                        
                           onPressed: () {
-                            final otp = _controllers.map((e) => e.text).join();
-                            debugPrint('OTP Entered: $otp');
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => const ResetPasswordPage(),
+                              PageRouteBuilder(
+                                pageBuilder: (context, animation,
+                                        secondaryAnimation) =>
+                                    const ResetPasswordPage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  const begin = Offset(1.0, 0.0);
+                                  const end = Offset.zero;
+                                  const curve = Curves.easeInOut;
+
+                                  var tween = Tween(begin: begin, end: end)
+                                      .chain(CurveTween(curve: curve));
+                                  var offsetAnimation = animation.drive(tween);
+
+                                  return SlideTransition(
+                                    position: offsetAnimation,
+                                    child: child,
+                                  );
+                                },
+                                transitionDuration:
+                                    const Duration(milliseconds: 500),
                               ),
                             );
                           },

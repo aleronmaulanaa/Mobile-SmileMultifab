@@ -16,7 +16,6 @@ class AuthWrapper extends StatelessWidget {
     return FutureBuilder<bool>(
       future: _hasToken(),
       builder: (context, snapshot) {
-        // Loading saat cek token
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(
@@ -25,12 +24,10 @@ class AuthWrapper extends StatelessWidget {
           );
         }
 
-        // Jika token ada → langsung MainWrapper
         if (snapshot.data == true) {
           return const MainWrapper();
         }
 
-        // Jika tidak ada token → Login
         return const LoginPage();
       },
     );

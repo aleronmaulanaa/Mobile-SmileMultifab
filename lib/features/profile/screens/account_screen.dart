@@ -224,7 +224,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       iconHeight: 35,
                     ),
                     AccountInfoCard(
-                      iconPath: 'assets/icons/ic_email.svg',
+                      iconPath: 'assets/icons/ic_email-profile.svg',
                       title: 'Email',
                       value: 'richie@multifab.co.id',
                       showCopyIcon: true,

@@ -16,7 +16,6 @@ class AttendanceHistory extends HiveObject {
   @HiveField(3)
   final double longitude;
 
-  // 🔥 TAMBAHAN
   @HiveField(4)
   final bool isOnline;
 

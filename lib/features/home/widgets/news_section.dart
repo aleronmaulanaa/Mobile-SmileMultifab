@@ -262,7 +262,7 @@ class _ArticleWebViewPageState extends State<ArticleWebViewPage> {
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: SvgPicture.asset(
-            'assets/icons/ic_arrow-back.svg',
+            'assets/icons/ic_arrow-back-left.svg',
             width: 27,
             height: 27,
             colorFilter: const ColorFilter.mode(

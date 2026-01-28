@@ -5,7 +5,6 @@ import 'package:mobile_smile_multifab/screens/main_wrapper.dart';
 import '../../services/auth_service.dart';
 import '../../core/utils/token_storage.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -26,9 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }   
-
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
                   top: 50,
                   left: 24,
                   child: Image.asset(
-                    'assets/images/login/logo_smile_v2.png',
+                    'assets/images/common/logo_smile_v2.png',
                     width: 133,
                     height: 58,
                     fit: BoxFit.contain,
@@ -230,75 +227,72 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const Spacer(),
-
-
-Center(
-  child: SizedBox(
-    width: 262,
-    height: 36,
-    child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFFA0007),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
-        elevation: 0,
-      ),
-      onPressed: _isLoading
-          ? null
-          : () async {
-              if (_emailController.text.isEmpty ||
-                  _passwordController.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Email dan password wajib diisi'),
+          Center(
+            child: SizedBox(
+              width: 262,
+              height: 36,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFA0007),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                );
-                return;
-              }
+                  elevation: 0,
+                ),
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        if (_emailController.text.isEmpty ||
+                            _passwordController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Email dan password wajib diisi'),
+                            ),
+                          );
+                          return;
+                        }
 
-              setState(() => _isLoading = true);
+                        setState(() => _isLoading = true);
 
-              try {
-                final token = await AuthService.login(
-                  email: _emailController.text.trim(),
-                  password: _passwordController.text.trim(),
-                );
+                        try {
+                          final token = await AuthService.login(
+                            email: _emailController.text.trim(),
+                            password: _passwordController.text.trim(),
+                          );
 
-                await TokenStorage.saveToken(token);
+                          await TokenStorage.saveToken(token);
 
-                if (!mounted) return;
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const MainWrapper(),
-                  ),
-                  (route) => false,
-                );
-              } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(e.toString())),
-                );
-              } finally {
-                if (mounted) setState(() => _isLoading = false);
-              }
-            },
-      child: _isLoading
-          ? const CircularProgressIndicator(color: Colors.white)
-          : const Text(
-              'Login',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-                color: Colors.white,
+                          if (!mounted) return;
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const MainWrapper(),
+                            ),
+                            (route) => false,
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.toString())),
+                          );
+                        } finally {
+                          if (mounted) setState(() => _isLoading = false);
+                        }
+                      },
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
-    ),
-  ),
-),
-const SizedBox(height: 13),
-
+          ),
+          const SizedBox(height: 13),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -316,8 +310,29 @@ const SizedBox(height: 13),
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const ForgotPasswordPage(),
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const ForgotPasswordPage(),
+                      transitionDuration: const Duration(milliseconds: 250),
+                      reverseTransitionDuration:
+                          const Duration(milliseconds: 200),
+
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        var curve = CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeOut,
+                        );
+
+                        return ScaleTransition(
+                          scale: Tween<double>(begin: 0.85, end: 1.0)
+                              .animate(curve),
+                          child: FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          ),
+                        );
+                      },
                     ),
                   );
                 },

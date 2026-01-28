@@ -4,7 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'widgets/scan_overlay.dart';
-import 'widgets/scan_mask_overlay.dart'; // 🔥 MASK TRANSPARAN
+import 'widgets/scan_mask_overlay.dart';
 import 'widgets/scan_bottom_card.dart';
 import 'widgets/scan_success_popup.dart';
 
@@ -23,7 +23,7 @@ class _ScanPageState extends State<ScanPage> {
   bool showPopup = false;
 
   String scannedUrl = '';
-  String? lastScannedValue; // 🔒 barcode terakhir
+  String? lastScannedValue;
 
   @override
   void initState() {
@@ -31,7 +31,6 @@ class _ScanPageState extends State<ScanPage> {
     _requestCameraPermission();
   }
 
-  // ===== CAMERA PERMISSION =====
   Future<void> _requestCameraPermission() async {
     final status = await Permission.camera.request();
     if (status.isGranted) {
@@ -39,15 +38,12 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
-  // ===== SCAN DETECT (DYNAMIC & SMART) =====
   void _onDetect(BarcodeCapture capture) {
     final String? value = capture.barcodes.first.rawValue;
     if (value == null) return;
 
-    // sementara hanya URL
     if (!value.startsWith('http')) return;
 
-    // 🔒 jika barcode sama, abaikan
     if (value == lastScannedValue) return;
 
     setState(() {
@@ -57,7 +53,6 @@ class _ScanPageState extends State<ScanPage> {
       showPopup = true;
     });
 
-    // popup auto close
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted) {
         setState(() => showPopup = false);
@@ -65,7 +60,6 @@ class _ScanPageState extends State<ScanPage> {
     });
   }
 
-  // ===== OPEN URL =====
   Future<void> openUrl(String url) async {
     final uri = Uri.parse(url);
     if (!await launchUrl(
@@ -76,7 +70,6 @@ class _ScanPageState extends State<ScanPage> {
     }
   }
 
-  // ===== OPTIONAL: RESET SCAN =====
   void resetScan() {
     setState(() {
       isDetected = false;
@@ -97,19 +90,12 @@ class _ScanPageState extends State<ScanPage> {
       backgroundColor: const Color(0xFF4A4A4A),
       body: Stack(
         children: [
-          /// ===== CAMERA (LIVE) =====
           MobileScanner(
             controller: scannerController,
             onDetect: _onDetect,
           ),
-
-          /// ===== MASK TRANSPARAN (FOKUS KE TENGAH) =====
           const ScanMaskOverlay(),
-
-          /// ===== SCAN OVERLAY (CORNER + LINE) =====
           const Center(child: ScanOverlay()),
-
-          /// ===== BOTTOM CARD =====
           Align(
             alignment: Alignment.bottomCenter,
             child: ScanBottomCard(
@@ -118,8 +104,6 @@ class _ScanPageState extends State<ScanPage> {
               onOpenUrl: openUrl,
             ),
           ),
-
-          /// ===== POPUP SUCCESS =====
           if (showPopup) const ScanSuccessPopup(),
         ],
       ),

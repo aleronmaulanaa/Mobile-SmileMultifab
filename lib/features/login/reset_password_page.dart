@@ -26,7 +26,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             height: screenHeight,
             child: Stack(
               children: [
-        
                 Positioned.fill(
                   child: Image.asset(
                     'assets/images/login/bg_login_page.JPEG',
@@ -35,7 +34,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         Container(color: Colors.white),
                   ),
                 ),
-
                 Positioned(
                   top: 78,
                   left: 0,
@@ -65,10 +63,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                 ),
                               ],
                             ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.arrow_back,
-                                size: 24,
+                            
+                            child: Center(
+                              child: SvgPicture.asset(
+                                'assets/icons/ic_arrow_black.svg', 
+                                width: 17,
+                                height: 17,
                                 color: Colors.black,
                               ),
                             ),
@@ -78,7 +78,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     ),
                   ),
                 ),
-
                 Positioned(
                   top: 188,
                   left: 0,
@@ -96,9 +95,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                               size: 114, color: Colors.grey);
                         },
                       ),
-
                       const SizedBox(height: 24),
-
                       SizedBox(
                         width: 347,
                         child: Column(
@@ -126,9 +123,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           ],
                         ),
                       ),
-
                       const SizedBox(height: 21),
-
                       _buildResetCard(context),
                     ],
                   ),
@@ -183,7 +178,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             ),
           ),
           const SizedBox(height: 8),
-
           _buildInputField(
             hintText: 'Enter your new password',
             iconPath: 'assets/icons/ic_password.svg',
@@ -192,9 +186,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             obscureText: _obscureNew,
             onToggle: () {},
           ),
-
           const SizedBox(height: 18),
-
           const Text(
             'Confirm New Password',
             style: TextStyle(
@@ -205,7 +197,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             ),
           ),
           const SizedBox(height: 8),
-
           _buildInputField(
             hintText: 'Confirm your password',
             iconPath: 'assets/icons/ic_password.svg',
@@ -218,9 +209,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               });
             },
           ),
-
           const SizedBox(height: 24),
-
           Center(
             child: SizedBox(
               width: 262,
@@ -323,56 +312,49 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     );
   }
 
-  void _showSuccessPopup(BuildContext context) {
-    showDialog(
+  void _showSuccessPopup(BuildContext context) async {
+    Future.delayed(const Duration(seconds: 2), () {
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    });
+
+    await showGeneralDialog(
       context: context,
       barrierDismissible: false,
+      barrierLabel: "Success Popup",
       barrierColor: Colors.black.withOpacity(0.35),
-      builder: (_) => Dialog(
-        insetPadding: EdgeInsets.zero,
-        backgroundColor: Colors.transparent,
-        child: Container(
-          width: 330,
-          padding: const EdgeInsets.only(
-            left: 35,
-            right: 35,
-            top: 25,
-            bottom: 30,
-          ),
-
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(9),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/login/popup_lock.png',
-                width: 73,
-                height: 73,
+      transitionDuration:
+          const Duration(milliseconds: 400),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              width: 330,
+              padding: const EdgeInsets.only(
+                left: 35,
+                right: 35,
+                top: 25,
+                bottom: 30,
               ),
-
-              const SizedBox(height: 16),
-
-              const Text(
-                'Password updated',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 24,
-                  color: Colors.black,
-                  height: 1.0,
-                ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(9),
               ),
-
-              Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Image.asset(
+                    'assets/images/common/popup_lock.png',
+                    width: 73,
+                    height: 73,
+                  ),
+                  const SizedBox(height: 16),
                   const Text(
-                    'successfully',
+                    'Password updated',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w600,
@@ -381,28 +363,53 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       height: 1.0,
                     ),
                   ),
-
-                  const SizedBox(width: 7),
-
-                  SvgPicture.asset(
-                    'assets/icons/checklist_popup.svg',
-                    width: 36,
-                    height: 36,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'successfully',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24,
+                          color: Colors.black,
+                          height: 1.0,
+                        ),
+                      ),
+                      const SizedBox(width: 7),
+                      SvgPicture.asset(
+                        'assets/icons/ic_checklist_popup.svg',
+                        width: 36,
+                        height: 36,
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
+
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        var curve =
+            CurvedAnimation(parent: animation, curve: Curves.easeOutBack);
+
+        return ScaleTransition(
+          scale: curve,
+          child: FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
+        );
+      },
     );
 
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pop();
+    if (context.mounted) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const LoginPage()),
         (route) => false,
       );
-    });
+    }
   }
 }

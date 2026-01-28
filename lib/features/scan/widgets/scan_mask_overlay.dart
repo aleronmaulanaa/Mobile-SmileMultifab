@@ -4,7 +4,7 @@ class ScanMaskOverlay extends StatelessWidget {
   const ScanMaskOverlay({super.key});
 
   static const double scanBoxSize = 220;
-  static const double cornerRadius = 20; // 🔥 ketumpulan sudut
+  static const double cornerRadius = 20;
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +34,9 @@ class _ScanMaskPainter extends CustomPainter {
     );
 
     final path = Path()
-      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height)) // layar penuh
-      ..addRRect(scanRect) // lubang tengah (rounded)
-      ..fillType = PathFillType.evenOdd; // 🔥 PENTING
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..addRRect(scanRect)
+      ..fillType = PathFillType.evenOdd;
 
     canvas.drawPath(path, paint);
   }

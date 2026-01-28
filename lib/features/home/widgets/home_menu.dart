@@ -51,9 +51,6 @@ class HomeMenu extends StatelessWidget {
         ),
         const SizedBox(height: 16),
 
-        /// ============================
-        /// MENU UTAMA (DITAMBAH ACTION)
-        /// ============================
         GridView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           shrinkWrap: true,

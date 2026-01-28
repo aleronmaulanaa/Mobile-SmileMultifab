@@ -1,10 +1,4 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
 part of 'attendance_daily_summary.dart';
-
-// **************************************************************************
-// TypeAdapterGenerator
-// **************************************************************************
 
 class AttendanceDailySummaryAdapter
     extends TypeAdapter<AttendanceDailySummary> {
