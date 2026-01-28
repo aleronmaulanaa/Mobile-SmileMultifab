@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mobile_smile_multifab/features/profile/widgets/account_info_card.dart';
+import 'package:hive/hive.dart';
+import '../../profile/models/user_profile.dart';
+
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -14,12 +17,23 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   bool _isOnline = true;
+  UserProfile? _profile;
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+final String _tempPhotoUrl =
+  'https://instagram.fcgk43-1.fna.fbcdn.net/v/t51.2885-19/560499887_18406026835188624_5424641557300119921_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=instagram.fcgk43-1.fna.fbcdn.net&_nc_cat=100&_nc_oc=Q6cZ2QGE6uY28Y9v_xp6mXdQgCvhsESmm_8Y2Jy_XDGDtoDYGW9n1PsRjTYQfBxb2pkLOeA&_nc_ohc=ktzKfdcYU_8Q7kNvwGDEUWQ&_nc_gid=4Ar_6QocitzDbfUb_Qpx8A&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfqL-kxpelqYeb4g1kvxHj_fN_WbzpXWNRNEq2qyblkIdQ&oe=69801492&_nc_sid=7a9f4b';
+
+
+
 
   @override
   void initState() {
     super.initState();
     _initConnectivity();
+
+      final box = Hive.box<UserProfile>('user_profile');
+  _profile = box.get('current');
+
     _connectivitySubscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> results) {
@@ -69,8 +83,9 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final String photoUrl =
-        "https://scontent-cgk2-1.cdninstagram.com/v/t51.2885-19/583200018_18367273294084132_5580250522120237473_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=scontent-cgk2-1.cdninstagram.com&_nc_cat=104&_nc_oc=Q6cZ2QH_StjD6RoNLsmif92M8IDCvWDL1NbIIu5u_1LkwLeqRqAhSsvB5EPUysGa4FWJEAY&_nc_ohc=BFSq9vY9zXYQ7kNvwG9LaaB&_nc_gid=7uOW328noKvLAHfgky-zLg&edm=ALGbJPMBAAAA&ccb=7-5&oh=00_AfrLLe2DYfmI4M2SEVGnYPMO227KLgww5m2x3Fatv2gmzw&oe=697CB30F&_nc_sid=7d3ac5";
+    
+  // final String? photoUrl = _profile?.photoUrl;
+
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
@@ -147,29 +162,29 @@ class _AccountScreenState extends State<AccountScreen> {
                               color: Colors.grey,
                             ),
                             child: ClipOval(
-                              child: _buildProfileImage(photoUrl),
+                              child: _buildProfileImage(),
                             ),
                           ),
                           const SizedBox(height: 20),
-                          const Text(
-                            'M. Richie Sugestiana.',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
-                          ),
+Text(
+  _profile?.name ?? '-',
+  style: const TextStyle(
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+    color: Colors.black,
+  ),
+),
                           const SizedBox(height: 11),
-                          const Text(
-                            '83493',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                              color: Color(0xFFFA0007),
-                            ),
-                          ),
+Text(
+  _profile?.badgeNumber ?? '-',
+  style: const TextStyle(
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w600,
+    fontSize: 16,
+    color: Color(0xFFFA0007),
+  ),
+),
                           const SizedBox(height: 9),
                           const Text(
                             'IT Network & Infrastruktur',
@@ -200,17 +215,19 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
                     const SizedBox(height: 21),
-                    AccountInfoCard(
-                      iconPath: 'assets/icons/ic_card_id.svg',
-                      title: 'Number ID',
-                      value: '83493',
-                      showCopyIcon: true,
-                      onCopyTap: () => _copyToClipboard(context, '83493'),
-                    ),
-                    const AccountInfoCard(
-                      iconPath: 'assets/icons/ic_user.svg',
-                      title: 'Full Name',
-                      value: 'M. Richie Sugestiana.',
+AccountInfoCard(
+  iconPath: 'assets/icons/ic_card_id.svg',
+  title: 'Number ID',
+  value: _profile?.badgeNumber ?? '-',
+  showCopyIcon: true,
+  onCopyTap: () =>
+      _copyToClipboard(context, _profile?.badgeNumber ?? ''),
+),
+
+AccountInfoCard(
+  iconPath: 'assets/icons/ic_user.svg',
+  title: 'Full Name',
+  value: _profile?.name ?? '-',
                       showCopyIcon: false,
                       iconWidth: 26.08,
                       iconHeight: 30,
@@ -224,12 +241,12 @@ class _AccountScreenState extends State<AccountScreen> {
                       iconHeight: 35,
                     ),
                     AccountInfoCard(
-                      iconPath: 'assets/icons/ic_email-profile.svg',
-                      title: 'Email',
-                      value: 'richie@multifab.co.id',
+                    iconPath: 'assets/icons/ic_email-profile.svg',
+                    title: 'Email',
+                    value: _profile?.email ?? '-',
                       showCopyIcon: true,
                       onCopyTap: () =>
-                          _copyToClipboard(context, 'richie@multifab.co.id'),
+                          _copyToClipboard(context, _profile?.email ?? ''),
                     ),
                     const SizedBox(height: 50),
                   ],
@@ -242,7 +259,7 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  Widget _buildProfileImage(String imageUrl) {
+  Widget _buildProfileImage() {
     if (!_isOnline) {
       return Image.asset(
         'assets/images/common/default-user.jpg',
@@ -250,7 +267,8 @@ class _AccountScreenState extends State<AccountScreen> {
       );
     }
 
-    final String cleanUrl = imageUrl.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
+      final cleanUrl =
+        _tempPhotoUrl.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
 
     return Image.network(
       cleanUrl,

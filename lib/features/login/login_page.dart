@@ -735,30 +735,29 @@ class _LoginPageState extends State<LoginPage> {
                         // 4. Proses Login
                         if (mounted) setState(() => _isLoading = true);
 
-                        try {
-                          final token = await AuthService.login(
-                            email: _emailController.text.trim(),
-                            password: _passwordController.text.trim(),
-                          );
+try {
+  await AuthService.login(
+    email: _emailController.text.trim(),
+    password: _passwordController.text.trim(),
+  );
 
-                          await TokenStorage.saveToken(token);
+  if (!mounted) return;
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const MainWrapper(),
+    ),
+    (route) => false,
+  );
+} catch (e) {
+  if (!mounted) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(e.toString())),
+  );
+} finally {
+  if (mounted) setState(() => _isLoading = false);
+}
 
-                          if (!mounted) return;
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const MainWrapper(),
-                            ),
-                            (route) => false,
-                          );
-                        } catch (e) {
-                          if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString())),
-                          );
-                        } finally {
-                          if (mounted) setState(() => _isLoading = false);
-                        }
                       },
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)

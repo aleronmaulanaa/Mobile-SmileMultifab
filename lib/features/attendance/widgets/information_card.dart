@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive/hive.dart';
 
+
+import '../../profile/models/user_profile.dart';
 import '../state/location_state.dart';
 import '../services/connectivity_service.dart';
 
@@ -15,13 +18,14 @@ class InformationCard extends StatefulWidget {
 }
 
 class _InformationCardState extends State<InformationCard> {
-  static const String _userName = 'M. Richie Sugestiana';
-  static const String _userId = 'test_user';
 
   late String _date;
 
   bool _isInternetOnline = false;
   bool _isAttendanceActive = false;
+
+  UserProfile? _profile;
+
 
   String? _checkInTime;
   String? _checkOutTime;
@@ -35,6 +39,8 @@ class _InformationCardState extends State<InformationCard> {
     super.initState();
 
     _isInternetOnline = ConnectivityService.currentStatus;
+    final box = Hive.box<UserProfile>('user_profile');
+    _profile = box.get('current');
 
     _updateDate();
     _loadLocation();
@@ -88,6 +94,7 @@ class _InformationCardState extends State<InformationCard> {
   }
 
   Future<void> _loadAttendanceTimes() async {
+    if (_profile == null) return;
     final today = DateTime.now();
     final startOfDay = DateTime(
       today.year,
@@ -99,7 +106,7 @@ class _InformationCardState extends State<InformationCard> {
 
     _attendanceSub = FirebaseFirestore.instance
         .collection('attendance')
-        .where('userId', isEqualTo: _userId)
+        .where('userId', isEqualTo: _profile?.userId,)
         .where(
           'timestamp',
           isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
@@ -180,20 +187,21 @@ class _InformationCardState extends State<InformationCard> {
       ),
       child: Column(
         children: [
-          Row(
-            children: const [
-              Icon(Icons.person, size: 16, color: Colors.black54),
-              SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  _userName,
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-              Text(
-                'ID: 83493',
-                style: TextStyle(fontSize: 12, color: Colors.black54),
-              ),
+              Row(
+                children: [
+                  const Icon(Icons.person, size: 16, color: Colors.black54),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      _profile?.name ?? '-',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Text(
+                    'ID: ${_profile?.badgeNumber ?? '-'}',
+                    style: const TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
+
             ],
           ),
 
