@@ -31,98 +31,120 @@
 //   Widget build(BuildContext context) {
 //     final screenHeight = MediaQuery.of(context).size.height;
 
-//     return GestureDetector(
-//       onTap: () {
-//         FocusManager.instance.primaryFocus?.unfocus();
-//       },
-//       child: Scaffold(
-//         resizeToAvoidBottomInset: false,
-//         body: SingleChildScrollView(
-//           child: SizedBox(
-//             height: screenHeight,
-//             child: Stack(
-//               children: [
-//                 Positioned.fill(
-//                   child: Image.asset(
-//                     'assets/images/login/bg_login_page.JPEG',
-//                     fit: BoxFit.cover,
-//                     errorBuilder: (context, error, stackTrace) =>
-//                         Container(color: Colors.white),
-//                   ),
-//                 ),
-//                 Positioned(
-//                   top: 50,
-//                   left: 24,
-//                   child: Image.asset(
-//                     'assets/images/common/logo_smile_v2.png',
-//                     width: 133,
-//                     height: 58,
-//                     fit: BoxFit.contain,
-//                   ),
-//                 ),
-//                 Positioned(
-//                   bottom: 120,
-//                   left: 0,
-//                   right: 0,
-//                   child: Column(
-//                     children: const [
-//                       Text(
-//                         'Powered by',
-//                         style: TextStyle(
-//                           fontFamily: 'Poppins',
-//                           fontWeight: FontWeight.w600,
-//                           fontSize: 13,
-//                           color: Color(0xFF97656E),
-//                         ),
-//                       ),
-//                       SizedBox(height: 11),
-//                       Text(
-//                         'Dept. Information of Technology',
-//                         style: TextStyle(
-//                           fontFamily: 'Poppins',
-//                           fontWeight: FontWeight.w600,
-//                           fontSize: 13,
-//                           color: Color(0xFF995565),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//                 Positioned(
-//                   top: 200,
-//                   left: 0,
-//                   right: 0,
-//                   child: Column(
-//                     mainAxisSize: MainAxisSize.min,
-//                     children: [
-//                       const Text(
-//                         'Login',
-//                         style: TextStyle(
-//                           fontFamily: 'Poppins',
-//                           fontWeight: FontWeight.w600,
-//                           fontSize: 24,
-//                           color: Color(0xFFFA0209),
-//                         ),
-//                       ),
-//                       const SizedBox(height: 9),
-//                       const Text(
-//                         'Please Login to continue',
-//                         style: TextStyle(
-//                           fontFamily: 'Poppins',
-//                           fontWeight: FontWeight.w600,
-//                           fontSize: 13,
-//                           color: Color(0xFF991B1C),
-//                         ),
-//                       ),
-//                       const SizedBox(height: 20),
-//                       _buildLoginCard(),
-//                     ],
-//                   ),
-//                 ),
-//               ],
+//     return Scaffold(
+//       resizeToAvoidBottomInset: false,
+//       body: Stack(
+//         children: [
+//           Positioned.fill(
+//             child: Image.asset(
+//               'assets/images/login/bg_login_page.JPEG',
+//               fit: BoxFit.cover,
+//               errorBuilder: (context, error, stackTrace) =>
+//                   Container(color: Colors.white),
 //             ),
 //           ),
-//         ),
+
+//           Positioned.fill(
+//             child: Scaffold(
+//               backgroundColor: Colors.transparent,
+//               resizeToAvoidBottomInset: true,
+
+//               body: Stack(
+//                 children: [
+//                   Positioned.fill(
+//                     child: GestureDetector(
+//                       onTap: () {
+//                         FocusManager.instance.primaryFocus?.unfocus();
+//                       },
+//                       child: SingleChildScrollView(
+//                         child: SizedBox(
+//                           height: screenHeight,
+//                           child: Stack(
+//                             children: [
+//                               Positioned(
+//                                 bottom: 120,
+//                                 left: 0,
+//                                 right: 0,
+//                                 child: Column(
+//                                   children: const [
+//                                     Text(
+//                                       'Powered by',
+//                                       style: TextStyle(
+//                                         fontFamily: 'Poppins',
+//                                         fontWeight: FontWeight.w600,
+//                                         fontSize: 13,
+//                                         color: Color(0xFF97656E),
+//                                       ),
+//                                     ),
+//                                     SizedBox(height: 11),
+//                                     Text(
+//                                       'Dept. Information of Technology',
+//                                       style: TextStyle(
+//                                         fontFamily: 'Poppins',
+//                                         fontWeight: FontWeight.w600,
+//                                         fontSize: 13,
+//                                         color: Color(0xFF995565),
+//                                       ),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               ),
+
+//                               Positioned(
+//                                 top: 200,
+//                                 left: 0,
+//                                 right: 0,
+//                                 child: Column(
+//                                   mainAxisSize: MainAxisSize.min,
+//                                   children: [
+//                                     const Text(
+//                                       'Login',
+//                                       style: TextStyle(
+//                                         fontFamily: 'Poppins',
+//                                         fontWeight: FontWeight.w600,
+//                                         fontSize: 24,
+//                                         color: Color(0xFFFA0209),
+//                                       ),
+//                                     ),
+//                                     const SizedBox(height: 9),
+//                                     const Text(
+//                                       'Please Login to continue',
+//                                       style: TextStyle(
+//                                         fontFamily: 'Poppins',
+//                                         fontWeight: FontWeight.w600,
+//                                         fontSize: 13,
+//                                         color: Color(0xFF991B1C),
+//                                       ),
+//                                     ),
+//                                     const SizedBox(height: 20),
+//                                     _buildLoginCard(),
+
+//                                     const SizedBox(height: 100),
+//                                   ],
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+
+//                   Positioned(
+//                     top: 50,
+//                     left: 24,
+//                     child: Image.asset(
+//                       'assets/images/common/logo_smile_v2.png',
+//                       width: 133,
+//                       height: 58,
+//                       fit: BoxFit.contain,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ),
+//         ],
 //       ),
 //     );
 //   }
@@ -242,8 +264,13 @@
 //                 onPressed: _isLoading
 //                     ? null
 //                     : () async {
+//                         FocusManager.instance.primaryFocus?.unfocus();
+
+//                         await Future.delayed(const Duration(milliseconds: 200));
+
 //                         if (_emailController.text.isEmpty ||
 //                             _passwordController.text.isEmpty) {
+//                           if (!mounted) return;
 //                           ScaffoldMessenger.of(context).showSnackBar(
 //                             const SnackBar(
 //                               content: Text('Email dan password wajib diisi'),
@@ -252,7 +279,7 @@
 //                           return;
 //                         }
 
-//                         setState(() => _isLoading = true);
+//                         if (mounted) setState(() => _isLoading = true);
 
 //                         try {
 //                           final token = await AuthService.login(
@@ -271,6 +298,7 @@
 //                             (route) => false,
 //                           );
 //                         } catch (e) {
+//                           if (!mounted) return;
 //                           ScaffoldMessenger.of(context).showSnackBar(
 //                             SnackBar(content: Text(e.toString())),
 //                           );
@@ -447,6 +475,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  // [BARU] Variable untuk menandai error login
+  bool _isLoginError = false;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -463,13 +493,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // [LAYER 1: BACKGROUND STATIS]
-    // Scaffold Luar: resizeToAvoidBottomInset = FALSE (Background Diam)
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // 1. BACKGROUND IMAGE
+          // LAYER 1: Background
           Positioned.fill(
             child: Image.asset(
               'assets/images/login/bg_login_page.JPEG',
@@ -479,20 +507,13 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
 
-          // [LAYER 2: KONTEN RESPONSIF]
-          // Scaffold Dalam: resizeToAvoidBottomInset = TRUE (Form Naik)
+          // LAYER 2: Nested Scaffold untuk Konten
           Positioned.fill(
             child: Scaffold(
               backgroundColor: Colors.transparent,
               resizeToAvoidBottomInset: true,
-
-              // Gunakan Stack untuk memisahkan Fixed Header vs Scrollable Form
               body: Stack(
                 children: [
-                  // ===============================================
-                  // 1. BAGIAN FORM & FOOTER (BISA DI-SCROLL)
-                  // ===============================================
-                  // Letakkan di lapisan paling bawah
                   Positioned.fill(
                     child: GestureDetector(
                       onTap: () {
@@ -503,8 +524,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: screenHeight,
                           child: Stack(
                             children: [
-                              // FOOTER (Powered By)
-                              // Posisinya tetap di bottom: 120 dari scrollable area
+                              // Footer
                               Positioned(
                                 bottom: 120,
                                 left: 0,
@@ -534,7 +554,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
 
-                              // KONTEN UTAMA (Title & Card)
+                              // Main Content
                               Positioned(
                                 top: 200,
                                 left: 0,
@@ -561,10 +581,46 @@ class _LoginPageState extends State<LoginPage> {
                                         color: Color(0xFF991B1C),
                                       ),
                                     ),
-                                    const SizedBox(height: 20),
+
+                                    // [BARU] Widget Pesan Error
+                                    if (_isLoginError) ...[
+                                      const SizedBox(height: 12),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 8),
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 24),
+                                        decoration: BoxDecoration(
+                                          color: const Color(
+                                              0xFF991B1C), // Background Merah
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: const [
+                                            Icon(Icons.error_outline,
+                                                color: Colors.white, size: 16),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              'Login gagal: Password atau email salah',
+                                              style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 11,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                    ] else ...[
+                                      const SizedBox(height: 20),
+                                    ],
+
                                     _buildLoginCard(),
 
-                                    // Tambahan padding bawah agar aman saat scroll
                                     const SizedBox(height: 100),
                                   ],
                                 ),
@@ -576,10 +632,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
-                  // ===============================================
-                  // 2. BAGIAN LOGO (FIXED / DIAM)
-                  // ===============================================
-                  // Posisinya Absolut dan di luar ScrollView
+                  // Logo Fixed
                   Positioned(
                     top: 50,
                     left: 24,
@@ -637,6 +690,8 @@ class _LoginPageState extends State<LoginPage> {
             iconPath: 'assets/icons/ic_email.svg',
             isPassword: false,
             controller: _emailController,
+            // [BARU] Pass status error ke input field
+            hasError: _isLoginError,
           ),
           const SizedBox(height: 18),
           const Text(
@@ -654,6 +709,8 @@ class _LoginPageState extends State<LoginPage> {
             iconPath: 'assets/icons/ic_password.svg',
             isPassword: true,
             controller: _passwordController,
+            // [BARU] Pass status error ke input field
+            hasError: _isLoginError,
           ),
           const SizedBox(height: 12),
           GestureDetector(
@@ -714,13 +771,15 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: _isLoading
                     ? null
                     : () async {
-                        // 1. Tutup Keyboard terlebih dahulu
+                        // 1. Reset Error & Tutup Keyboard
+                        setState(() {
+                          _isLoginError = false;
+                        });
                         FocusManager.instance.primaryFocus?.unfocus();
 
-                        // 2. Beri jeda agar animasi keyboard selesai
                         await Future.delayed(const Duration(milliseconds: 200));
 
-                        // 3. Validasi
+                        // Validasi Input Kosong
                         if (_emailController.text.isEmpty ||
                             _passwordController.text.isEmpty) {
                           if (!mounted) return;
@@ -732,7 +791,6 @@ class _LoginPageState extends State<LoginPage> {
                           return;
                         }
 
-                        // 4. Proses Login
                         if (mounted) setState(() => _isLoading = true);
 
                         try {
@@ -753,9 +811,16 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         } catch (e) {
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString())),
-                          );
+
+                          // [BARU] Tampilkan Error Merah
+                          setState(() {
+                            _isLoginError = true;
+                          });
+
+                          // Opsional: Tetap tampilkan snackbar debug message jika perlu
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   SnackBar(content: Text(e.toString())),
+                          // );
                         } finally {
                           if (mounted) setState(() => _isLoading = false);
                         }
@@ -790,8 +855,6 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(width: 4),
               GestureDetector(
                 onTap: () {
-                  // Menggunakan Animasi "Native Popup" (Scale 0.85 -> 1.0)
-                  // sesuai request Anda sebelumnya agar konsisten "mahal".
                   Navigator.push(
                     context,
                     PageRouteBuilder(
@@ -845,8 +908,9 @@ class _LoginPageState extends State<LoginPage> {
     required String iconPath,
     required bool isPassword,
     required TextEditingController controller,
+    // [BARU] Parameter untuk border error
+    bool hasError = false,
   }) {
-    // ... Bagian ini tidak berubah, sama seperti kode Anda sebelumnya ...
     return Container(
       width: 314,
       height: 42,
@@ -854,6 +918,10 @@ class _LoginPageState extends State<LoginPage> {
       decoration: BoxDecoration(
         color: const Color(0xFFF2F2F2),
         borderRadius: BorderRadius.circular(5),
+        // [BARU] Logika Border Merah
+        border: hasError
+            ? Border.all(color: const Color(0xFF991B1C), width: 1.0)
+            : null,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
