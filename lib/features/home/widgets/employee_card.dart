@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../features/attendance/pages/attendance_history_page.dart';
+import 'package:hive/hive.dart';
+import '../../../features/profile/models/user_profile.dart';
+
 
 
 class EmployeeCard extends StatefulWidget {
@@ -17,9 +20,12 @@ class EmployeeCard extends StatefulWidget {
   State<EmployeeCard> createState() => _EmployeeCardState();
 }
 
+
 class _EmployeeCardState extends State<EmployeeCard> {
 
   bool _isLateHidden = true;
+  UserProfile? _profile;
+
 
   Color _getSpColor() {
     switch (widget.spLevel) {
@@ -49,6 +55,18 @@ class _EmployeeCardState extends State<EmployeeCard> {
   String _getSpText() {
     return "Surat Peringatan (SP) : ${widget.spLevel}";
   }
+
+ 
+
+  @override
+  void initState() {
+    super.initState();
+
+    final box = Hive.box<UserProfile>('user_profile');
+    _profile = box.get('current');
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -176,29 +194,29 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
                 const SizedBox(width: 10),
 
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 4),
-                    Text(
-                      "Hi, M. Richie Sugestiana.",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      "83493",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Text(
+      'Hi, ${_profile?.name ?? '-'}',
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+    const SizedBox(height: 2),
+    Text(
+      _profile?.badgeNumber ?? '-',
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+  ],
+),
+
 
                 const Spacer(),
 

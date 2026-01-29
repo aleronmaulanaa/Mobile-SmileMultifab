@@ -31,10 +31,13 @@
 //   Widget build(BuildContext context) {
 //     final screenHeight = MediaQuery.of(context).size.height;
 
+//     // [LAYER 1: BACKGROUND STATIS]
+//     // Scaffold Luar: resizeToAvoidBottomInset = FALSE (Background Diam)
 //     return Scaffold(
 //       resizeToAvoidBottomInset: false,
 //       body: Stack(
 //         children: [
+//           // 1. BACKGROUND IMAGE
 //           Positioned.fill(
 //             child: Image.asset(
 //               'assets/images/login/bg_login_page.JPEG',
@@ -44,13 +47,20 @@
 //             ),
 //           ),
 
+//           // [LAYER 2: KONTEN RESPONSIF]
+//           // Scaffold Dalam: resizeToAvoidBottomInset = TRUE (Form Naik)
 //           Positioned.fill(
 //             child: Scaffold(
 //               backgroundColor: Colors.transparent,
 //               resizeToAvoidBottomInset: true,
 
+//               // Gunakan Stack untuk memisahkan Fixed Header vs Scrollable Form
 //               body: Stack(
 //                 children: [
+//                   // ===============================================
+//                   // 1. BAGIAN FORM & FOOTER (BISA DI-SCROLL)
+//                   // ===============================================
+//                   // Letakkan di lapisan paling bawah
 //                   Positioned.fill(
 //                     child: GestureDetector(
 //                       onTap: () {
@@ -61,6 +71,8 @@
 //                           height: screenHeight,
 //                           child: Stack(
 //                             children: [
+//                               // FOOTER (Powered By)
+//                               // Posisinya tetap di bottom: 120 dari scrollable area
 //                               Positioned(
 //                                 bottom: 120,
 //                                 left: 0,
@@ -90,6 +102,7 @@
 //                                 ),
 //                               ),
 
+//                               // KONTEN UTAMA (Title & Card)
 //                               Positioned(
 //                                 top: 200,
 //                                 left: 0,
@@ -119,6 +132,7 @@
 //                                     const SizedBox(height: 20),
 //                                     _buildLoginCard(),
 
+//                                     // Tambahan padding bawah agar aman saat scroll
 //                                     const SizedBox(height: 100),
 //                                   ],
 //                                 ),
@@ -130,6 +144,10 @@
 //                     ),
 //                   ),
 
+//                   // ===============================================
+//                   // 2. BAGIAN LOGO (FIXED / DIAM)
+//                   // ===============================================
+//                   // Posisinya Absolut dan di luar ScrollView
 //                   Positioned(
 //                     top: 50,
 //                     left: 24,
@@ -264,10 +282,13 @@
 //                 onPressed: _isLoading
 //                     ? null
 //                     : () async {
+//                         // 1. Tutup Keyboard terlebih dahulu
 //                         FocusManager.instance.primaryFocus?.unfocus();
 
+//                         // 2. Beri jeda agar animasi keyboard selesai
 //                         await Future.delayed(const Duration(milliseconds: 200));
 
+//                         // 3. Validasi
 //                         if (_emailController.text.isEmpty ||
 //                             _passwordController.text.isEmpty) {
 //                           if (!mounted) return;
@@ -279,15 +300,14 @@
 //                           return;
 //                         }
 
+//                         // 4. Proses Login
 //                         if (mounted) setState(() => _isLoading = true);
 
 //                         try {
-//                           final token = await AuthService.login(
+//                           await AuthService.login(
 //                             email: _emailController.text.trim(),
 //                             password: _passwordController.text.trim(),
 //                           );
-
-//                           await TokenStorage.saveToken(token);
 
 //                           if (!mounted) return;
 //                           Navigator.pushAndRemoveUntil(
@@ -336,6 +356,8 @@
 //               const SizedBox(width: 4),
 //               GestureDetector(
 //                 onTap: () {
+//                   // Menggunakan Animasi "Native Popup" (Scale 0.85 -> 1.0)
+//                   // sesuai request Anda sebelumnya agar konsisten "mahal".
 //                   Navigator.push(
 //                     context,
 //                     PageRouteBuilder(
@@ -390,6 +412,7 @@
 //     required bool isPassword,
 //     required TextEditingController controller,
 //   }) {
+//     // ... Bagian ini tidak berubah, sama seperti kode Anda sebelumnya ...
 //     return Container(
 //       width: 314,
 //       height: 42,
@@ -475,7 +498,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   bool _rememberMe = false;
-  // [BARU] Variable untuk menandai error login
+
+  // [MODIFIED] State untuk menangani status error login
   bool _isLoginError = false;
 
   final TextEditingController _emailController = TextEditingController();
@@ -497,7 +521,7 @@ class _LoginPageState extends State<LoginPage> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          // LAYER 1: Background
+          // 1. BACKGROUND IMAGE
           Positioned.fill(
             child: Image.asset(
               'assets/images/login/bg_login_page.JPEG',
@@ -507,7 +531,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
 
-          // LAYER 2: Nested Scaffold untuk Konten
+          // [LAYER 2: KONTEN RESPONSIF]
           Positioned.fill(
             child: Scaffold(
               backgroundColor: Colors.transparent,
@@ -524,7 +548,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: screenHeight,
                           child: Stack(
                             children: [
-                              // Footer
+                              // FOOTER
                               Positioned(
                                 bottom: 120,
                                 left: 0,
@@ -554,7 +578,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
 
-                              // Main Content
+                              // KONTEN UTAMA (Title & Card)
                               Positioned(
                                 top: 200,
                                 left: 0,
@@ -572,53 +596,42 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 9),
-                                    const Text(
-                                      'Please Login to continue',
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 13,
-                                        color: Color(0xFF991B1C),
-                                      ),
-                                    ),
 
-                                    // [BARU] Widget Pesan Error
-                                    if (_isLoginError) ...[
-                                      const SizedBox(height: 12),
+                                    // [MODIFIED] Logika Tampilan Error vs Teks Biasa
+                                    if (_isLoginError)
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 12, vertical: 8),
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 24),
+                                            horizontal: 12, vertical: 6),
                                         decoration: BoxDecoration(
                                           color: const Color(
-                                              0xFF991B1C), // Background Merah
+                                              0xFF991B1C), // Background Merah Gelap
                                           borderRadius:
-                                              BorderRadius.circular(8),
+                                              BorderRadius.circular(4),
                                         ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: const [
-                                            Icon(Icons.error_outline,
-                                                color: Colors.white, size: 16),
-                                            SizedBox(width: 8),
-                                            Text(
-                                              'Login gagal: Password atau email salah',
-                                              style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 11,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
+                                        child: const Text(
+                                          'Login gagal: Password atau email salah',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize:
+                                                12, // Sedikit diperkecil agar muat rapi
+                                            color: Colors
+                                                .white, // Teks putih agar kontras
+                                          ),
+                                        ),
+                                      )
+                                    else
+                                      const Text(
+                                        'Please Login to continue',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13,
+                                          color: Color(0xFF991B1C),
                                         ),
                                       ),
-                                      const SizedBox(height: 12),
-                                    ] else ...[
-                                      const SizedBox(height: 20),
-                                    ],
 
+                                    const SizedBox(height: 20),
                                     _buildLoginCard(),
 
                                     const SizedBox(height: 100),
@@ -632,7 +645,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
-                  // Logo Fixed
+                  // LOGO
                   Positioned(
                     top: 50,
                     left: 24,
@@ -685,14 +698,16 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const SizedBox(height: 8),
+
+          // [MODIFIED] Kirim status error ke input field
           _buildInputField(
             hintText: 'email@multifab.com',
             iconPath: 'assets/icons/ic_email.svg',
             isPassword: false,
             controller: _emailController,
-            // [BARU] Pass status error ke input field
-            hasError: _isLoginError,
+            isError: _isLoginError, // Trigger merah jika error
           ),
+
           const SizedBox(height: 18),
           const Text(
             'Password',
@@ -704,14 +719,16 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const SizedBox(height: 8),
+
+          // [MODIFIED] Kirim status error ke input field
           _buildInputField(
             hintText: 'Enter your password',
             iconPath: 'assets/icons/ic_password.svg',
             isPassword: true,
             controller: _passwordController,
-            // [BARU] Pass status error ke input field
-            hasError: _isLoginError,
+            isError: _isLoginError, // Trigger merah jika error
           ),
+
           const SizedBox(height: 12),
           GestureDetector(
             onTap: () {
@@ -771,15 +788,12 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: _isLoading
                     ? null
                     : () async {
-                        // 1. Reset Error & Tutup Keyboard
-                        setState(() {
-                          _isLoginError = false;
-                        });
                         FocusManager.instance.primaryFocus?.unfocus();
-
                         await Future.delayed(const Duration(milliseconds: 200));
 
-                        // Validasi Input Kosong
+                        // Reset error state saat tombol ditekan
+                        if (mounted) setState(() => _isLoginError = false);
+
                         if (_emailController.text.isEmpty ||
                             _passwordController.text.isEmpty) {
                           if (!mounted) return;
@@ -794,12 +808,10 @@ class _LoginPageState extends State<LoginPage> {
                         if (mounted) setState(() => _isLoading = true);
 
                         try {
-                          final token = await AuthService.login(
+                          await AuthService.login(
                             email: _emailController.text.trim(),
                             password: _passwordController.text.trim(),
                           );
-
-                          await TokenStorage.saveToken(token);
 
                           if (!mounted) return;
                           Navigator.pushAndRemoveUntil(
@@ -812,12 +824,14 @@ class _LoginPageState extends State<LoginPage> {
                         } catch (e) {
                           if (!mounted) return;
 
-                          // [BARU] Tampilkan Error Merah
+                          // [MODIFIED] Set error true jika catch terpanggil
                           setState(() {
                             _isLoginError = true;
+                            _isLoading =
+                                false; // Matikan loading agar user bisa coba lagi
                           });
 
-                          // Opsional: Tetap tampilkan snackbar debug message jika perlu
+                          // Optional: Tetap tampilkan snackbar jika perlu detail error lain
                           // ScaffoldMessenger.of(context).showSnackBar(
                           //   SnackBar(content: Text(e.toString())),
                           // );
@@ -903,13 +917,13 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // [MODIFIED] Menambahkan parameter isError
   Widget _buildInputField({
     required String hintText,
     required String iconPath,
     required bool isPassword,
     required TextEditingController controller,
-    // [BARU] Parameter untuk border error
-    bool hasError = false,
+    required bool isError, // Parameter baru
   }) {
     return Container(
       width: 314,
@@ -918,9 +932,9 @@ class _LoginPageState extends State<LoginPage> {
       decoration: BoxDecoration(
         color: const Color(0xFFF2F2F2),
         borderRadius: BorderRadius.circular(5),
-        // [BARU] Logika Border Merah
-        border: hasError
-            ? Border.all(color: const Color(0xFF991B1C), width: 1.0)
+        // [MODIFIED] Tambahkan Border Merah jika isError == true
+        border: isError
+            ? Border.all(color: const Color(0xFF991B1C), width: 1.5)
             : null,
       ),
       child: Row(
@@ -938,6 +952,14 @@ class _LoginPageState extends State<LoginPage> {
               controller: controller,
               obscureText: isPassword ? _obscurePassword : false,
               textAlignVertical: TextAlignVertical.center,
+              // Reset error saat user mulai mengetik ulang (Opsional, tapi UX yang baik)
+              onChanged: (_) {
+                if (_isLoginError) {
+                  setState(() {
+                    _isLoginError = false;
+                  });
+                }
+              },
               style: const TextStyle(
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w600,

@@ -1,39 +1,41 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'attendance_daily_summary.dart';
+part of 'user_profile.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class AttendanceDailySummaryAdapter
-    extends TypeAdapter<AttendanceDailySummary> {
+class UserProfileAdapter extends TypeAdapter<UserProfile> {
   @override
-  final int typeId = 2;
+  final int typeId = 30;
 
   @override
-  AttendanceDailySummary read(BinaryReader reader) {
+  UserProfile read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return AttendanceDailySummary(
-      date: fields[0] as DateTime,
-      checkIn: fields[1] as DateTime?,
-      checkOut: fields[2] as DateTime?,
+    return UserProfile(
+      userId: fields[0] as int,
+      name: fields[1] as String,
+      email: fields[2] as String,
+      badgeNumber: fields[3] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, AttendanceDailySummary obj) {
+  void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.date)
+      ..write(obj.userId)
       ..writeByte(1)
-      ..write(obj.checkIn)
+      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.checkOut);
+      ..write(obj.email)
+      ..writeByte(3)
+      ..write(obj.badgeNumber);
   }
 
   @override
@@ -42,7 +44,7 @@ class AttendanceDailySummaryAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AttendanceDailySummaryAdapter &&
+      other is UserProfileAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

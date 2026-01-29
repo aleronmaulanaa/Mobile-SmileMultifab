@@ -15,6 +15,8 @@ import 'features/attendance/services/location_tracking_service.dart';
 import 'features/attendance/models/attendance_history.dart';
 import 'features/attendance/models/attendance_daily_summary.dart';
 import 'features/attendance/models/location_tracking.dart';
+import 'features/profile/models/user_profile.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +31,8 @@ void main() async {
   Hive.registerAdapter(AttendanceHistoryAdapter());
   Hive.registerAdapter(AttendanceDailySummaryAdapter());
   Hive.registerAdapter(LocationTrackingAdapter());
+  Hive.registerAdapter(UserProfileAdapter());
+  await Hive.openBox<UserProfile>('user_profile');
   await Hive.openBox<AttendanceHistory>('attendance_history');
   await Hive.openBox<AttendanceDailySummary>('attendance_daily_summary');
   await Hive.openBox<LocationTracking>('tracking_buffer');

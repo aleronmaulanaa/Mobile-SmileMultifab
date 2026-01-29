@@ -1,4 +1,10 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
 part of 'attendance_history.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
 
 class AttendanceHistoryAdapter extends TypeAdapter<AttendanceHistory> {
   @override

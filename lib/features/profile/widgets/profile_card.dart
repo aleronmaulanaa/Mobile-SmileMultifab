@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import '../models/user_profile.dart';
 
-class ProfileHeaderCard extends StatelessWidget {
+
+class ProfileHeaderCard extends StatefulWidget {
   final bool isOnline;
   final String imageUrl;
   final VoidCallback? onQrTap;
@@ -12,8 +15,30 @@ class ProfileHeaderCard extends StatelessWidget {
     this.onQrTap,
   });
 
-  final String qrCodeUrl =
-      "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=83493";
+  @override
+  State<ProfileHeaderCard> createState() => _ProfileHeaderCardState();
+}
+
+
+class _ProfileHeaderCardState extends State<ProfileHeaderCard> {
+  UserProfile? _profile;
+
+  @override
+  void initState() {
+    super.initState();
+    final box = Hive.box<UserProfile>('user_profile');
+    _profile = box.get('current');
+  }
+
+
+
+
+
+String get _qrCodeUrl {
+  final badge = _profile?.badgeNumber ?? '';
+  return "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=$badge";
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,27 +95,29 @@ class ProfileHeaderCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
-                              'M. Richie Sugestiana.',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15,
-                                color: Colors.white,
-                              ),
-                            ),
+Text(
+  _profile?.name ?? '-',
+  maxLines: 1,
+  overflow: TextOverflow.ellipsis,
+  style: const TextStyle(
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w600,
+    fontSize: 15,
+    color: Colors.white,
+  ),
+),
+
                             const SizedBox(height: 4),
-                            const Text(
-                              '83493',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 13,
-                                color: Colors.white,
-                              ),
-                            ),
+Text(
+  _profile?.badgeNumber ?? '-',
+  style: const TextStyle(
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w500,
+    fontSize: 13,
+    color: Colors.white,
+  ),
+),
+
                             const SizedBox(height: 11),
                             const Text(
                               'IT Network & Infrastruktur',
@@ -112,7 +139,7 @@ class ProfileHeaderCard extends StatelessWidget {
               ),
 
               GestureDetector(
-                onTap: onQrTap,
+                onTap: widget.onQrTap,
                 behavior: HitTestBehavior.opaque,
                 child: Container(
                   width: 110,
@@ -127,9 +154,9 @@ class ProfileHeaderCard extends StatelessWidget {
                         width: 57,
                         height: 57,
                         child: Image.network(
-                          qrCodeUrl,
+                          _qrCodeUrl,
 
-                          key: ValueKey(isOnline),
+                          key: ValueKey(widget.isOnline),
 
                           fit: BoxFit.contain,
 
@@ -187,16 +214,16 @@ class ProfileHeaderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileImage() {
+Widget _buildProfileImage() {
+  if (!widget.isOnline) {
+    return Image.asset(
+      'assets/images/common/default-user.jpg',
+      fit: BoxFit.cover,
+    );
+  }
 
-    if (!isOnline) {
-      return Image.asset(
-        'assets/images/common/default-user.jpg',
-        fit: BoxFit.cover,
-      );
-    }
+   final String cleanUrl = widget.imageUrl.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
 
-    final String cleanUrl = imageUrl.replaceAll(RegExp(r'(?<!:)/{2,}'), '/');
 
     return Image.network(
       cleanUrl,
