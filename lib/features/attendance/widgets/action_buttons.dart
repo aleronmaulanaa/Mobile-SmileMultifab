@@ -25,16 +25,28 @@ class ActionButtons extends StatelessWidget {
               ),
             ),
             label: 'Record Time',
-            onTap: () {
-              Navigator.push(
+
+
+
+            onTap: () async {
+              final bool? result = await Navigator.push<bool>(
                 context,
                 MaterialPageRoute(
                   builder: (_) => const RecordTimePage(),
                 ),
               );
+
+              if (result == true && context.mounted) {
+                // 🔴 FORCE rebuild AttendancePage & InformationCard
+                (context as Element).markNeedsBuild();
+              }
             },
+            // 🔴 END CHANGE
           ),
         ),
+
+
+
 
         const SizedBox(width: 12),
 

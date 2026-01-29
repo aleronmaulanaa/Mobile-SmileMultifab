@@ -36,6 +36,8 @@ void main() async {
   await Hive.openBox<AttendanceHistory>('attendance_history');
   await Hive.openBox<AttendanceDailySummary>('attendance_daily_summary');
   await Hive.openBox<LocationTracking>('tracking_buffer');
+  await Hive.openBox('attendance_state');
+
 
   runApp(const MyApp());
 }

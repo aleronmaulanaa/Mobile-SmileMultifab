@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../core/utils/user_session.dart';
+
+
 
 class AttendanceOnlineService {
   static final FirebaseFirestore _firestore =
@@ -11,16 +14,26 @@ class AttendanceOnlineService {
         required double longitude,
         required String type,
       }) async {
+
+
+        final DateTime now = DateTime.now();
+
         final docRef = await _firestore.collection('attendance').add({
           'userId': userId,
           'type': type,
           'status': 'online',
           'latitude': latitude,
           'longitude': longitude,
-          'timestamp': Timestamp.fromDate(DateTime.now()),
+          'timestamp': Timestamp.fromDate(now),
           'photoStatus': 'pending',
           'photoUrl': null,
         });
+
+        await UserSession.saveAttendanceState(
+        type: type,
+        time: now,
+        );
+
         return docRef.id;
       }
 

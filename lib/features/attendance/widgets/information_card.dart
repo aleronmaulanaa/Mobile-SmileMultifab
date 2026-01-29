@@ -4,11 +4,14 @@ import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 
 import '../../profile/models/user_profile.dart';
 import '../state/location_state.dart';
 import '../services/connectivity_service.dart';
+import '../../../core/utils/user_session.dart';
+
 
 class InformationCard extends StatefulWidget {
   const InformationCard({super.key});
@@ -44,7 +47,13 @@ class _InformationCardState extends State<InformationCard> {
 
     _updateDate();
     _loadLocation();
-    _loadAttendanceTimes();
+    // _loadAttendanceTimes();
+    // _updateDate();
+    _loadLocalAttendance(); 
+    // _loadLocation();
+    _listenAttendanceFromServer();
+
+
 
     _timer = Timer.periodic(
       const Duration(minutes: 1),
@@ -62,6 +71,121 @@ class _InformationCardState extends State<InformationCard> {
       await _loadLocation();
     });
   }
+
+
+
+
+  // =====================================================
+  // 🔴 ADDED (TAHAP 2)
+  // LOCAL ATTENDANCE (HIVE)
+  // =====================================================
+  void _loadLocalAttendance() {
+    final Map<String, dynamic>? data =
+    UserSession.getTodayAttendance();
+
+    if (data == null) return;
+
+    setState(() {
+      _checkInTime = data['checkInTime'] != null
+          ? DateFormat('HH.mm')
+              .format(DateTime.parse(data['checkInTime']))
+          : null;
+
+      _checkOutTime = data['checkOutTime'] != null
+          ? DateFormat('HH.mm')
+              .format(DateTime.parse(data['checkOutTime']))
+          : null;
+
+      _isAttendanceActive =
+          _checkInTime != null && _checkOutTime == null;
+    });
+  }
+
+  // =====================================================
+  // 🔴 ADDED (TAHAP 2)
+  // SERVER SYNC (FIRESTORE → HIVE)
+  // =====================================================
+  void _listenAttendanceFromServer() async {
+    if (_profile == null) return;
+
+    final today = DateTime.now();
+    final startOfDay = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    );
+
+    await _attendanceSub?.cancel();
+
+    _attendanceSub = FirebaseFirestore.instance
+        .collection('attendance')
+        .where('userId', isEqualTo: _profile!.userId)
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
+        .orderBy('timestamp')
+        .snapshots()
+        .listen((snapshot) {
+      if (!mounted) return;
+      if (snapshot.docs.isEmpty) return;
+
+      DateTime? checkInTime;
+      DateTime? checkOutTime;
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final time = (data['timestamp'] as Timestamp).toDate();
+
+        if (data['type'] == 'checkin' && checkInTime == null) {
+          checkInTime = time;
+        }
+
+        if (data['type'] == 'checkout') {
+          checkOutTime = time;
+        }
+      }
+
+      // 🔴 ADDED (TAHAP 2): sinkronkan Firestore → Hive
+      if (checkInTime != null) {
+        UserSession.saveAttendanceState(
+          type: 'checkin',
+          time: checkInTime!,
+        );
+      }
+
+      if (checkOutTime != null) {
+        UserSession.saveAttendanceState(
+          type: 'checkout',
+          time: checkOutTime!,
+        );
+      }
+
+      setState(() {
+        _checkInTime = checkInTime != null
+            ? DateFormat('HH.mm').format(checkInTime!)
+            : _checkInTime;
+
+        _checkOutTime = checkOutTime != null
+            ? DateFormat('HH.mm').format(checkOutTime!)
+            : _checkOutTime;
+
+        _isAttendanceActive =
+            _checkInTime != null && _checkOutTime == null;
+      });
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   void _updateDate() {
     if (!mounted) return;
@@ -93,68 +217,7 @@ class _InformationCardState extends State<InformationCard> {
     }
   }
 
-  Future<void> _loadAttendanceTimes() async {
-    if (_profile == null) return;
-    final today = DateTime.now();
-    final startOfDay = DateTime(
-      today.year,
-      today.month,
-      today.day,
-    );
-
-    await _attendanceSub?.cancel();
-
-    _attendanceSub = FirebaseFirestore.instance
-        .collection('attendance')
-        .where('userId', isEqualTo: _profile?.userId,)
-        .where(
-          'timestamp',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
-        )
-        .orderBy('timestamp')
-        .snapshots()
-        .listen((snapshot) {
-      if (!mounted) return;
-
-      if (snapshot.docs.isEmpty) {
-        setState(() {
-          _checkInTime = null;
-          _checkOutTime = null;
-          _isAttendanceActive = false;
-        });
-        return;
-      }
-
-      DateTime? checkInTime;
-      DateTime? checkOutTime;
-
-      for (final doc in snapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>;
-        final time = (data['timestamp'] as Timestamp).toDate();
-
-        if (data['type'] == 'checkin' && checkInTime == null) {
-          checkInTime = time;
-        }
-
-        if (data['type'] == 'checkout') {
-          checkOutTime = time;
-        }
-      }
-
-      setState(() {
-        _checkInTime = checkInTime != null
-            ? DateFormat('HH.mm').format(checkInTime)
-            : null;
-
-        _checkOutTime = checkOutTime != null
-            ? DateFormat('HH.mm').format(checkOutTime)
-            : null;
-
-        _isAttendanceActive =
-            checkInTime != null && checkOutTime == null;
-      });
-    });
-  }
+ 
 
   String _latLongText() {
     final pos = LocationState.currentPosition;
@@ -257,18 +320,39 @@ class _InformationCardState extends State<InformationCard> {
                   ],
                 ),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF1E6),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '${_checkInTime ?? '--.--'}  |  ${_checkOutTime ?? '--.--'}',
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ),
+ValueListenableBuilder(
+  valueListenable: Hive.box('attendance_state').listenable(),
+  builder: (context, box, _) {
+
+
+    final Map<String, dynamic>? data =
+    UserSession.getTodayAttendance();
+
+
+    final checkIn = data?['checkInTime'] != null
+        ? DateFormat('HH.mm')
+            .format(DateTime.parse(data!['checkInTime']))
+        : '--.--';
+
+    final checkOut = data?['checkOutTime'] != null
+        ? DateFormat('HH.mm')
+            .format(DateTime.parse(data!['checkOutTime']))
+        : '--.--';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF1E6),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        '$checkIn  |  $checkOut',
+        style: const TextStyle(fontSize: 12),
+      ),
+    );
+  },
+),
+
             ],
           ),
         ],
