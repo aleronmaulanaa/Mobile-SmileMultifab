@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '../models/attendance_history.dart';
 import '../services/attendance_history_service.dart';
 import '../services/attendance_online_service.dart';
+import '../../../core/utils/user_session.dart';
+
 
 class AttendanceHistoryPage extends StatelessWidget {
   const AttendanceHistoryPage({super.key});
@@ -42,6 +44,14 @@ class AttendanceHistoryPage extends StatelessWidget {
 
     if (histories.isEmpty) return;
 
+
+final userId = UserSession.getUserId();
+if (userId == null) {
+  Navigator.pop(context);
+  return;
+}
+
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -52,12 +62,13 @@ class AttendanceHistoryPage extends StatelessWidget {
 
     try {
       for (AttendanceHistory data in histories) {
-        await AttendanceOnlineService.submitAttendance(
-          userId: 'test_user',
-          latitude: data.latitude,
-          longitude: data.longitude,
-          type: 'checkin',
-        );
+await AttendanceOnlineService.submitAttendance(
+  userId: userId,
+  latitude: data.latitude,
+  longitude: data.longitude,
+  type: 'checkin',
+);
+
       }
 
       await AttendanceHistoryService.clearHistory();

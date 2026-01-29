@@ -8,9 +8,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import '../widgets/attendance_camera.dart';
 import '../models/attendance_history.dart';
 import '../services/attendance_history_service.dart';
-import '../services/attendance_daily_summary_service.dart';
+// import '../services/attendance_daily_summary_service.dart';
 import '../services/attendance_online_service.dart';
 import '../services/attendance_photo_service.dart';
+import '../../../core/utils/user_session.dart';
+
 
 
 
@@ -385,6 +387,16 @@ appBar: AppBar(
 
                                   final isOnlineNow = await _checkConnectionNow();
 
+final userId = UserSession.getUserId();
+if (userId == null) {
+  setState(() {
+    _isSubmitting = false;
+  });
+  return;
+}
+
+
+
                                   if (isOnlineNow) {
                                     try {
                                       final int hour = DateTime.now().hour;
@@ -406,22 +418,20 @@ appBar: AppBar(
                                         return;
                                       }
 
-                                      final String attendanceId =
-                                          await AttendanceOnlineService.submitAttendance(
-                                        userId: 'test_user',
-                                        latitude: _position!.latitude,
-                                        longitude: _position!.longitude,
-                                        type: attendanceType,
-                                      );
+final String attendanceId =
+    await AttendanceOnlineService.submitAttendance(
+  userId: userId,
+  latitude: _position!.latitude,
+  longitude: _position!.longitude,
+  type: attendanceType,
+);
 
+AttendancePhotoService.uploadAttendancePhoto(
+  attendanceId: attendanceId,
+  imagePath: _capturedImage!.path,
+  userId: userId,
+);
 
-
-       
-                                    AttendancePhotoService.uploadAttendancePhoto(
-                                      attendanceId: attendanceId,
-                                      imagePath: _capturedImage!.path,
-                                      userId: 'test_user',
-                                    );
 
                                   
 

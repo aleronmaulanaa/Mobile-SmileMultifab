@@ -7,6 +7,8 @@ import 'connectivity_service.dart';
 import 'attendance_online_service.dart';
 import 'tracking_buffer_service.dart';
 import '../models/location_tracking.dart';
+import '../../../core/utils/user_session.dart';
+
 
 class LocationTrackingService {
   static Timer? _timer;
@@ -70,13 +72,18 @@ class LocationTrackingService {
       final bool isOnline =
           ConnectivityService.currentStatus;
 
-      if (isOnline) {
-        await AttendanceOnlineService.submitTracking(
-          userId: 'test_user',
-          latitude: position.latitude,
-          longitude: position.longitude,
-        );
-      } else {
+if (isOnline) {
+  final userId = UserSession.getUserId();
+  if (userId == null) return;
+
+  await AttendanceOnlineService.submitTracking(
+    userId: userId,
+    latitude: position.latitude,
+    longitude: position.longitude,
+  );
+}
+
+       else {
         await TrackingBufferService.add(
           LocationTracking(
             latitude: position.latitude,
