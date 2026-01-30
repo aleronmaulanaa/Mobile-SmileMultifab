@@ -15,6 +15,18 @@ import '../../../core/utils/user_session.dart';
 
 
 
+class AttendanceDecision {
+  final bool allowed;
+  final String? type; // checkin / checkout
+  final String? message; // alert message
+
+  AttendanceDecision({
+    required this.allowed,
+    this.type,
+    this.message,
+  });
+}
+
 
 class RecordTimePage extends StatefulWidget {
   const RecordTimePage({super.key});
@@ -29,10 +41,13 @@ class RecordTimePage extends StatefulWidget {
       bool _isSubmitting = false;
       DateTime? _photoTakenTime;
       bool _isOnline = true;
+
       Timer? _clockTimer;
       DateTime _now = DateTime.now();
+      
       String get _currentTime =>
           DateFormat('HH:mm:ss').format(_now);
+
       String get _currentDate =>
           DateFormat('EEEE, dd MMMM yyyy', 'id_ID')
           .format(_now);
@@ -44,6 +59,8 @@ class RecordTimePage extends StatefulWidget {
                 _getLocation();
                 _checkConnection();
               }
+
+
               void _startClock() {
                 _clockTimer = Timer.periodic(
                   const Duration(seconds: 1),
@@ -55,6 +72,52 @@ class RecordTimePage extends StatefulWidget {
                   },
                 );
               }
+
+
+AttendanceDecision _decideAttendance(DateTime now) {
+  final hour = now.hour;
+  final minute = now.minute;
+
+  // 00.00 – 06.59
+  if (hour < 7) {
+    return AttendanceDecision(
+      allowed: false,
+      message: 'Absensi ditutup',
+    );
+  }
+
+  // 07.00 – 10.00 (CHECK-IN)
+  if (hour >= 7 && (hour < 10 || (hour == 10 && minute == 0))) {
+    return AttendanceDecision(
+      allowed: true,
+      type: 'checkin',
+    );
+  }
+
+  // 10.01 – 12.59
+  if ((hour == 10 && minute > 0) || hour == 11 || hour == 12) {
+    return AttendanceDecision(
+      allowed: false,
+      message: 'Absensi check-in telah ditutup',
+    );
+  }
+
+  // 13.00 – 20.00 (CHECK-OUT) → MODE TESTING
+  if (hour >= 13 && (hour < 20 || (hour == 20 && minute == 0))) {
+    return AttendanceDecision(
+      allowed: true,
+      type: 'checkout',
+    );
+  }
+
+  // 20.01 – 23.59
+  return AttendanceDecision(
+    allowed: false,
+    message: 'Absensi ditutup',
+  );
+}
+
+
 
             Future<bool> _isUsingFakeGps() async {
               try {
@@ -101,6 +164,29 @@ class RecordTimePage extends StatefulWidget {
                   _isOnline = online;
                 });
               }
+
+
+
+                    Future<bool> _checkConnectionNow() async {
+                    final connectivityResult =
+                        await Connectivity().checkConnectivity();
+
+                    bool online = connectivityResult != ConnectivityResult.none;
+
+                    if (online) {
+                      try {
+                        final result =
+                            await InternetAddress.lookup('google.com');
+                        online = result.isNotEmpty &&
+                            result.first.rawAddress.isNotEmpty;
+                      } catch (_) {
+                        online = false;
+                      }
+                    }
+
+                    return online;
+                    }
+
 
               void _onImageCaptured(File image) {
                 setState(() {
@@ -358,119 +444,100 @@ appBar: AppBar(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                onPressed: _canSubmit
-                    ? () async {
-                        setState(() {
-                          _isSubmitting = true;
-                        });
+onPressed: _canSubmit
+    ? () async {
+        setState(() => _isSubmitting = true);
 
-                        await Future.delayed(
-                          const Duration(seconds: 2),
-                        );
-                            final bool isFakeGps = await _isUsingFakeGps();
-                            if (isFakeGps) {
-                              setState(() {
-                                _isSubmitting = false;
-                              });
+        final isFakeGps = await _isUsingFakeGps();
+        if (isFakeGps) {
+          setState(() => _isSubmitting = false);
+          showDialog(
+            context: context,
+            builder: (_) => const AlertDialog(
+              title: Text('Fake GPS Terdeteksi'),
+              content: Text(
+                'Silakan matikan Fake GPS atau Mock Location.',
+              ),
+            ),
+          );
+          return;
+        }
 
-                              showDialog(
-                                context: context,
-                                builder: (_) => const AlertDialog(
-                                  title: Text('Fake GPS Terdeteksi'),
-                                  content: Text(
-                                    'Silakan matikan Fake GPS atau Mock Location.',
-                                  ),
-                                ),
-                              );
-                              return; 
-                            }
+        final userId = UserSession.getUserId();
+        if (userId == null) {
+          setState(() => _isSubmitting = false);
+          return;
+        }
 
-                                  final isOnlineNow = await _checkConnectionNow();
+        // 🔴 LOGIC JAM (SATU-SATUNYA)
+        final decision = _decideAttendance(DateTime.now());
+        if (!decision.allowed) {
+          setState(() => _isSubmitting = false);
+          showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text('Absensi'),
+              content: Text(decision.message ?? '-'),
+            ),
+          );
+          return;
+        }
 
-final userId = UserSession.getUserId();
-if (userId == null) {
-  setState(() {
-    _isSubmitting = false;
-  });
-  return;
-}
+// ✅ POSISI YANG BENAR
+final bool isOnlineNow = await _checkConnectionNow();
 
-
-
-                                  if (isOnlineNow) {
-                                    try {
-                                      final int hour = DateTime.now().hour;
-
-                                      String? attendanceType;
-
-                                      if (hour >= 00 && hour < 12) {
-                                        attendanceType = 'checkin';
-                                      } else if (hour >= 13 && hour < 24) {
-                                        attendanceType = 'checkout';
-                                      } else {
-                                        attendanceType = null;
-                                      }
-
-                                      if (attendanceType == null) {
-                                        setState(() {
-                                          _isSubmitting = false;
-                                        });
-                                        return;
-                                      }
-
-final String attendanceId =
-    await AttendanceOnlineService.submitAttendance(
-  userId: userId,
-  latitude: _position!.latitude,
-  longitude: _position!.longitude,
-  type: attendanceType,
-);
-
-AttendancePhotoService.uploadAttendancePhoto(
-  attendanceId: attendanceId,
-  imagePath: _capturedImage!.path,
-  userId: userId,
-);
+setState(() {
+  _isOnline = isOnlineNow;
+});
 
 
-                                  
 
-                                  } catch (e) {
-                                    
-                                    await AttendanceHistoryService.addHistory(
-                                      AttendanceHistory(
-                                        imagePath: _capturedImage!.path,
-                                        checkInTime: _photoTakenTime!,
-                                        latitude: _position!.latitude,
-                                        longitude: _position!.longitude,
-                                        isOnline: false,
-                                        photoStatus: 'pending',
-                                      ),
-                                    );
-                                  }
-                                } else {
-                                 
-                                  await AttendanceHistoryService.addHistory(
-                                    AttendanceHistory(
-                                      imagePath: _capturedImage!.path,
-                                      checkInTime: _photoTakenTime!,
-                                      latitude: _position!.latitude,
-                                      longitude: _position!.longitude,
-                                      isOnline: false,
-                                      photoStatus: 'pending',
-                                    ),
-                                  );
-                                }
+        try {
+          if (isOnlineNow) {
+            final attendanceId =
+                await AttendanceOnlineService.submitAttendance(
+              userId: userId,
+              latitude: _position!.latitude,
+              longitude: _position!.longitude,
+              type: decision.type!, // ✅ PASTI ADA
+            );
 
-                                if (!mounted) return;
+            AttendancePhotoService.uploadAttendancePhoto(
+              attendanceId: attendanceId,
+              imagePath: _capturedImage!.path,
+              userId: userId,
+            );
+          } else {
+            await AttendanceHistoryService.addHistory(
+              AttendanceHistory(
+                imagePath: _capturedImage!.path,
+                checkInTime: _photoTakenTime!,
+                latitude: _position!.latitude,
+                longitude: _position!.longitude,
+                isOnline: false,
+                photoStatus: 'pending',
+              ),
+            );
+          }
+        } catch (e) {
+          await AttendanceHistoryService.addHistory(
+            AttendanceHistory(
+              imagePath: _capturedImage!.path,
+              checkInTime: _photoTakenTime!,
+              latitude: _position!.latitude,
+              longitude: _position!.longitude,
+              isOnline: false,
+              photoStatus: 'pending',
+            ),
+          );
+        }
 
-                                setState(() {
-                                  _isSubmitting = false;
-                                });
+        if (!mounted) return;
+        setState(() => _isSubmitting = false);
+        _showSuccessDialog();
+      }
+    : null,
 
-                                _showSuccessDialog();
-                              }
-                            : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             _canSubmit ? Colors.green : Colors.grey,
@@ -500,23 +567,5 @@ AttendancePhotoService.uploadAttendancePhoto(
               ),
             );
           }
-                    Future<bool> _checkConnectionNow() async {
-                    final connectivityResult =
-                        await Connectivity().checkConnectivity();
+    }
 
-                    bool online = connectivityResult != ConnectivityResult.none;
-
-                    if (online) {
-                      try {
-                        final result =
-                            await InternetAddress.lookup('google.com');
-                        online = result.isNotEmpty &&
-                            result.first.rawAddress.isNotEmpty;
-                      } catch (_) {
-                        online = false;
-                      }
-                    }
-
-                    return online;
-                    }
-                  }

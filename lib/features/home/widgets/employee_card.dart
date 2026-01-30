@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../features/attendance/pages/attendance_history_page.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import '../../../core/utils/user_session.dart';
 import '../../../features/profile/models/user_profile.dart';
 
 
@@ -25,6 +29,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
   bool _isLateHidden = true;
   UserProfile? _profile;
+  late String _date;
 
 
   Color _getSpColor() {
@@ -64,6 +69,11 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
     final box = Hive.box<UserProfile>('user_profile');
     _profile = box.get('current');
+
+      _date = DateFormat(
+      'EEEE, d MMMM yyyy',
+      'id_ID',
+  ).format(DateTime.now());
   }
 
 
@@ -411,12 +421,20 @@ Widget _buildAbsenceSection() {
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            "Wednesday, 7 January 2026",
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
+
+
+
+
+              Text(
+              _date,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+
+
+
+        
+        color: Colors.black,
             ),
           ),
           Row(
@@ -466,111 +484,149 @@ Widget _buildAbsenceSection() {
           children: [
             Row(
               children: [
-                Expanded(
-                  child: Container(
-                    height: 78,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF36CA95),
-                      borderRadius: BorderRadius.circular(13),
-                      border: Border.all(
-                        color: const Color(0xFFD4D4D4),
-                        width: 2,
-                      ),
-                    ),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "07:35",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              "WIB",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          "Check in",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+
+
+                                          Expanded(
+                                            child: ValueListenableBuilder(
+                                              valueListenable: Hive.box('attendance_state').listenable(),
+                                              builder: (context, box, _) {
+                                                final data = UserSession.getTodayAttendance();
+
+                                                final checkInTime =
+                                                    data?['checkInTime'] != null
+                                                        ? DateFormat('HH.mm').format(
+                                                            DateTime.parse(data!['checkInTime']),
+                                                          )
+                                                        : '--.--';
+
+                                                return Container(
+                                                  height: 78,
+                                                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                                                  decoration: BoxDecoration(
+                                                    color: const Color(0xFF36CA95),
+                                                    borderRadius: BorderRadius.circular(13),
+                                                    border: Border.all(
+                                                      color: const Color(0xFFD4D4D4),
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Text(
+                                                            checkInTime,
+                                                            style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 15,
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(width: 4),
+                                                          const Text(
+                                                            "WIB",
+                                                            style: TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 14,
+                                                              fontWeight: FontWeight.w500,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(height: 2),
+                                                      const Text(
+                                                        "Check in",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+
+
 
                 const SizedBox(width: 12),
 
-                Expanded(
-                  child: Container(
-                    height: 78,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF59642),
-                      borderRadius: BorderRadius.circular(13),
-                      border: Border.all(
-                        color: const Color(0xFFD4D4D4),
-                        width: 2,
-                      ),
-                    ),
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              "--:--",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              "WIB",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          "Check out",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+
+
+
+
+                                              Expanded(
+                                                child: ValueListenableBuilder(
+                                                  valueListenable: Hive.box('attendance_state').listenable(),
+                                                  builder: (context, box, _) {
+                                                    final data = UserSession.getTodayAttendance();
+
+                                                    final checkOutTime =
+                                                        data?['checkOutTime'] != null
+                                                            ? DateFormat('HH.mm').format(
+                                                                DateTime.parse(data!['checkOutTime']),
+                                                              )
+                                                            : '--.--';
+
+                                                    return Container(
+                                                      height: 78,
+                                                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(0xFFF59642),
+                                                        borderRadius: BorderRadius.circular(13),
+                                                        border: Border.all(
+                                                          color: const Color(0xFFD4D4D4),
+                                                          width: 2,
+                                                        ),
+                                                      ),
+                                                      child: Column(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Text(
+                                                                checkOutTime,
+                                                                style: const TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 15,
+                                                                  fontWeight: FontWeight.bold,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(width: 4),
+                                                              const Text(
+                                                                "WIB",
+                                                                style: TextStyle(
+                                                                  color: Colors.white,
+                                                                  fontSize: 14,
+                                                                  fontWeight: FontWeight.w500,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          const SizedBox(height: 2),
+                                                          const Text(
+                                                            "Check out",
+                                                            style: TextStyle(
+                                                              color: Colors.white,
+                                                              fontSize: 14,
+                                                              fontWeight: FontWeight.w500,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+
+
 
             const SizedBox(height: 12),
 
