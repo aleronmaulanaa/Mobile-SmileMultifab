@@ -14,8 +14,11 @@ class InformationProfileScreen extends StatefulWidget {
 }
 
 class _InformationProfileScreenState extends State<InformationProfileScreen> {
-
   bool _isOnline = true;
+  bool _isLoading = false;
+  bool _isSuccess = false;
+
+  final ScrollController _scrollController = ScrollController();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   final String _photoUrl =
@@ -35,6 +38,7 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
   @override
   void dispose() {
     _connectivitySubscription.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -51,26 +55,52 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
 
   void _updateConnectionStatus(List<ConnectivityResult> results) {
     if (results.contains(ConnectivityResult.none)) {
-      setState(() {
-        _isOnline = false;
-      });
+      setState(() => _isOnline = false);
     } else {
-      setState(() {
-        _isOnline = true;
-      });
+      setState(() => _isOnline = true);
     }
+  }
+
+  Widget _buildNotificationBadge({
+    required Color color,
+    required IconData icon,
+    required String message,
+  }) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 16),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-
     const double headerHeight = 150.0;
-
     const double stripHeight = 47.0;
-
     const double profileSize = 73.0;
     const double profileRadius = profileSize / 2;
-
     const double totalFixedArea = headerHeight + stripHeight;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -79,15 +109,14 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
       ),
-
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
           backgroundColor: const Color(0xFFF3F4F6),
           body: Stack(
             children: [
-
               ListView(
+                controller: _scrollController,
                 padding: const EdgeInsets.only(
                   top: totalFixedArea + 30,
                   left: 24,
@@ -96,6 +125,13 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                 ),
                 physics: const BouncingScrollPhysics(),
                 children: [
+                  if (_isSuccess)
+                    _buildNotificationBadge(
+                      color: const Color(0xFF1B9928),
+                      icon: Icons.check_circle_outline,
+                      message: 'Berhasil: Profil telah diperbarui',
+                    ),
+
                   const Text(
                     'Update Identitas',
                     style: TextStyle(
@@ -106,22 +142,18 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 21),
-
                   const CustomTextField(
                     label: 'Kartu Keluarga (KK)',
                     hint: 'Nomor KK',
                     keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 18),
-
                   const CustomTextField(
                     label: 'Kartu Tanda Penduduk (KTP)',
                     hint: 'Nomor KTP',
                     keyboardType: TextInputType.number,
                   ),
-
                   const SizedBox(height: 40),
-
                   const Text(
                     'Informasi Tempat tinggal',
                     style: TextStyle(
@@ -132,7 +164,6 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 21),
-
                   const Text(
                     'Alamat Domisili',
                     style: TextStyle(
@@ -143,7 +174,6 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-
                   _buildSimpleForm(hint: 'Alamat Lengkap'),
                   const SizedBox(height: 8),
                   _buildSimpleForm(hint: 'Negara'),
@@ -157,9 +187,7 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                   _buildSimpleForm(hint: 'Kelurahan'),
                   const SizedBox(height: 8),
                   _buildSimpleForm(hint: 'Kode POS', isNumber: true),
-
                   const SizedBox(height: 18),
-
                   const Text(
                     'Alamat (KTP)',
                     style: TextStyle(
@@ -170,7 +198,6 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-
                   _buildSimpleForm(hint: 'Alamat Lengkap'),
                   const SizedBox(height: 8),
                   _buildSimpleForm(hint: 'Negara'),
@@ -184,7 +211,6 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                   _buildSimpleForm(hint: 'Kelurahan'),
                   const SizedBox(height: 8),
                   _buildSimpleForm(hint: 'Kode POS', isNumber: true),
-
                   const SizedBox(height: 40),
 
                   Center(
@@ -192,30 +218,68 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                       width: 262,
                       height: 36,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: _isLoading
+                            ? null
+                            : () async {
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                setState(() {
+                                  _isLoading = true;
+                                  _isSuccess = false;
+                                });
+
+                                await Future.delayed(
+                                    const Duration(seconds: 1));
+
+                                if (mounted) {
+                                  setState(() {
+                                    _isLoading = false;
+                                    _isSuccess = true;
+                                  });
+
+                                  _scrollController.animateTo(
+                                    0,
+                                    duration: const Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut,
+                                  );
+
+                                  await Future.delayed(
+                                      const Duration(milliseconds: 1500));
+                                  if (mounted) Navigator.pop(context);
+                                }
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFA0007),
+                          disabledBackgroundColor:
+                              const Color(0xFFFEE1E4),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18),
                           ),
                           elevation: 0,
                         ),
-                        child: const Text(
-                          'Save changes',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                            color: Colors.white,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFFFA0007),
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text(
+                                'Save changes',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 30),
                 ],
               ),
-
               Positioned(
                 top: 0,
                 left: 0,
@@ -224,7 +288,6 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-
                     Positioned(
                       top: 0,
                       left: 0,
@@ -237,15 +300,12 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                           bottom: false,
                           child: Column(
                             children: [
-
                               const SizedBox(height: 35),
-
                               SizedBox(
                                 height: 30,
                                 child: Stack(
                                   alignment: Alignment.center,
                                   children: [
-
                                     Align(
                                       alignment: Alignment.centerLeft,
                                       child: GestureDetector(
@@ -259,7 +319,6 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                                         ),
                                       ),
                                     ),
-
                                     const Text(
                                       'Information Profile',
                                       style: TextStyle(
@@ -277,7 +336,6 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                         ),
                       ),
                     ),
-
                     Positioned(
                       top: headerHeight,
                       left: 0,
@@ -303,7 +361,6 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
                         ),
                       ),
                     ),
-
                     Positioned(
                       top: headerHeight - profileRadius,
                       left: 24,
@@ -331,8 +388,7 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
 
   Widget _buildSimpleForm({required String hint, bool isNumber = false}) {
     return Container(
-      width:
-          double.infinity,
+      width: double.infinity,
       height: 42,
       padding: const EdgeInsets.symmetric(horizontal: 7),
       decoration: BoxDecoration(
@@ -360,8 +416,7 @@ class _InformationProfileScreenState extends State<InformationProfileScreen> {
           ),
           border: InputBorder.none,
           isDense: true,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 13),
+          contentPadding: const EdgeInsets.symmetric(vertical: 13),
         ),
       ),
     );

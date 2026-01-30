@@ -19,7 +19,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-
   bool _isOnline = true;
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   ProfileView _currentView = ProfileView.menu;
@@ -41,7 +40,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _initConnectivity() async {
-
     try {
       final result = await Connectivity().checkConnectivity();
       _updateConnectionStatus(result);
@@ -51,7 +49,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _updateConnectionStatus(List<ConnectivityResult> results) {
     setState(() => _isOnline = !results.contains(ConnectivityResult.none));
   }
-
 
   void _goToMenu() {
     setState(() => _currentView = ProfileView.menu);
@@ -71,7 +68,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showQrCodeModal() {
-
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
@@ -95,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final double screenHeight = MediaQuery.of(context).size.height;
     final double scale = screenHeight / 844.0;
     final double headerCardTop = 170.0 * scale;
-    final double menuSectionTop = 380.0 * scale;
+    final double menuSectionTop = 377.0 * scale;
 
     final bool isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
@@ -103,22 +99,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return BaseBackgroundScaffold(
       isOnline: _isOnline,
-
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-
           Positioned(
             top: menuSectionTop,
             left: 0,
             right: 0,
-
             bottom: -100,
             child: ProfileMenuSection(
               onChangePassword: _goToPassword,
             ),
           ),
-
           Positioned(
             top: headerCardTop,
             left: 24,
@@ -129,20 +121,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onQrTap: _showQrCodeModal,
             ),
           ),
-
           Positioned(
-
             bottom: isKeyboardOpen ? 0 : -bottomNavbarGap,
             left: 0,
             right: 0,
-            height: isKeyboardOpen
-                ? double.infinity
-                : (screenHeight * 0.423) + bottomNavbarGap,
-
+            height: isKeyboardOpen ? double.infinity : (screenHeight * 0.6),
             child: IgnorePointer(
               ignoring: _currentView != ProfileView.password,
               child: AnimatedSlide(
-
                 offset: _currentView == ProfileView.menu
                     ? const Offset(1.0, 0.0)
                     : Offset.zero,
@@ -156,12 +142,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
           ),
-
           Positioned(
             bottom: isKeyboardOpen ? 0 : -bottomNavbarGap,
             left: 0,
             right: 0,
-            height: (screenHeight * 0.423) + bottomNavbarGap,
+            height: (screenHeight * 0.6),
             child: IgnorePointer(
               ignoring: _currentView != ProfileView.success,
               child: AnimatedSlide(
