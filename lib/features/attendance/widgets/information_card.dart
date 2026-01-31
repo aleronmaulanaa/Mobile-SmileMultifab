@@ -1,0 +1,362 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+
+import '../../profile/models/user_profile.dart';
+import '../state/location_state.dart';
+import '../services/connectivity_service.dart';
+import '../../../core/utils/user_session.dart';
+
+
+class InformationCard extends StatefulWidget {
+  const InformationCard({super.key});
+
+  @override
+  State<InformationCard> createState() => _InformationCardState();
+}
+
+class _InformationCardState extends State<InformationCard> {
+
+  late String _date;
+
+  bool _isInternetOnline = false;
+  bool _isAttendanceActive = false;
+
+  UserProfile? _profile;
+
+
+  String? _checkInTime;
+  String? _checkOutTime;
+
+  Timer? _timer;
+  StreamSubscription<bool>? _connectionSub;
+  StreamSubscription<QuerySnapshot>? _attendanceSub;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _isInternetOnline = ConnectivityService.currentStatus;
+    final box = Hive.box<UserProfile>('user_profile');
+    _profile = box.get('current');
+
+    _updateDate();
+    _loadLocation();
+    // _loadAttendanceTimes();
+    // _updateDate();
+    _loadLocalAttendance(); 
+    // _loadLocation();
+    _listenAttendanceFromServer();
+
+
+
+    _timer = Timer.periodic(
+      const Duration(minutes: 1),
+      (_) => _updateDate(),
+    );
+
+    _connectionSub =
+        ConnectivityService.onlineStatusStream.listen((status) async {
+      if (!mounted) return;
+
+      setState(() {
+        _isInternetOnline = status;
+      });
+
+      await _loadLocation();
+    });
+  }
+
+
+
+
+  // =====================================================
+  // 🔴 ADDED (TAHAP 2)
+  // LOCAL ATTENDANCE (HIVE)
+  // =====================================================
+  void _loadLocalAttendance() {
+    final Map<String, dynamic>? data =
+    UserSession.getTodayAttendance();
+
+    if (data == null) return;
+
+    setState(() {
+      _checkInTime = data['checkInTime'] != null
+          ? DateFormat('HH.mm')
+              .format(DateTime.parse(data['checkInTime']))
+          : null;
+
+      _checkOutTime = data['checkOutTime'] != null
+          ? DateFormat('HH.mm')
+              .format(DateTime.parse(data['checkOutTime']))
+          : null;
+
+      _isAttendanceActive =
+          _checkInTime != null && _checkOutTime == null;
+    });
+  }
+
+  // =====================================================
+  // 🔴 ADDED (TAHAP 2)
+  // SERVER SYNC (FIRESTORE → HIVE)
+  // =====================================================
+  void _listenAttendanceFromServer() async {
+    if (_profile == null) return;
+
+    final today = DateTime.now();
+    final startOfDay = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    );
+
+    await _attendanceSub?.cancel();
+
+    _attendanceSub = FirebaseFirestore.instance
+        .collection('attendance')
+        .where('userId', isEqualTo: _profile!.userId)
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
+        )
+        .orderBy('timestamp')
+        .snapshots()
+        .listen((snapshot) {
+      if (!mounted) return;
+      if (snapshot.docs.isEmpty) return;
+
+      DateTime? checkInTime;
+      DateTime? checkOutTime;
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final time = (data['timestamp'] as Timestamp).toDate();
+
+        if (data['type'] == 'checkin' && checkInTime == null) {
+          checkInTime = time;
+        }
+
+        if (data['type'] == 'checkout') {
+          checkOutTime = time;
+        }
+      }
+
+      // 🔴 ADDED (TAHAP 2): sinkronkan Firestore → Hive
+      if (checkInTime != null) {
+        UserSession.saveAttendanceState(
+          type: 'checkin',
+          time: checkInTime!,
+        );
+      }
+
+      if (checkOutTime != null) {
+        UserSession.saveAttendanceState(
+          type: 'checkout',
+          time: checkOutTime!,
+        );
+      }
+
+      setState(() {
+        _checkInTime = checkInTime != null
+            ? DateFormat('HH.mm').format(checkInTime!)
+            : _checkInTime;
+
+        _checkOutTime = checkOutTime != null
+            ? DateFormat('HH.mm').format(checkOutTime!)
+            : _checkOutTime;
+
+        _isAttendanceActive =
+            _checkInTime != null && _checkOutTime == null;
+      });
+    });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  void _updateDate() {
+    if (!mounted) return;
+    setState(() {
+      _date = DateFormat(
+        'EEEE, d MMMM yyyy',
+        'id_ID',
+      ).format(DateTime.now());
+    });
+  }
+
+  Future<void> _loadLocation() async {
+    try {
+      Position? pos;
+
+      if (_isInternetOnline) {
+        pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
+      } else {
+        pos = await Geolocator.getLastKnownPosition();
+      }
+
+      if (pos != null) {
+        LocationState.setPosition(pos);
+        if (mounted) setState(() {});
+      }
+    } catch (_) {
+    }
+  }
+
+ 
+
+  String _latLongText() {
+    final pos = LocationState.currentPosition;
+    if (pos == null) return "-";
+    return '${pos.latitude.toStringAsFixed(5)}   '
+           '${pos.longitude.toStringAsFixed(5)}';
+  }
+
+  @override
+  void dispose() {
+    _attendanceSub?.cancel();
+    _timer?.cancel();
+    _connectionSub?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+              Row(
+                children: [
+                  const Icon(Icons.person, size: 16, color: Colors.black54),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      _profile?.name ?? '-',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Text(
+                    'ID: ${_profile?.badgeNumber ?? '-'}',
+                    style: const TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
+
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          Row(
+            children: [
+              Text(
+                _latLongText(),
+                style: const TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+              const Spacer(),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 4,
+                    backgroundColor:
+                        _isInternetOnline ? Colors.green : Colors.red,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    _isInternetOnline ? "Online" : "Offline",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: _isInternetOnline
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Information",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(_date, style: const TextStyle(fontSize: 12)),
+                    const Text(
+                      "Shift : Normal (07.00 - 17.00)",
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+ValueListenableBuilder(
+  valueListenable: Hive.box('attendance_state').listenable(),
+  builder: (context, box, _) {
+
+
+    final Map<String, dynamic>? data =
+    UserSession.getTodayAttendance();
+
+
+    final checkIn = data?['checkInTime'] != null
+        ? DateFormat('HH.mm')
+            .format(DateTime.parse(data!['checkInTime']))
+        : '--.--';
+
+    final checkOut = data?['checkOutTime'] != null
+        ? DateFormat('HH.mm')
+            .format(DateTime.parse(data!['checkOutTime']))
+        : '--.--';
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF1E6),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        '$checkIn  |  $checkOut',
+        style: const TextStyle(fontSize: 12),
+      ),
+    );
+  },
+),
+
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "792519503913",
+    "project_id": "attendance-dev-5b428",
+    "storage_bucket": "attendance-dev-5b428.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:792519503913:android:812b80d0f8e3dd23506c38",
+        "android_client_info": {
+          "package_name": "com.example.mobile_smile_multifab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6kRUMaT1-RNu5IRnlBFLxxuVJROckRBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      } 
+    }
+  ],
+  "configuration_version": "1"
+}
