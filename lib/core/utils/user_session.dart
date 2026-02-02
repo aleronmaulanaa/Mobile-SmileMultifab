@@ -57,7 +57,7 @@ static Map<String, dynamic>? getTodayAttendance() {
   final raw = box.get(todayKey);
   if (raw == null) return null;
 
-  // 🔴 FIX UTAMA: force convert Map<dynamic,dynamic> → Map<String,dynamic>
+  
   return Map<String, dynamic>.from(raw as Map);
 }
 

@@ -25,11 +25,11 @@ class AuthService {
 
       final result = response.data['result'];
 
-      // 1️⃣ SIMPAN TOKEN
+    
       final token = result['loginToken'];
       await TokenStorage.saveToken(token);
 
-      // 2️⃣ SIMPAN PROFILE DASAR DARI LOGIN
+    
       final profileBox = Hive.box<UserProfile>('user_profile');
 
       final profile = UserProfile(
@@ -41,19 +41,16 @@ class AuthService {
 
       await profileBox.put('current', profile);
 
-      // 3️⃣ AMBIL PROFILE LENGKAP (ONLINE)
+      
       try {
         final profileResponse = await ProfileService.fetchProfile(
           badgeNumber: profile.badgeNumber,
         );
 
-        // kalau backend kirim data tambahan,
-        // kamu bisa update Hive di sini
-        // (sementara kita biarkan)
+
 
       } catch (_) {
-        // kalau gagal, TIDAK MASALAH
-        // profile dasar sudah ada
+
       }
 
     } on DioException catch (e) {

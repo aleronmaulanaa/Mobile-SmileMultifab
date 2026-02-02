@@ -17,8 +17,8 @@ import '../../../core/utils/user_session.dart';
 
 class AttendanceDecision {
   final bool allowed;
-  final String? type; // checkin / checkout
-  final String? message; // alert message
+  final String? type; 
+  final String? message; 
 
   AttendanceDecision({
     required this.allowed,
@@ -78,7 +78,8 @@ AttendanceDecision _decideAttendance(DateTime now) {
   final hour = now.hour;
   final minute = now.minute;
 
-  // 00.00 – 06.59
+
+  
   if (hour < 7) {
     return AttendanceDecision(
       allowed: false,
@@ -86,15 +87,14 @@ AttendanceDecision _decideAttendance(DateTime now) {
     );
   }
 
-  // 07.00 – 10.00 (CHECK-IN)
+  
   if (hour >= 7 && (hour < 10 || (hour == 10 && minute == 0))) {
     return AttendanceDecision(
       allowed: true,
       type: 'checkin',
     );
   }
-
-  // 10.01 – 12.59
+  
   if ((hour == 10 && minute > 0) || hour == 11 || hour == 12) {
     return AttendanceDecision(
       allowed: false,
@@ -102,7 +102,7 @@ AttendanceDecision _decideAttendance(DateTime now) {
     );
   }
 
-  // 13.00 – 20.00 (CHECK-OUT) → MODE TESTING
+  
   if (hour >= 13 && (hour < 20 || (hour == 20 && minute == 0))) {
     return AttendanceDecision(
       allowed: true,
@@ -110,7 +110,7 @@ AttendanceDecision _decideAttendance(DateTime now) {
     );
   }
 
-  // 20.01 – 23.59
+
   return AttendanceDecision(
     allowed: false,
     message: 'Absensi ditutup',
@@ -469,7 +469,7 @@ onPressed: _canSubmit
           return;
         }
 
-        // 🔴 LOGIC JAM (SATU-SATUNYA)
+        
         final decision = _decideAttendance(DateTime.now());
         if (!decision.allowed) {
           setState(() => _isSubmitting = false);
@@ -483,7 +483,7 @@ onPressed: _canSubmit
           return;
         }
 
-// ✅ POSISI YANG BENAR
+
 final bool isOnlineNow = await _checkConnectionNow();
 
 setState(() {
@@ -499,7 +499,7 @@ setState(() {
               userId: userId,
               latitude: _position!.latitude,
               longitude: _position!.longitude,
-              type: decision.type!, // ✅ PASTI ADA
+              type: decision.type!, 
             );
 
             AttendancePhotoService.uploadAttendancePhoto(

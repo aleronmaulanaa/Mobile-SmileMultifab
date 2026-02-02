@@ -75,10 +75,7 @@ class _InformationCardState extends State<InformationCard> {
 
 
 
-  // =====================================================
-  // 🔴 ADDED (TAHAP 2)
-  // LOCAL ATTENDANCE (HIVE)
-  // =====================================================
+
   void _loadLocalAttendance() {
     final Map<String, dynamic>? data =
     UserSession.getTodayAttendance();
@@ -101,10 +98,7 @@ class _InformationCardState extends State<InformationCard> {
     });
   }
 
-  // =====================================================
-  // 🔴 ADDED (TAHAP 2)
-  // SERVER SYNC (FIRESTORE → HIVE)
-  // =====================================================
+
   void _listenAttendanceFromServer() async {
     if (_profile == null) return;
 
@@ -146,7 +140,7 @@ class _InformationCardState extends State<InformationCard> {
         }
       }
 
-      // 🔴 ADDED (TAHAP 2): sinkronkan Firestore → Hive
+    
       if (checkInTime != null) {
         UserSession.saveAttendanceState(
           type: 'checkin',
